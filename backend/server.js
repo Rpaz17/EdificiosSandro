@@ -16,6 +16,10 @@ app.get("/", (req, res) => {
 const usuariosRoutes = require("./routes/usuarios.routes");
 app.use("/api", usuariosRoutes);
 
+//endpoint de clientes
+const clientesRoutes = require("./routes/clientes.routes");
+app.use("/api", clientesRoutes);
+
 // Aquí crearás tus endpoints reales
 app.get("/clientes", (req, res) => {
   res.json({ mensaje: "Listado de clientes (endpoint de ejemplo)" });
