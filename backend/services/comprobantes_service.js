@@ -2,15 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const { Comprobante, Pago } = require("../models");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
-async function subirComprobante(data) {
-  const {
-    id_pago, // id del pago asociado
-    archivo, // archivo en buffer (imagen?)
-    nombreArchivo, // nombre original del archivo
-    notas, // notas opcionales del cliente
-    usuarioId, // quien sube el comprobante
-  } = data;
 
+async function subirComprobante({
+  id_pago,
+  usuarioId,
+  notas,
+  archivo,
+  nombreArchivo,
+}) {
   // 1. Validaciones minimas
   if (!id_pago) throw new Error("El comprobante necesita un id_pago");
   if (!archivo) throw new Error("No se recibió un archivo");
