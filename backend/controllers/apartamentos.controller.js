@@ -12,13 +12,14 @@ const crearApartamento = async (req, res) => {
       return res.status(400).json({
         error: 'Los campos id_sucursal, numero_apartamento, precio_mensual, estado_ocupacion y descripcion son obligatorios.',
       });
-    } else {
-      // Verificar si la sucursal existe
-      const sucursal = await Sucursal.findByPk(id_sucursal);
-      if (!sucursal) {
-        return res.status(404).json({ error: 'La sucursal asignada no existe.' });
-      }
     }
+
+    // Verificar si la sucursal existe
+    const sucursal = await Sucursal.findByPk(id_sucursal);
+    if (!sucursal) {
+      return res.status(404).json({ error: 'La sucursal asignada no existe.' });
+    }
+
     // Crear el nuevo apartamento
     const nuevoApartamento = await Apartamento.create({
       id_sucursal,
