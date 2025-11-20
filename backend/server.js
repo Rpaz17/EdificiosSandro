@@ -16,6 +16,10 @@ app.get("/", (req, res) => {
 const usuariosRoutes = require("./routes/usuarios.routes");
 app.use("/api", usuariosRoutes);
 
+//endpoint de sucursales
+const sucursalesRoutes = require("./routes/sucursales.routes");
+app.use("/api", sucursalesRoutes);
+
 //endpoint de clientes
 const clientesRoutes = require("./routes/clientes.routes");
 app.use("/api", clientesRoutes);
@@ -23,6 +27,14 @@ app.use("/api", clientesRoutes);
 //endpoint de apartamentos
 const apartamentosRoutes = require("./routes/apartamentos.routes");
 app.use("/api", apartamentosRoutes);
+
+//endpoint de apartamentos
+const apartamentosRoutes = require("./routes/apartamentos.routes");
+app.use("/api", apartamentosRoutes);
+
+//endpoint de contratos
+const contratosRoutes = require("./routes/contratos.routes");
+app.use("/api", contratosRoutes);
 
 // Aquí crearás tus endpoints reales
 app.get("/clientes", (req, res) => {
