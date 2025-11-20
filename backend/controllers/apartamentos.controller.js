@@ -1,3 +1,4 @@
+const express = require('express');
 const { Apartamento, Sucursal } = require('../models');
 
 // ===============================
@@ -6,7 +7,6 @@ const { Apartamento, Sucursal } = require('../models');
 const crearApartamento = async (req, res) => {
   try {
     let { id_sucursal, numero_apartamento, descripcion, precio_mensual, estado_ocupacion } = req.body;
-
     // 1. Validar campos obligatorios
     if (!id_sucursal || !numero_apartamento || !precio_mensual || !estado_ocupacion || !descripcion) {
       return res.status(400).json({
@@ -37,4 +37,7 @@ const crearApartamento = async (req, res) => {
   }
 };
 
-module.exports = { crearApartamento };
+module.exports = {
+  crearApartamento,
+  
+};
