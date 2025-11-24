@@ -1,6 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const { Comprobante, Pago } = require("../models");
+const {
+  aprobarComprobante,
+} = require("../controllers/comprobantes_controller");
+const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
 
 async function subirComprobante({
@@ -49,6 +53,47 @@ async function subirComprobante({
   return comprobante;
 }
 
+async function validarComprobante(comprobanteId, usuarioId) {
+  // Validar que exista el comprobante
+  const comprobante = await Comprobante.findByPk(comprobanteId);
+  if (!comprobante) {
+    throw new ServiceError("Comprobante no encontrado", 404);
+  }
+  // Actualizar el estado del comprobante a aprobado
+  const estado = comprobante.estado_validacion;
+  if (estado !== "pendiente") {
+    throw new ServiceError("El comprobante ya ha sido validado", 409);
+  }
+  comprobante.estado_validacion = "validado";
+  comprobante.validado_por = usuarioId;
+  comprobante.validado_en = new Date();
+
+  await comprobante.save();
+
+  return comprobante;
+}
+
+async function rechazarComprobante(comprobanteId, usuarioId) {
+  // Validar que exista el comprobante
+  const comprobante = await Comprobante.findByPk(comprobanteId);
+  if (!comprobante) {
+    throw new ServiceError("Comprobante no encontrado", 404);
+  }
+  // Actualizar el estado del comprobante a aprobado
+  const estado = comprobante.estado_validacion;
+  if (estado !== "pendiente") {
+    throw new ServiceError("El comprobante ya ha sido validado", 409);
+  }
+  comprobante.estado_validacion = "rechazado";
+  comprobante.validado_por = usuarioId;
+  comprobante.validado_en = new Date();
+
+  await comprobante.save();
+
+  return comprobante;
+}
 module.exports = {
   subirComprobante,
+  validarComprobante,
+  rechazarComprobante,
 };
