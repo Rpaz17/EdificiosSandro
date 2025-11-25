@@ -120,4 +120,50 @@ module.exports = {
       });
     }
   },
+
+  eliminarComprobante: async (request, response) => {
+    const comprobanteId = request.params.id;
+    const usuarioId = request.body.usuarioId;
+    // 1. Validar ID del comprobante
+    if (!comprobanteId) {
+      return response.status(400).json({
+        error: "El parámetro 'id' es obligatorio en la URL",
+      });
+    }
+
+    // 2. Validar número de comprobanteId
+    if (isNaN(Number(comprobanteId))) {
+      return response.status(400).json({
+        error: "El ID del comprobante debe ser un número válido",
+      });
+    }
+
+    // 3. Validar usuarioId
+    if (!usuarioId) {
+      return response.status(400).json({
+        error: "El 'usuarioId' es obligatorio en el cuerpo de la petición",
+      });
+    }
+
+    // 4. Validar número de usuarioId
+    if (isNaN(Number(usuarioId))) {
+      return response.status(400).json({
+        error: "El usuarioId debe ser un número válido",
+      });
+    }
+    try {
+      const comprobante = await comprobantesService.eliminarComprobante(
+        comprobanteId,
+        usuarioId
+      );
+      return response.status(200).json({
+        mensaje: "Comprobante marcado como deleted",
+        comprobante,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
 };

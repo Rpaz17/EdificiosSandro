@@ -10,6 +10,6 @@ router.post(
 );
 
 router.patch("/:id/aprobar", comprobantesController.validarComprobante);
-router, this.patch("/:id/rechazar", comprobantesController.rechazarComprobante);
-
+router.patch("/:id/rechazar", comprobantesController.rechazarComprobante);
+router.patch("/:id/eliminar", comprobantesController.eliminarComprobante);
 module.exports = router;
