@@ -1,10 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { Comprobante, Pago } = require("../models");
-const {
-  aprobarComprobante,
-  eliminarComprobante,
-} = require("../controllers/comprobantes_controller");
+
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
 
