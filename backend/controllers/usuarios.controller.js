@@ -81,3 +81,96 @@ exports.crearUsuario = async (req, res) => {
     });
   }
 };
+
+// controlador de editar usuarios
+exports.editarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params; // viene por URL: /usuarios/:id
+    let { email, password, rol, updated_by } = req.body;
+
+    // 1. Validar ID
+    const usuario = await Usuario.findOne({
+      where: { id, is_deleted: false },
+    });
+
+    if (!usuario) {
+      return res.status(404).json({
+        error: "Usuario no encontrado",
+      });
+    }
+
+    // 2. Sanitizar email si viene
+    if (email) {
+      email = clean(email);
+
+      // Validar estructura
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          error: "email no válido",
+        });
+      }
+
+      // corrección: operador correcto en Sequelize
+      const existeOtro = await Usuario.findOne({
+        where: {
+          email,
+          is_deleted: false,
+          id: { [require("sequelize").Op.ne]: id },
+        },
+      });
+
+      if (existeOtro) {
+        return res.status(409).json({
+          error: "Ya existe un usuario con ese email",
+        });
+      }
+    }
+
+    // 3. Validar rol si viene
+    if (rol) {
+      rol = clean(rol);
+      const rolesPermitidos = ["admin", "cobrador", "cliente"];
+
+      if (!rolesPermitidos.includes(rol)) {
+        return res.status(400).json({
+          error: "rol inválido (debe ser admin, cobrador o cliente)",
+        });
+      }
+    }
+
+    // 4. Si viene password, hashearla
+    let password_hash = usuario.password_hash;
+    if (password) {
+      password_hash = await bcrypt.hash(password, 10);
+    }
+
+    // 5. Actualizar usuario
+    await usuario.update({
+      email: email ?? usuario.email,
+      password_hash,
+      rol: rol ?? usuario.rol,
+      updated_by: updated_by || null,
+      updated_at: new Date(),
+    });
+
+    // 6. Respuesta sin password
+    const usuarioResp = {
+      id: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol,
+      estado: usuario.estado,
+      updated_at: usuario.updated_at,
+    };
+
+    return res.status(200).json({
+      mensaje: "Usuario actualizado exitosamente",
+      usuario: usuarioResp,
+    });
+  } catch (error) {
+    console.error("Error al editar usuario:", error);
+    return res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+};
