@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Importar controlador
 const { crearUsuario } = require("../controllers/usuarios.controller");
+const { editarUsuario } = require("../controllers/usuarios.controller");
 
 // Ruta de prueba
 router.get("/test", (req, res) => {
@@ -11,5 +12,7 @@ router.get("/test", (req, res) => {
 
 // POST /api/usuarios → Usar el controller
 router.post("/usuarios", crearUsuario);
+
+router.put("/usuarios/:id", editarUsuario);
 
 module.exports = router;

@@ -1,9 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { Comprobante, Pago } = require("../models");
-const {
-  aprobarComprobante,
-} = require("../controllers/comprobantes_controller");
+
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
 
@@ -92,8 +90,34 @@ async function rechazarComprobante(comprobanteId, usuarioId) {
 
   return comprobante;
 }
+
+async function eliminarComprobante(comprobanteId, usuarioId) {
+  //Validar si existe
+  const comprobante = await Comprobante.findByPk(comprobanteId);
+  if (!comprobante) {
+    throw new ServiceError("Comprobante no encontrado", 404);
+  }
+  //Verificar si el comprobante ya ha sido validado
+
+  const estado = comprobante.estado_validacion;
+  if (estado === "pendiente") {
+    throw new ServiceError(
+      "No se puede eliminar un comprobante que no ha sido validado",
+      409
+    );
+  }
+
+  comprobante.is_deleted = true;
+  comprobante.deleted_at = new Date();
+  comprobante.updated_by = usuarioId;
+
+  await comprobante.save();
+
+  return comprobante;
+}
 module.exports = {
   subirComprobante,
   validarComprobante,
   rechazarComprobante,
+  eliminarComprobante,
 };
