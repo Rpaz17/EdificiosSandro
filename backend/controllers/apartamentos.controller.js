@@ -75,9 +75,31 @@ const getApartamentosById = async (req, res) => {
   }
 };
 
+const eliminarApartamento = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const apartamento = await Apartamento.findByPk(id);
+    if (!apartamento || apartamento.is_deleted) {
+      return res.status(404).json({ error: 'Apartamento no encontrado.' });
+    }
+
+    // Marcar como eliminado (soft delete)
+    apartamento.is_deleted = true;
+    await apartamento.save();
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    const status = (error && (error.statusCode || error.status)) || 500;
+    const message = (error && error.message) || 'Error al eliminar el apartamento.';
+    return res.status(status).json({ error: message });
+  }
+};
+
 module.exports = {
   crearApartamento,
   getApartamentos,
   getApartamentosById,
+  eliminarApartamento,
 
 };
