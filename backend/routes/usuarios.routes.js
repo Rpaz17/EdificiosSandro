@@ -2,8 +2,17 @@ const express = require("express");
 const router = express.Router();
 
 // Importar controlador
-const { crearUsuario } = require("../controllers/usuarios.controller");
+const {
+  crearUsuario,
+  eliminarUsuario,
+} = require("../controllers/usuarios.controller");
 const { editarUsuario } = require("../controllers/usuarios.controller");
+
+const {
+  crearUsuario,
+  editarUsuario,
+  eliminarUsuario,
+} = require("../controllers/usuarios.controller");
 
 // Ruta de prueba
 router.get("/test", (req, res) => {
@@ -14,5 +23,7 @@ router.get("/test", (req, res) => {
 router.post("/usuarios", crearUsuario);
 
 router.put("/usuarios/:id", editarUsuario);
+
+router.delete("/usuarios/:id", eliminarUsuario);
 
 module.exports = router;
