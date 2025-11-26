@@ -1,3 +1,4 @@
+"use strict";
 const { Sucursal } = require("../models");
 
 // Sanitizador
@@ -56,5 +57,131 @@ const crearSucursal = async (req, res) => {
   }
 };
 
-// Exportar correctamente
-module.exports = { crearSucursal };
+/**
+ * Obtener sucursal por ID
+ */
+const obtenerSucursal = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const sucursal = await Sucursal.findOne({
+      where: { id, is_deleted: false },
+    });
+
+    if (!sucursal) {
+      return res.status(404).json({
+        error: "Sucursal no encontrada",
+      });
+    }
+
+    return res.status(200).json({
+      mensaje: "Sucursal encontrada",
+      sucursal: {
+        id: sucursal.id,
+        nombre: sucursal.nombre,
+        ciudad: sucursal.ciudad,
+        sector: sucursal.sector,
+        calle: sucursal.calle,
+        created_at: sucursal.created_at,
+        updated_at: sucursal.updated_at,
+      },
+    });
+  } catch (error) {
+    console.error("Error al obtener sucursal:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+/**
+ * Editar sucursal
+ */
+const editarSucursal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { nombre, ciudad, sector, calle, updated_by } = req.body;
+
+    const sucursal = await Sucursal.findOne({
+      where: { id, is_deleted: false },
+    });
+
+    if (!sucursal) {
+      return res.status(404).json({
+        error: "Sucursal no encontrada",
+      });
+    }
+
+    // Sanitizar datos
+    nombre = nombre ? clean(nombre) : sucursal.nombre;
+    ciudad = ciudad ? clean(ciudad) : sucursal.ciudad;
+    sector = sector ? clean(sector) : sucursal.sector;
+    calle = calle ? clean(calle) : sucursal.calle;
+
+    await sucursal.update({
+      nombre,
+      ciudad,
+      sector,
+      calle,
+      updated_by: updated_by || null,
+      updated_at: new Date(),
+    });
+
+    return res.status(200).json({
+      mensaje: "Sucursal actualizada exitosamente",
+      sucursal: {
+        id: sucursal.id,
+        nombre: sucursal.nombre,
+        ciudad: sucursal.ciudad,
+        sector: sucursal.sector,
+        calle: sucursal.calle,
+        updated_at: sucursal.updated_at,
+      },
+    });
+  } catch (error) {
+    console.error("Error al editar sucursal:", error);
+    return res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+};
+
+/**
+ * Eliminar sucursal (soft delete)
+ */
+const eliminarSucursal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { updated_by } = req.body;
+
+    const sucursal = await Sucursal.findOne({
+      where: { id, is_deleted: false },
+    });
+
+    if (!sucursal) {
+      return res.status(404).json({
+        error: "Sucursal no encontrada",
+      });
+    }
+
+    await sucursal.update({
+      is_deleted: true,
+      deleted_at: new Date(),
+      updated_by: updated_by || null,
+    });
+
+    return res.status(200).json({
+      mensaje: "Sucursal eliminada exitosamente",
+    });
+  } catch (error) {
+    console.error("Error al eliminar sucursal:", error);
+    return res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+};
+
+module.exports = {
+  crearSucursal,
+  obtenerSucursal,
+  editarSucursal,
+  eliminarSucursal,
+};
