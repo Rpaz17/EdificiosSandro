@@ -174,3 +174,54 @@ exports.editarUsuario = async (req, res) => {
     });
   }
 };
+
+//controlador para eliminar usuario
+
+exports.eliminarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { updated_by } = req.body;
+
+    //verificar que exista el usuario
+
+    const usuario = await Usuario.findOne({
+      where: { id, is_deleted: false }, //lo buscamos por id y vemos si ya esta borrado o aun no
+    });
+
+    //ver si existe ese usuario
+
+    if (!usuario)
+      return res.status(404).json({
+        error: "Usuario no encontrado",
+      });
+
+    //agarramos la fecha actual
+
+    const fechaActual = new Date();
+
+    await usuario.update({
+      is_deleted: true, //actualizamos a que esta borrado ahora si
+      deleted_at: fechaActual, //agarramos la fecha de cuando se borro
+      updated_by: updated_by || null, //agarramos el usuario quien lo borro
+      updated_at: fechaActual,
+      estado: false, //esto significa que esta borrado
+    });
+
+    // 7. Armar respuesta limpia
+    return res.status(200).json({
+      mensaje: "Usuario eliminado correctamente",
+      usuario: {
+        id: usuario.id,
+        email: usuario.email,
+        rol: usuario.rol,
+        estado: false,
+        deleted_at: fechaActual,
+      },
+    });
+  } catch (error) {
+    console.error("Error al eliminar el usuario", error);
+    return res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+};
