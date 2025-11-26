@@ -29,7 +29,7 @@ const apartamentosRoutes = require("./routes/apartamentos.routes");
 app.use("/api", apartamentosRoutes);
 
 //endpoint de comprobantes
-const comprobantesRoutes = require("./routes/comprobantes_routes");
+const comprobantesRoutes = require("./routes/comprobantes.routes");
 app.use("/api/comprobantes", comprobantesRoutes);
 
 //endpoint de contratos
