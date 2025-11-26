@@ -75,19 +75,44 @@ const getApartamentosById = async (req, res) => {
   }
 };
 
+const editarApartamento = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { id_sucursal, numero_apartamento, descripcion, precio_mensual, estado_ocupacion } = req.body;
+    const apartamento = await Apartamento.findOne({ where: { id: id, is_deleted: false } });
+
+    if (!apartamento) {
+      return res.status(404).json({ error: 'Apartamento no encontrado.' });
+    }
+    // Actualizar campos
+    apartamento.id_sucursal = id_sucursal || apartamento.id_sucursal;
+    apartamento.numero_apartamento = numero_apartamento || apartamento.numero_apartamento;
+    apartamento.descripcion = descripcion || apartamento.descripcion;
+    apartamento.precio_mensual = precio_mensual || apartamento.precio_mensual;
+    apartamento.estado_ocupacion = estado_ocupacion || apartamento.estado_ocupacion;
+
+    await apartamento.save();
+    res.status(200).json(apartamento);
+  } catch (error) {
+    console.error(error);
+    const status = (error && (error.statusCode || error.status)) || 500;
+    const message = (error && error.message) || 'Error al actualizar el apartamento.';
+    return res.status(status).json({ error: message });
+  }
+};
+
 const eliminarApartamento = async (req, res) => {
   try {
     const { id } = req.params;
-    const apartamento = await Apartamento.findByPk(id);
-    if (!apartamento || apartamento.is_deleted) {
+    const apartamento = await Apartamento.findOne({ where: { id: id, is_deleted: false } });
+    if (!apartamento) {
       return res.status(404).json({ error: 'Apartamento no encontrado.' });
     }
 
-    // Marcar como eliminado (soft delete)
+    // Soft delete: marcar como eliminado
     apartamento.is_deleted = true;
     await apartamento.save();
-
-    res.status(204).send();
+    res.status(200).json({ mensaje: 'Apartamento eliminado correctamente.' });
   } catch (error) {
     console.error(error);
     const status = (error && (error.statusCode || error.status)) || 500;
@@ -100,6 +125,7 @@ module.exports = {
   crearApartamento,
   getApartamentos,
   getApartamentosById,
+  editarApartamento,
   eliminarApartamento,
-
+  
 };
