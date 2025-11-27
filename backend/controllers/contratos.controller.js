@@ -101,8 +101,35 @@ const editarContrato = async (req, res) => {
     }
 };
 
+const getContratos = async (req, res) => {
+    try {
+        const contratos = await Contrato.findAll();
+        res.status(200).json(contratos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al obtener los contratos' });
+    }
+};
+
+const eliminarContrato = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const contrato = await Contrato.findByPk(id);
+        if (!contrato) {
+            return res.status(404).json({ mensaje: 'Contrato no encontrado' });
+        }
+        await contrato.destroy();
+        res.status(200).json({ mensaje: 'Contrato eliminado exitosamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al eliminar el contrato' });
+    }
+};
+
 module.exports = {
     crearContrato,
     editarContrato,
-
+    getContratos,
+    eliminarContrato,
+    
 };
