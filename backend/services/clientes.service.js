@@ -30,6 +30,29 @@ async function editarCliente(clienteId, data, usuarioId) {
   return cliente;
 }
 
+async function eliminarCliente(clienteId, usuarioId) {
+  // 1. Validar si el cliente existe
+  const cliente = await Cliente.findByPk(clienteId);
+
+  if (!cliente) {
+    throw new ServiceError("El cliente no existe", 404);
+  }
+
+  // 2. Evitar eliminar si ya está marcado como eliminado
+  if (cliente.is_deleted) {
+    throw new ServiceError("El cliente ya se encuentra eliminado", 409);
+  }
+
+  // 3. Soft delete
+  cliente.is_deleted = true;
+  cliente.deleted_at = new Date();
+  cliente.updated_by = usuarioId;
+
+  await cliente.save();
+
+  return cliente;
+}
 module.exports = {
   editarCliente,
+  eliminarCliente,
 };

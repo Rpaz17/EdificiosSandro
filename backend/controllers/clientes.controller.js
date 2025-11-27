@@ -167,4 +167,41 @@ module.exports = {
       });
     }
   },
+
+  eliminarCliente: async (req, res) => {
+    const clienteId = req.params.id;
+    const usuarioId = req.body.usuarioId;
+
+    if (!clienteId) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'id' es obligatorio" });
+    }
+
+    if (isNaN(Number(clienteId))) {
+      return res
+        .status(400)
+        .json({ error: "El ID del cliente debe ser válido" });
+    }
+
+    if (!usuarioId) {
+      return res.status(400).json({ error: "El usuarioId es obligatorio" });
+    }
+
+    try {
+      const cliente = await clientesService.eliminarCliente(
+        clienteId,
+        usuarioId
+      );
+
+      return res.status(200).json({
+        mensaje: "Cliente eliminado exitosamente",
+        cliente,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
 };
