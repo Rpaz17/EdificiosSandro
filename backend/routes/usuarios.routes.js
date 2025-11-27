@@ -2,11 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 // Importar controlador
-const {
-  crearUsuario,
-  eliminarUsuario,
-} = require("../controllers/usuarios.controller");
-const { editarUsuario } = require("../controllers/usuarios.controller");
 
 const {
   crearUsuario,
