@@ -1,5 +1,4 @@
-const { request } = require("express");
-const comprobantesService = require("../services/comprobantes_service");
+const comprobantesService = require("../services/comprobantes.service");
 
 module.exports = {
   //POST /comprobantes
@@ -66,7 +65,7 @@ module.exports = {
         comprobante,
       });
     } catch (error) {
-      return response.status(400).json({
+      return res.status(error.statusCode || 500).json({
         error: error.message,
       });
     }

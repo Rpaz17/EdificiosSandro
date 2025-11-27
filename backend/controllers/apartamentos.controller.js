@@ -101,10 +101,32 @@ const editarApartamento = async (req, res) => {
   }
 };
 
+const eliminarApartamento = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const apartamento = await Apartamento.findOne({ where: { id: id, is_deleted: false } });
+    if (!apartamento) {
+      return res.status(404).json({ error: 'Apartamento no encontrado.' });
+    }
+
+    // Soft delete: marcar como eliminado
+    apartamento.is_deleted = true;
+    await apartamento.save();
+    res.status(200).json({ mensaje: 'Apartamento eliminado correctamente.' });
+  } catch (error) {
+    console.error(error);
+    const status = (error && (error.statusCode || error.status)) || 500;
+    const message = (error && error.message) || 'Error al eliminar el apartamento.';
+    return res.status(status).json({ error: message });
+  }
+};
+
 module.exports = {
   crearApartamento,
   getApartamentos,
   getApartamentosById,
   editarApartamento,
+  eliminarApartamento,
   
+
 };

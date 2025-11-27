@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const comprobantesController = require("../controllers/comprobantes_controller");
+const comprobantesController = require("../controllers/comprobantes.controller");
 const upload = require("../middlewares/upload");
 
 router.post(
@@ -11,5 +11,6 @@ router.post(
 
 router.patch("/:id/aprobar", comprobantesController.validarComprobante);
 router.patch("/:id/rechazar", comprobantesController.rechazarComprobante);
+//cambiar a delete
 router.patch("/:id/eliminar", comprobantesController.eliminarComprobante);
 module.exports = router;
