@@ -11,5 +11,6 @@ router.post(
 
 router.patch("/:id/aprobar", comprobantesController.validarComprobante);
 router.patch("/:id/rechazar", comprobantesController.rechazarComprobante);
+//cambiar a delete
 router.patch("/:id/eliminar", comprobantesController.eliminarComprobante);
 module.exports = router;
