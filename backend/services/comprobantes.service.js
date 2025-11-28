@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { Comprobante, Pago } = require("../models");
+const crypto = require("crypto");
 
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
@@ -67,6 +68,8 @@ async function validarComprobante(comprobanteId, usuarioId) {
   comprobante.validado_en = new Date();
 
   await comprobante.save();
+
+  //IMPORTANTE: Actualizar el estado del pago asociado a 'pagado' (estado_pago)
 
   return comprobante;
 }

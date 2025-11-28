@@ -1,5 +1,5 @@
 const { Cliente, Usuario } = require("../models");
-
+const clientesService = require("../services/clientes.service");
 // Sanitizador
 const clean = (str = "") => String(str).trim();
 

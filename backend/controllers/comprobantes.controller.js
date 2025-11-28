@@ -65,7 +65,7 @@ module.exports = {
         comprobante,
       });
     } catch (error) {
-      return res.status(error.statusCode || 500).json({
+      return response.status(error.statusCode || 500).json({
         error: error.message,
       });
     }
@@ -114,7 +114,7 @@ module.exports = {
         comprobante,
       });
     } catch (error) {
-      return res.status(error.statusCode || 500).json({
+      return response.status(error.statusCode || 500).json({
         error: error.message,
       });
     }
@@ -160,7 +160,7 @@ module.exports = {
         comprobante,
       });
     } catch (error) {
-      return res.status(error.statusCode || 500).json({
+      return response.status(error.statusCode || 500).json({
         error: error.message,
       });
     }

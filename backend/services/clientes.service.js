@@ -1,4 +1,4 @@
-const { Cliente } = require("../models/cliente.model");
+const { Cliente } = require("../models");
 const ServiceError = require("../utils/serviceError");
 
 async function editarCliente(clienteId, data, usuarioId) {

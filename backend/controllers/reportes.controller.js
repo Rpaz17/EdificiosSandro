@@ -4,6 +4,7 @@ module.exports = {
   pagosMensuales: async (req, res) => {
     const { fechaInicio, fechaFinal, sucursalId } = req.body;
 
+    // Validaciones iniciales
     if (!fechaInicio) {
       return res.status(400).json({
         error: "La fecha inicial del reporte es obligatoria",
@@ -16,23 +17,36 @@ module.exports = {
       });
     }
 
-    if (new Date(fechaInicio) > new Date(fechaFinal)) {
-      return res.status(400).json({
-        error: "La fecha inicial no puede ser mayor a la fecha final",
-      });
-    }
-
     if (!sucursalId) {
       return res.status(400).json({
         error: "El id de la sucursal es obligatorio",
       });
     }
 
+    // Convertir fechas a objetos Date
+    const inicio = new Date(fechaInicio);
+    const final = new Date(fechaFinal);
+
+    // Validar formato de fecha
+    if (isNaN(inicio.getTime()) || isNaN(final.getTime())) {
+      return res.status(400).json({
+        error: "Formato de fecha inválido. Use YYYY-MM-DD",
+      });
+    }
+
+    // Validar rango lógico
+    if (inicio > final) {
+      return res.status(400).json({
+        error: "La fecha inicial no puede ser mayor a la fecha final",
+      });
+    }
+
     try {
+      // Llamar a tu servicio con fechas YA convertidas
       const reporte = await reportesService.pagosMensuales(
         sucursalId,
-        fechaInicio,
-        fechaFinal
+        inicio,
+        final
       );
 
       return res.status(200).json({
@@ -40,8 +54,9 @@ module.exports = {
         reporte,
       });
     } catch (error) {
-      return res.status(400).json({
-        error: error.message,
+      console.error("Error en pagosMensuales:", error);
+      return res.status(500).json({
+        error: error.message || "Error al generar reporte",
       });
     }
   },

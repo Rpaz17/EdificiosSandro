@@ -1,4 +1,3 @@
-const { morosidad } = require("../controllers/reportes.controller");
 const { Pago, Apartamento, Cliente, Sucursal, Contrato } = require("../models");
 const { Op } = require("sequelize");
 const ServiceError = require("../utils/serviceError");
@@ -109,7 +108,7 @@ async function clientesAtrasados(sucursalId) {
             model: Pago,
             required: true,
             where: {
-              fecha_limite: { [Op.lt]: hoy },
+              periodo: { [Op.lt]: hoy },
               estado_pago: { [Op.ne]: "pagado" },
             },
           },

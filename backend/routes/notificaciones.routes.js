@@ -13,6 +13,6 @@ const router = Router();
 router.post("/internal", crearNotificacionInterna);
 
 // Endpoint para obtener notificaciones del usuario autenticado
-router.get("/", authMiddleware, obtenerNotificacionesUsuarioAutenticado);
+//router.get("/", authMiddleware, obtenerNotificacionesUsuarioAutenticado);
 
 module.exports = router;

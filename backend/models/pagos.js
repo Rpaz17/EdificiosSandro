@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
 
   Pago.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
       id_contrato: DataTypes.INTEGER,
       fecha: DataTypes.DATE,
       periodo: DataTypes.DATEONLY,
