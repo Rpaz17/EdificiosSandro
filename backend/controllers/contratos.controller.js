@@ -24,7 +24,7 @@ const crearContrato = async (req, res) => {
         mensaje: "Apartamento no encontrado",
       });
     }
-    if (apartamento.estado === "ocupado") {
+    if (apartamento.estado_ocupacion === "ocupado") {
       return res.status(400).json({
         mensaje: "El apartamento ya está ocupado",
       });
@@ -40,7 +40,7 @@ const crearContrato = async (req, res) => {
       estado,
     });
 
-    apartamento.estado = "ocupado";
+    apartamento.estado_ocupacion = "ocupado";
     await apartamento.save();
 
     res.status(201).json({
@@ -106,7 +106,9 @@ const editarContrato = async (req, res) => {
 
 const getContratos = async (req, res) => {
   try {
-    const contratos = await Contrato.findAll();
+    const contratos = await Contrato.findAll({
+      where: { is_deleted: false },
+    });
     res.status(200).json(contratos);
   } catch (error) {
     console.error(error);
@@ -117,11 +119,18 @@ const getContratos = async (req, res) => {
 const eliminarContrato = async (req, res) => {
   try {
     const { id } = req.params;
-    const contrato = await Contrato.findByPk(id);
+    const contrato = await Contrato.findOne({
+      where: { id, is_deleted: false },
+    });
+
     if (!contrato) {
       return res.status(404).json({ mensaje: "Contrato no encontrado" });
     }
-    await contrato.destroy();
+
+    contrato.is_deleted = true;
+    contrato.deleted_at = new Date();
+    await contrato.save();
+
     res.status(200).json({ mensaje: "Contrato eliminado exitosamente" });
   } catch (error) {
     console.error(error);
