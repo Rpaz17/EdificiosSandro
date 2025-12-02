@@ -82,6 +82,42 @@ exports.crearUsuario = async (req, res) => {
   }
 };
 
+// obtener usuario por ID
+exports.obtenerUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Buscar usuario no eliminado
+    const usuario = await Usuario.findOne({
+      where: { id, is_deleted: false },
+    });
+
+    if (!usuario) {
+      return res.status(404).json({
+        error: "Usuario no encontrado",
+      });
+    }
+
+    // Respuesta limpia sin password
+    return res.status(200).json({
+      mensaje: "Usuario encontrado",
+      usuario: {
+        id: usuario.id,
+        email: usuario.email,
+        rol: usuario.rol,
+        estado: usuario.estado,
+        created_at: usuario.created_at,
+        updated_at: usuario.updated_at,
+      },
+    });
+  } catch (error) {
+    console.error("Error al obtener usuario:", error);
+    return res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+};
+
 // controlador de editar usuarios
 exports.editarUsuario = async (req, res) => {
   try {
