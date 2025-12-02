@@ -19,7 +19,7 @@ module.exports = router;
  * @swagger
  * components:
  *   schemas:
- *     Comprobante:
+ *     Core.Comprobante:
  *       type: object
  *       properties:
  *         id:
@@ -64,7 +64,7 @@ module.exports = router;
  *         is_deleted:
  *           type: boolean
  *
- *     ComprobanteUploadRequest:
+ *     Comprobante.UploadRequest:
  *       type: object
  *       properties:
  *         id_pago:
@@ -82,7 +82,7 @@ module.exports = router;
  *         - usuarioId
  *         - archivo
  *
- *     UsuarioActionBody:
+ *     Comprobante.ActionBody:
  *       type: object
  *       properties:
  *         usuarioId:
@@ -111,7 +111,7 @@ module.exports = router;
  *       content:
  *         multipart/form-data:
  *           schema:
- *             $ref: "#/components/schemas/ComprobanteUploadRequest"
+ *             $ref: "#/components/schemas/Comprobante.UploadRequest"
  *     responses:
  *       201:
  *         description: Comprobante subido exitosamente
@@ -123,7 +123,7 @@ module.exports = router;
  *                 mensaje:
  *                   type: string
  *                 voucher:
- *                   $ref: "#/components/schemas/Comprobante"
+ *                   $ref: "#/components/schemas/Core.Comprobante"
  *       400:
  *         description: Error en los datos enviados
  *       500:
@@ -150,7 +150,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/UsuarioActionBody"
+ *             $ref: "#/components/schemas/Comprobante.ActionBody"
  *     responses:
  *       200:
  *         description: Comprobante aprobado exitosamente
@@ -162,7 +162,7 @@ module.exports = router;
  *                 mensaje:
  *                   type: string
  *                 comprobante:
- *                   $ref: "#/components/schemas/Comprobante"
+ *                   $ref: "#/components/schemas/Core.Comprobante"
  *       400:
  *         description: Datos inválidos
  *       404:
@@ -193,7 +193,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/UsuarioActionBody"
+ *             $ref: "#/components/schemas/Comprobante.ActionBody"
  *     responses:
  *       200:
  *         description: Comprobante rechazado exitosamente
@@ -205,7 +205,7 @@ module.exports = router;
  *                 mensaje:
  *                   type: string
  *                 comprobante:
- *                   $ref: "#/components/schemas/Comprobante"
+ *                   $ref: "#/components/schemas/Core.Comprobante"
  *       400:
  *         description: Datos inválidos
  *       404:
@@ -236,7 +236,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/UsuarioActionBody"
+ *             $ref: "#/components/schemas/Comprobante.ActionBody"
  *     responses:
  *       200:
  *         description: Comprobante eliminado exitosamente
@@ -248,7 +248,7 @@ module.exports = router;
  *                 mensaje:
  *                   type: string
  *                 comprobante:
- *                   $ref: "#/components/schemas/Comprobante"
+ *                   $ref: "#/components/schemas/Core.Comprobante"
  *       400:
  *         description: Datos inválidos
  *       404:
