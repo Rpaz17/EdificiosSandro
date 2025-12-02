@@ -9,11 +9,6 @@ const {
   eliminarUsuario,
 } = require("../controllers/usuarios.controller");
 
-// Ruta de prueba
-router.get("/test", (req, res) => {
-  res.json({ mensaje: "Ruta usuarios OK" });
-});
-
 // POST /api/usuarios → Usar el controller
 router.post("/usuarios", crearUsuario);
 
