@@ -111,6 +111,7 @@ const eliminarApartamento = async (req, res) => {
 
     // Soft delete: marcar como eliminado
     apartamento.is_deleted = true;
+    apartamento.deleted_at = new Date();
     await apartamento.save();
     res.status(200).json({ mensaje: 'Apartamento eliminado correctamente.' });
   } catch (error) {
