@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
+var swaggerJsDoc = require("swagger-jsdoc");
+var swaggerUI = require("swagger-ui-express");
 
 console.log("Cargando rutas desde:", __dirname);
 console.log("Intentando cargar archivo: ./routes/usuarios.routes.js");
@@ -41,6 +43,22 @@ app.use("/api", contratosRoutes);
 
 const notificacionesRoutes = require("./routes/notificaciones.routes");
 app.use("/api/notificaciones", notificacionesRoutes);
+
+//SWAGGER SETUP
+const options = {
+  definition: {
+    openapi: "3.0.3",
+    info: {
+      title: "Campus Connect Api Documentation",
+      version: "0.1",
+    },
+    servers: [{ url: "http://localhost:3000/api" }],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const specs = swaggerJsDoc(options);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 // Aquí crearás tus endpoints reales
 app.get("/clientes", (req, res) => {
