@@ -44,6 +44,10 @@ app.use("/api", contratosRoutes);
 const notificacionesRoutes = require("./routes/notificaciones.routes");
 app.use("/api/notificaciones", notificacionesRoutes);
 
+const authRoutes = require("./routes/auth.routes");
+app.use("/api/auth", authRoutes);
+
+
 //SWAGGER SETUP
 const options = {
   definition: {
@@ -53,8 +57,24 @@ const options = {
       version: "0.1",
     },
     servers: [{ url: "http://localhost:3000/api" }],
+
+    // Definición de componentes para autenticación
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
-  apis: ["./routes/*.js"],
+  apis: ["./routes/*.js", "./controllers/*.js"],
 };
 
 const specs = swaggerJsDoc(options);

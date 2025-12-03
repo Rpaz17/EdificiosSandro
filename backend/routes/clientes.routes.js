@@ -103,7 +103,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/clientes:
+ * /clientes:
  *   post:
  *     summary: Crear un nuevo cliente
  *     tags:
@@ -133,7 +133,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/clientes/{id}:
+ * /clientes/{id}:
  *   patch:
  *     summary: Editar un cliente existente
  *     tags:
@@ -170,7 +170,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/clientes/{id}:
+ * /clientes/{id}:
  *   delete:
  *     summary: Eliminar (soft delete) un cliente
  *     tags:
