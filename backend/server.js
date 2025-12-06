@@ -47,13 +47,12 @@ app.use("/api/notificaciones", notificacionesRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/api/auth", authRoutes);
 
-
 //SWAGGER SETUP
 const options = {
   definition: {
     openapi: "3.0.3",
     info: {
-      title: "Campus Connect Api Documentation",
+      title: "Edificios Sandro Api Documentation",
       version: "0.1",
     },
     servers: [{ url: "http://localhost:3000/api" }],

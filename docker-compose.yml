@@ -35,17 +35,20 @@ services:
     networks:
       - app_network
 
-  # frontend:
-  #     build: ./frontend
-  #     container_name: react_client
-  #     ports:
-  #       - "3000:3000"
-  #     volumes:
-  #       - ./frontend:/app
-  #     stdin_open: true
-  #     tty: true
-  #     networks:
-  #       - app_network
+  frontend:
+    build: ./frontend
+    container_name: react_client
+    ports:
+      - "5173:5173"  
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+    networks:
+      - app_network
 
 networks:
   app_network:
