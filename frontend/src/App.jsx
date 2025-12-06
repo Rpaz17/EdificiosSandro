@@ -1,8 +1,7 @@
-
 export default function App() {
   return (
     <div className="flex h-screen bg-gray-50">
-     frontend funcionando correctamente
+      frontend funcionando correctamente
     </div>
   );
 }
