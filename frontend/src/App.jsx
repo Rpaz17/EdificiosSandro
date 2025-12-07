@@ -1,4 +1,5 @@
 import { Comprobantes } from "./pages/comprobantes";
+import { Sucursales } from "./pages/sucursales";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,6 +12,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/comprobantes" element={<Comprobantes />} />
+        <Route path="/sucursales" element={<Sucursales />} />
       </Routes>
     </Router>
   );
