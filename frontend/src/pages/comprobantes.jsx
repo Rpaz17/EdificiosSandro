@@ -19,6 +19,7 @@ import {
  */
 
 /** @type {Comprobante[]} */
+
 const mockComprobantes = [
   {
     codigo: "COMP-2024-156",
