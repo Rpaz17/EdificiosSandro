@@ -5,15 +5,17 @@ import {
   Routes,
   Route,
   Navigate,
+  BrowserRouter,
 } from "react-router-dom";
+import { NavigationLayout } from "./layouts/navigation-layout";
 
 export default function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/comprobantes" element={<Comprobantes />} />
         <Route path="/sucursales" element={<Sucursales />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
