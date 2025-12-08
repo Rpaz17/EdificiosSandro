@@ -7,7 +7,7 @@ export function NavigationLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState("");
   return (
-    <div className="flex">
+    <div className="h-screen flex overflow-hidden ">
       <Sidebar
         collapsed={collapsed}
         onToggle={() => setCollapsed(!collapsed)}
@@ -15,10 +15,10 @@ export function NavigationLayout() {
         onMenuClick={setActiveMenu}
       />
 
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 h-screen">
         <Topbar />
 
-        <main className="p-4 ">
+        <main className="flex-1 p-4  overflow-y-auto ">
           {/* Contenido*/}
           <Outlet />
         </main>

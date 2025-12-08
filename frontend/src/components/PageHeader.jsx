@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "./button";
+import { Button } from "./ui/button";
 
 /**
  * Header para las pantallas porque todas tienen el mismo header
@@ -19,21 +19,19 @@ export function PageHeader({
   headerClassName = "",
 }) {
   return (
-    <header className={`flex flex-col gap-4 ${className}`}>
+    <header className={` ${className}`}>
       {(title || description || actionButton) && (
-        <div
-          className={`mb-8 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between ${headerClassName}`}
-        >
+        <div className={`${headerClassName}`}>
           {/* Title / Description */}
           {(title || description) && (
             <div>
               {title && (
-                <h1 className="mb-2 text-3xl font-semibold text-slate-900">
-                  {title}
-                </h1>
+                <h1 className="text-gray-900 text-2xl font-medium">{title}</h1>
               )}
               {description && (
-                <p className="text-sm text-slate-500">{description}</p>
+                <p className=" text-gray-600 mt-1 text-lg font-light">
+                  {description}
+                </p>
               )}
             </div>
           )}

@@ -13,8 +13,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/comprobantes" element={<Comprobantes />} />
-        <Route path="/sucursales" element={<Sucursales />} />
+        <Route element={<NavigationLayout />}>
+          {/*Todo lo que tenga sidebar aqui*/}
+          <Route path="/comprobantes" element={<Comprobantes />} />
+          <Route path="/sucursales" element={<Sucursales />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
