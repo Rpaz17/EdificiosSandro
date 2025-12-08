@@ -18,6 +18,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route element={<NavigationLayout />}>
+          {/*Todo lo que tenga sidebar aqui*/}
+          <Route path="/comprobantes" element={<Comprobantes />} />
+          <Route path="/sucursales" element={<Sucursales />} />
+        </Route>
         <Route path="/comprobantes" element={<Comprobantes />} />
         <Route path="/" element={<Login />} />
         <Route path="/sucursales" element={<Sucursales />} />

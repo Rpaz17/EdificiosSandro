@@ -7,6 +7,10 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
+import { PageHeader } from "../components/PageHeader";
+import { Filters } from "../components/Filters";
+import { ComprobanteDetalle } from "../components/comprobanteDetalle";
+
 /**
  * @typedef {Object} Comprobante
  * @property {string} codigo
@@ -19,6 +23,35 @@ import {
  */
 
 /** @type {Comprobante[]} */
+const filters = [
+  {
+    id: "estado",
+    label: "Estado",
+    placeholder: "Todos",
+    options: [
+      { label: "Pendiente", value: 1 },
+      { label: "Rechazado", value: 2 },
+      { label: "Validado", value: 3 },
+    ],
+  },
+  {
+    id: "sucursal",
+    label: "Sucursal",
+    placeholder: "Todas",
+    options: [
+      { label: "Centro", value: "1" },
+      { label: "Norte", value: "2" },
+      { label: "Sur", value: "3" },
+      { label: "Este", value: "4" },
+    ],
+  },
+];
+
+const values = {
+  sucursal: 2,
+  torre: "A",
+  estado: "1",
+};
 
 const mockComprobantes = [
   {
@@ -96,7 +129,7 @@ const mockComprobantes = [
 export function Comprobantes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("Todos");
-  const [sucursalFilter, setSucursalFilter] = useState("Todas");
+
   const [selectedComprobante, setSelectedComprobante] = useState(null);
   const [comprobantes, setComprobantes] = useState(mockComprobantes);
 
@@ -144,193 +177,120 @@ export function Comprobantes() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-gray-900">Comprobantes</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Revisa y valida los comprobantes de pago enviados por los clientes
-        </p>
-      </div>
-
-      {/* Filters Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="lg:col-span-2">
-            <label className="block text-sm text-gray-700 mb-2">Buscar</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar por cliente, código o referencia"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Estado Filter */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Estado</label>
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <select
-                value={estadoFilter}
-                onChange={(e) => setEstadoFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-              >
-                <option>Todos</option>
-                <option>Pendiente</option>
-                <option>Validado</option>
-                <option>Rechazado</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Sucursal Filter */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Sucursal</label>
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <select
-                value={sucursalFilter}
-                onChange={(e) => setSucursalFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-              >
-                <option>Todas</option>
-                <option>Centro</option>
-                <option>Norte</option>
-                <option>Sur</option>
-                <option>Este</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Date Range (Optional) */}
-        <div className="mt-4 flex items-center gap-3">
-          <Calendar className="w-5 h-5 text-gray-400" />
-          <input
-            type="date"
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Desde"
-          />
-          <span className="text-gray-500">hasta</span>
-          <input
-            type="date"
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Hasta"
+    <div className="p-6 ">
+      <div className="space-y-6">
+        {" "}
+        {/* Page Title */}
+        <div>
+          <PageHeader
+            title={"Comprobantes"}
+            description={
+              "Revisa y valida los comprobantes de pago enviados por los clientes"
+            }
           />
         </div>
-      </div>
-
-      {/* Results Summary */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Mostrando{" "}
-          <span className="text-gray-900">{filteredComprobantes.length}</span>{" "}
-          comprobantes
-        </p>
-      </div>
-
-      {/* Comprobantes Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Código del Comprobante
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Cliente
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Monto
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Método de Pago
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Fecha de Envío
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Estado
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredComprobantes.map((comp) => (
-                <tr
-                  key={comp.codigo}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {comp.codigo}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {comp.cliente}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    ${comp.monto.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {comp.metodoPago}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {comp.fechaEnvio}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                        comp.estado
-                      )}`}
-                    >
-                      {comp.estado}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setSelectedComprobante(comp)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Ver detalle"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      {comp.estado === "Pendiente" && (
-                        <>
-                          <button
-                            onClick={() => handleValidate(comp.codigo)}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Validar"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleReject(comp.codigo)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Rechazar"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
+        <div>
+          <Filters
+            title="comprobantes"
+            filters={filters}
+            values={values}
+          ></Filters>
+        </div>
+        {/* Results Summary */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-600">
+            Mostrando{" "}
+            <span className="text-gray-900">{filteredComprobantes.length}</span>{" "}
+            comprobantes
+          </p>
+        </div>
+        {/* Comprobantes Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Código del Comprobante
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Cliente
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Monto
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Método de Pago
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Fecha de Envío
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Estado
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Acciones
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredComprobantes.map((comp) => (
+                  <tr
+                    key={comp.codigo}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {comp.codigo}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {comp.cliente}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      ${comp.monto.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {comp.metodoPago}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {comp.fechaEnvio}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
+                          comp.estado
+                        )}`}
+                      >
+                        {comp.estado}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setSelectedComprobante(comp)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Ver detalle"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Detail Panel */}
+      {selectedComprobante && (
+        <ComprobanteDetalle
+          comprobante={selectedComprobante}
+          onClose={() => setSelectedComprobante(null)}
+          onValidate={handleValidate}
+          onReject={handleReject}
+        />
+      )}
     </div>
   );
 }
