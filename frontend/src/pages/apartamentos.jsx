@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, Filter, Plus, Edit, Trash2, Home } from "lucide-react";
+import { PageHeader } from "../components/PageHeader";
 //import { CreateApartamentoModal } from "./CreateApartamentoModal";
 //import { EditApartamentoModal } from "./EditApartamentoModal";
 //import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamentoModal";
@@ -183,8 +184,7 @@ export function Apartamentos() {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isChangeEstadoModalOpen, setIsChangeEstadoModalOpen] =
-    useState(false);
+  const [isChangeEstadoModalOpen, setIsChangeEstadoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const filteredApartamentos = apartamentos.filter((apt) => {
@@ -247,6 +247,15 @@ export function Apartamentos() {
 
   return (
     <div className="p-6 space-y-6">
+      <PageHeader
+        title="Apartamentos"
+        description="Gestiona y supervisa todos los apartamentos disponibles para alquiler"
+        actionButton={{
+          label: "Nuevo Apartamento",
+          icon: <Plus className="w-4 h-4" />,
+          onClick: () => setIsCreateModalOpen(true),
+        }}
+      />
       {/* Filtros */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -358,13 +367,6 @@ export function Apartamentos() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 flex items-center justify-between border-b border-gray-200">
           <h3 className="text-gray-900">Listado de Apartamentos</h3>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-          >
-            <Plus className="w-5 h-5" />
-            Nuevo Apartamento
-          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -464,8 +466,8 @@ export function Apartamentos() {
         {/* Paginación */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <p className="text-sm text-gray-600">
-            Mostrando 1 a {filteredApartamentos.length} de{" "}
-            {apartamentos.length} apartamentos
+            Mostrando 1 a {filteredApartamentos.length} de {apartamentos.length}{" "}
+            apartamentos
           </p>
           <div className="flex items-center gap-2">
             <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">

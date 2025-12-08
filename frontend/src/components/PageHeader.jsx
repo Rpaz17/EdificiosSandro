@@ -21,7 +21,7 @@ export function PageHeader({
   return (
     <header className={` ${className}`}>
       {(title || description || actionButton) && (
-        <div className={`${headerClassName}`}>
+        <div className={`flex flex-row justify-between${headerClassName}`}>
           {/* Title / Description */}
           {(title || description) && (
             <div>

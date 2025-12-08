@@ -22,13 +22,12 @@ export default function App() {
           {/*Todo lo que tenga sidebar aqui*/}
           <Route path="/comprobantes" element={<Comprobantes />} />
           <Route path="/sucursales" element={<Sucursales />} />
+          <Route path="/apartamentos" element={<Apartamentos />} />
         </Route>
-        <Route path="/comprobantes" element={<Comprobantes />} />
+
         <Route path="/" element={<Login />} />
-        <Route path="/sucursales" element={<Sucursales />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/verificarCodigo" element={<VerificarCodigo />} />
-        <Route path="/apartamentos" element={<Apartamentos />} />
       </Routes>
     </BrowserRouter>
   );

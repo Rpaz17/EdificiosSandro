@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Building2, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -102,6 +104,9 @@ export function Login({ onLogin }) {
             <button
               type="submit"
               className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={() => {
+                navigate("/comprobantes");
+              }}
             >
               Iniciar Sesión
             </button>
