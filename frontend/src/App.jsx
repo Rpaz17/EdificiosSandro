@@ -1,5 +1,8 @@
 import { Comprobantes } from "./pages/comprobantes";
 import { Sucursales } from "./pages/sucursales";
+import { Login } from "./pages/login";
+import { ForgotPassword } from "./pages/forgotPassword";
+import { VerificarCodigo } from "./pages/verificarCodigo";
 import { Apartamentos } from "./pages/apartamentos";
 
 import {
@@ -16,7 +19,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/comprobantes" element={<Comprobantes />} />
+        <Route path="/" element={<Login />} />
         <Route path="/sucursales" element={<Sucursales />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/verificarCodigo" element={<VerificarCodigo />} />
         <Route path="/apartamentos" element={<Apartamentos />} />
       </Routes>
     </BrowserRouter>
