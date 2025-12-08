@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Search, Filter, Plus, Edit, Trash2, Home } from "lucide-react";
-import { CreateApartamentoModal } from "./CreateApartamentoModal";
-import { EditApartamentoModal } from "./EditApartamentoModal";
-import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamentoModal";
-import { DeleteApartamentoModal } from "./DeleteApartamentoModal";
+//import { CreateApartamentoModal } from "./CreateApartamentoModal";
+//import { EditApartamentoModal } from "./EditApartamentoModal";
+//import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamentoModal";
 
 /**
  * Modelo de datos de un Apartamento
