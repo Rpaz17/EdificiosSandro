@@ -1,5 +1,7 @@
 import { Comprobantes } from "./pages/comprobantes";
 import { Sucursales } from "./pages/sucursales";
+import { Apartamentos } from "./pages/apartamentos";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,6 +17,7 @@ export default function App() {
       <Routes>
         <Route path="/comprobantes" element={<Comprobantes />} />
         <Route path="/sucursales" element={<Sucursales />} />
+        <Route path="/apartamentos" element={<Apartamentos />} />
       </Routes>
     </BrowserRouter>
   );
