@@ -8,6 +8,7 @@ import { Usuarios } from "./pages/usuarios";
 import { UsuarioModal } from "./pages/usuarioModal";
 import { UsuarioDeleteModal } from "./pages/usuarioDeleteModal";
 import { UsuarioViewModal } from "./pages/usuarioViewModal";
+import { Clientes } from "./pages/clientes";
 
 import {
   BrowserRouter as Router,
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/usuarioModal" element={<UsuarioModal />} />
           <Route path="/usuarioDeleteModal" element={<UsuarioDeleteModal />} />
           <Route path="/usuarioViewModal" element={<UsuarioViewModal />} />
+          <Route path="/clientes" element={<Clientes />} />
         </Route>
 
         <Route path="/" element={<Login />} />

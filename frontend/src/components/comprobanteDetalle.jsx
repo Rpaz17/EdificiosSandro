@@ -55,7 +55,7 @@ export function ComprobanteDetalle({
       {/* Overlay */}
       <div
         className="fixed backdrop-blur-sm
- inset-0 z-40 bg-[rgba(0,0,0,0.4)]"
+ inset-0 z-40 bg-black/20"
         onClick={onClose}
       />
 
