@@ -10,6 +10,8 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useState } from "react";
+import { ClienteModal } from "./clienteModal";
+import { ClienteDetalle } from "./clienteDetalle";
 
 const filters = [
   {
@@ -141,7 +143,11 @@ export function Clientes() {
     setEditingCliente(cliente);
     setIsModalOpen(true);
   };
-
+  const handleSaveCliente = (clienteData) => {
+    console.log("Guardando cliente:", clienteData);
+    setIsModalOpen(false);
+    setEditingCliente(null);
+  };
   const handleViewDetails = (cliente) => {
     setSelectedCliente(cliente);
     setIsDetailPanelOpen(true);
@@ -151,7 +157,10 @@ export function Clientes() {
       ? "bg-green-100 text-green-800"
       : "bg-gray-100 text-gray-800";
   };
-
+  const handleNewCliente = () => {
+    setEditingCliente(null);
+    setIsModalOpen(true);
+  };
   return (
     <div className="p-6">
       <div className="space-y-6">
@@ -165,6 +174,7 @@ export function Clientes() {
               icon: <Plus className="w-4 h-4" />,
               onClick: () => {
                 console.log("Nuevo Cliente clicked");
+                handleNewCliente();
               },
             }}
           />
@@ -250,25 +260,6 @@ export function Clientes() {
                           >
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleToggleEstado(cliente.id)}
-                            className={`p-2 rounded-lg transition-colors ${
-                              cliente.estado === "Activo"
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-green-600 hover:bg-green-50"
-                            }`}
-                            title={
-                              cliente.estado === "Activo"
-                                ? "Desactivar"
-                                : "Reactivar"
-                            }
-                          >
-                            {cliente.estado === "Activo" ? (
-                              <UserX className="w-4 h-4" />
-                            ) : (
-                              <UserCheck className="w-4 h-4" />
-                            )}
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -280,6 +271,31 @@ export function Clientes() {
         </div>
       </div>
       {/** MODALES  (Crear,editar,eliminar,ver detalles)*/}
+      {isModalOpen && (
+        <ClienteModal
+          cliente={editingCliente}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingCliente(null);
+          }}
+          onSave={handleSaveCliente}
+        />
+      )}
+
+      {isDetailPanelOpen && selectedCliente && (
+        <ClienteDetalle
+          cliente={selectedCliente}
+          onClose={() => {
+            setIsDetailPanelOpen(false);
+            setSelectedCliente(null);
+          }}
+          onEdit={(cliente) => {
+            setIsDetailPanelOpen(false);
+            handleEdit(cliente);
+          }}
+          onToggleEstado={handleToggleEstado}
+        />
+      )}
       <div></div>
     </div>
   );
