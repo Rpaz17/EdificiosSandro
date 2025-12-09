@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Search, Filter, Plus, Edit, Trash2, Home } from "lucide-react";
+import { Search, Filter, Plus, Edit, Trash2, Home, Eye } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
-//import { CreateApartamentoModal } from "./CreateApartamentoModal";
-//import { EditApartamentoModal } from "./EditApartamentoModal";
-//import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamentoModal";
+import { CreateApartamentoModal } from "./CreateApartamentoModal";
+import { EditApartamentoModal } from "./EditApartamentoModal";
+import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamento";
+import { ApartamentoDetailPanel } from "./ApartamentoDetallesModal";
+import { DeleteApartamentoModal } from "./DeleteApartamentoModal";
 
 /**
  * Modelo de datos de un Apartamento
@@ -186,6 +188,7 @@ export function Apartamentos() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isChangeEstadoModalOpen, setIsChangeEstadoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
 
   const filteredApartamentos = apartamentos.filter((apt) => {
     const matchesSearch = apt.numero
@@ -215,6 +218,11 @@ export function Apartamentos() {
     setTorreFilter("Todas las torres");
     setEstadoFilter("Todos los estados");
     setTipoFilter("Todos los tipos");
+  };
+
+  const handleViewDetails = (apartamento) => {
+    setSelectedApartamento(apartamento);
+    setIsDetailPanelOpen(true);
   };
 
   const handleEdit = (apartamento) => {
@@ -435,12 +443,21 @@ export function Apartamentos() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
+                        onClick={() => handleViewDetails(apartamento)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Ver detalles"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+
+                      <button
                         onClick={() => handleEdit(apartamento)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Editar"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
+
                       <button
                         onClick={() => handleChangeEstado(apartamento)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -448,6 +465,7 @@ export function Apartamentos() {
                       >
                         E
                       </button>
+
                       <button
                         onClick={() => handleDelete(apartamento)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -482,6 +500,30 @@ export function Apartamentos() {
           </div>
         </div>
       </div>
+
+      {/* Panel lateral de detalle */}
+      {isDetailPanelOpen && selectedApartamento && (
+        <ApartamentoDetailPanel
+          apartamento={selectedApartamento}
+          onClose={() => {
+            setIsDetailPanelOpen(false);
+            setSelectedApartamento(null);
+          }}
+          onViewFull={() => {}}
+          onEdit={(apt) => {
+            setIsDetailPanelOpen(false);
+            handleEdit(apt);
+          }}
+          onChangeEstado={(apt) => {
+            setIsDetailPanelOpen(false);
+            handleChangeEstado(apt);
+          }}
+          onDelete={(apt) => {
+            setIsDetailPanelOpen(false);
+            handleDelete(apt);
+          }}
+        />
+      )}
 
       {/* Modales */}
       {isCreateModalOpen && (
