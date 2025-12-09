@@ -4,6 +4,7 @@ import { Login } from "./pages/login";
 import { ForgotPassword } from "./pages/forgotPassword";
 import { VerificarCodigo } from "./pages/verificarCodigo";
 import { Apartamentos } from "./pages/apartamentos";
+import { Clientes } from "./pages/clientes";
 
 import {
   BrowserRouter as Router,
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/comprobantes" element={<Comprobantes />} />
           <Route path="/sucursales" element={<Sucursales />} />
           <Route path="/apartamentos" element={<Apartamentos />} />
+          <Route path="/clientes" element={<Clientes />} />
         </Route>
 
         <Route path="/" element={<Login />} />

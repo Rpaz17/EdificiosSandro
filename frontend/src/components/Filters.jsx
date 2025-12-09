@@ -35,13 +35,13 @@ export function Filters({
   return (
     <div
       className={clsx(
-        "w-full rounded-xl border bg-white p-6 shadow-sm flex flex-col gap-6",
+        "w-full rounded-xl border bg-white p-6 shadow-md flex flex-col gap-6",
         className
       )}
     >
       <h3 className="font-semibold text-lg flex items-center gap-2">
         <Filter className="w-5 h-5 text-gray-600" />
-        <span className="text-slate-600">Filtros de {title}</span>
+        <span className="text-slate-600">Filtros para {title}</span>
         <button
           className="ml-auto"
           onClick={() => {
@@ -60,7 +60,7 @@ export function Filters({
       {collapsed && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* BUSCADOR */}
-          <div className="flex flex-col gap-1 lg:col-span-1">
+          <div className="flex flex-col  gap-1 lg:col-span-1">
             <label className="text-sm font-medium text-slate-700">Buscar</label>
             <input
               type="text"
