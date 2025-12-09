@@ -4,6 +4,10 @@ import { Login } from "./pages/login";
 import { ForgotPassword } from "./pages/forgotPassword";
 import { VerificarCodigo } from "./pages/verificarCodigo";
 import { Apartamentos } from "./pages/apartamentos";
+import { Usuarios } from "./pages/usuarios";
+import { UsuarioModal } from "./pages/usuarioModal";
+import { UsuarioDeleteModal } from "./pages/usuarioDeleteModal";
+import { UsuarioViewModal } from "./pages/usuarioViewModal";
 import { Clientes } from "./pages/clientes";
 
 import {
@@ -24,6 +28,10 @@ export default function App() {
           <Route path="/comprobantes" element={<Comprobantes />} />
           <Route path="/sucursales" element={<Sucursales />} />
           <Route path="/apartamentos" element={<Apartamentos />} />
+          <Route path="/usuarios" element={<Usuarios />} />
+          <Route path="/usuarioModal" element={<UsuarioModal />} />
+          <Route path="/usuarioDeleteModal" element={<UsuarioDeleteModal />} />
+          <Route path="/usuarioViewModal" element={<UsuarioViewModal />} />
           <Route path="/clientes" element={<Clientes />} />
         </Route>
 
