@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Search, Filter, Plus, Eye, Edit, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
-//import { ContratoDetailPanel } from './ContratoDetailPanel';
-//import { CreateContratoModal } from './CreateContratoModal';
+import { ContratoDetailPanel } from './ContratoDetallesModal';
+import { CreateContratoModal } from './CreateContratoModal';
 //import { EditContratoModal } from './EditContratoModal';
 //import { RenewContratoModal } from './RenewContratoModal';
 //import { FinalizeContratoModal } from './FinalizeContratoModal';
