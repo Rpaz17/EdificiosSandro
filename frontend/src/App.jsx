@@ -10,6 +10,8 @@ import { UsuarioDeleteModal } from "./pages/usuarioDeleteModal";
 import { UsuarioViewModal } from "./pages/usuarioViewModal";
 import { Clientes } from "./pages/clientes";
 import { Reportes } from "./pages/reportes";
+import { KPICard } from "./pages/kpiCards";
+import { Dashboard } from "./pages/dashboard";
 
 import {
   BrowserRouter as Router,
@@ -35,6 +37,8 @@ export default function App() {
           <Route path="/usuarioViewModal" element={<UsuarioViewModal />} />
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/reportes" element={<Reportes />} />
+          <Route path="/kpiCards" element={<KPICard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
 
         <Route path="/" element={<Login />} />
