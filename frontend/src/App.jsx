@@ -13,6 +13,7 @@ import { Contratos } from "./pages/contratos";
 import { Reportes } from "./pages/reportes";
 import { KPICard } from "./pages/kpiCards";
 import { Dashboard } from "./pages/dashboard";
+import { Mantenimientos } from "./pages/mantenimientos";
 
 import {
   BrowserRouter as Router,
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/reportes" element={<Reportes />} />
           <Route path="/kpiCards" element={<KPICard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/mantenimientos" element={<Mantenimientos />} />
         </Route>
 
         <Route path="/" element={<Login />} />

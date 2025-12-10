@@ -1,14 +1,6 @@
 import { PageHeader } from "../components/PageHeader";
 import { Filters } from "../components/Filters";
-import {
-  Search,
-  Filter,
-  Plus,
-  Edit,
-  Eye,
-  UserX,
-  UserCheck,
-} from "lucide-react";
+import { Plus, Edit, Eye } from "lucide-react";
 import { useState } from "react";
 import { ClienteModal } from "./clienteModal";
 import { ClienteDetalle } from "./clienteDetalle";
