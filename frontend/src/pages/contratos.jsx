@@ -3,7 +3,7 @@ import { Search, Filter, Plus, Eye, Edit, Calendar, ChevronLeft, ChevronRight } 
 
 import { ContratoDetailPanel } from './ContratoDetallesModal';
 import { CreateContratoModal } from './CreateContratoModal';
-//import { EditContratoModal } from './EditContratoModal';
+import { EditContratoModal } from './EditContratoModal';
 //import { RenewContratoModal } from './RenewContratoModal';
 //import { FinalizeContratoModal } from './FinalizeContratoModal';
 
