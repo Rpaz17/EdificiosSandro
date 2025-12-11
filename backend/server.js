@@ -32,14 +32,18 @@ app.use("/api", apartamentosRoutes);
 
 //endpoint de comprobantes
 const comprobantesRoutes = require("./routes/comprobantes.routes");
-app.use("/api/comprobantes", comprobantesRoutes);
+app.use("/api", comprobantesRoutes);
 
 const reportesRoutes = require("./routes/reportes.routes");
-app.use("/api/reportes", reportesRoutes);
+app.use("/api", reportesRoutes);
 
 //endpoint de contratos
 const contratosRoutes = require("./routes/contratos.routes");
 app.use("/api", contratosRoutes);
+
+//endpoint de mantenimientos
+const mantenimientosRoutes = require("./routes/mantenimientos.routes");
+app.use("/api", mantenimientosRoutes);
 
 const notificacionesRoutes = require("./routes/notificaciones.routes");
 app.use("/api/notificaciones", notificacionesRoutes);

@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const reportesController = require("../controllers/reportes.controller");
 
-router.post("/pagos", reportesController.pagosMensuales);
-router.post("/ocupacion", reportesController.ocupacion);
-router.post("/morosidad", reportesController.morosidad);
+router.post("/reportes/pagos", reportesController.pagosMensuales);
+router.post("/reportes/ocupacion", reportesController.ocupacion);
+router.post("/reportes/morosidad", reportesController.morosidad);
 
 module.exports = router;
 

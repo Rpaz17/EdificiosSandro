@@ -4,15 +4,24 @@ const comprobantesController = require("../controllers/comprobantes.controller")
 const upload = require("../middlewares/upload");
 
 router.post(
-  "/subir",
+  "/comprobantes/subir",
   upload.single("archivo"),
   comprobantesController.subirComprobante
 );
 
-router.patch("/:id/aprobar", comprobantesController.validarComprobante);
-router.patch("/:id/rechazar", comprobantesController.rechazarComprobante);
+router.patch(
+  "/comprobantes/:id/aprobar",
+  comprobantesController.validarComprobante
+);
+router.patch(
+  "/comprobantes/:id/rechazar",
+  comprobantesController.rechazarComprobante
+);
 //cambiar a delete
-router.delete("/:id/eliminar", comprobantesController.eliminarComprobante);
+router.delete(
+  "/comprobantes/:id/eliminar",
+  comprobantesController.eliminarComprobante
+);
 module.exports = router;
 
 /**

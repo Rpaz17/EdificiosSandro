@@ -207,10 +207,10 @@ const controller = require("../controllers/mantenimientos.controller");
  */
 
 // CRUD
-router.post("/", controller.crearMantenimiento);
-router.get("/", controller.listarMantenimientos);
-router.get("/:id", controller.obtenerMantenimiento);
-router.put("/:id", controller.actualizarMantenimiento);
-router.delete("/:id", controller.eliminarMantenimiento);
+router.post("mantenimientos/", controller.crearMantenimiento);
+router.get("mantenimientos/", controller.listarMantenimientos);
+router.get("mantenimientos/:id", controller.obtenerMantenimiento);
+router.put("mantenimientos/:id", controller.actualizarMantenimiento);
+router.delete("mantenimientos/:id", controller.eliminarMantenimiento);
 
 module.exports = router;
