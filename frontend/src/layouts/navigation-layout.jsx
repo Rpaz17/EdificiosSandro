@@ -2,10 +2,39 @@ import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
-
+//import { NotificationsDropdown } from "./../components/notificacionDropdown";
+import NotificationDetail from "../pages/notificacionDetalle";
 export function NavigationLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState("");
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  const [notifications, setNotifications] = useState([
+    { id: '1', tipo: 'nuevo_cliente', mensaje: 'Nuevo cliente registrado', estado: 'NO_LEIDA', fecha_envio: 'hace 5 min' },
+    { id: '2', tipo: 'pago_recibido', mensaje: 'Pago recibido del Contrato #123', estado: 'LEIDA', fecha_envio: 'hace 1 hr' },
+  ]);
+
+  const [selectedNotification, setSelectedNotification] = useState(null);
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, estado: 'LEIDA' })));
+  };
+
+  const handleNotificationClick = (notification) => {
+    setNotifications(prev => 
+      prev.map(n => 
+        n.id === notification.id ? { ...n, estado: 'LEIDA' } : n
+      )
+    );
+    setIsNotificationsOpen(false);
+    setSelectedNotification(notification);
+    console.log('Navegando a la fuente de la notificación:', notification);
+  };
+
+  const handleBackFromDetail = () => {
+    setSelectedNotification(null);
+  };
+
   return (
     <div className="h-screen flex overflow-hidden ">
       <Sidebar
@@ -16,11 +45,25 @@ export function NavigationLayout() {
       />
 
       <div className="flex flex-col flex-1 h-screen">
-        <Topbar />
+        {/* PASA TODAS LAS PROPS AL TOPBAR */}
+        <Topbar 
+            onNotificationsToggle={() => setIsNotificationsOpen(prev => !prev)}
+            isNotificationsOpen={isNotificationsOpen}
+            unreadCount={notifications.filter(n => n.estado === 'NO_LEIDA').length}
+            notifications={notifications}
+            onNotificationClick={handleNotificationClick}
+            onMarkAllAsRead={handleMarkAllAsRead}
+        />
 
-        <main className="flex-1 p-4  overflow-y-auto ">
-          {/* Contenido*/}
-          <Outlet />
+        <main className="flex-1 p-4 overflow-y-auto ">
+          {selectedNotification ? (
+            <NotificationDetail
+              notification={selectedNotification}
+              onBack={handleBackFromDetail}
+            />
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
     </div>
