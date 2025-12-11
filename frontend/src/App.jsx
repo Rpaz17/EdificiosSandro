@@ -13,6 +13,8 @@ import { Contratos } from "./pages/contratos";
 import { Reportes } from "./pages/reportes";
 import { KPICard } from "./pages/kpiCards";
 import { Dashboard } from "./pages/dashboard";
+import { MiPerfil } from "./pages/miPerfil";
+import { CambiarPasswordModal } from "./pages/cambiarPasswordModal";
 
 import {
   BrowserRouter as Router,
@@ -41,6 +43,11 @@ export default function App() {
           <Route path="/reportes" element={<Reportes />} />
           <Route path="/kpiCards" element={<KPICard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/miPerfil" element={<MiPerfil />} />
+          <Route
+            path="/cambiarPasswordModal"
+            element={<CambiarPasswordModal />}
+          />
         </Route>
 
         <Route path="/" element={<Login />} />
