@@ -1,3 +1,5 @@
+import { use, useEffect } from "react";
+import { fetchApartamentos } from "../services/apartamentoServices";
 import { useState } from "react";
 import { Search, Filter, Plus, Edit, Trash2, Home, Eye } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
@@ -181,7 +183,7 @@ export function Apartamentos() {
   const [torreFilter, setTorreFilter] = useState("Todas las torres");
   const [estadoFilter, setEstadoFilter] = useState("Todos los estados");
   const [tipoFilter, setTipoFilter] = useState("Todos los tipos");
-  const [apartamentos, setApartamentos] = useState(mockApartamentos);
+  const [apartamentos, setApartamentos] = useState([]);
   const [selectedApartamento, setSelectedApartamento] = useState(null);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -211,6 +213,42 @@ export function Apartamentos() {
       matchesTipo
     );
   });
+
+  useEffect(() => {
+    const loadData = async () => {
+      try{
+        const response = await fetchApartamentos();
+        const apiApts = response.data;
+
+        const mapped = apiApts.map((apt) => ({
+          id: apt.id,
+          numero: `Apt ${apt.numero_apartamento}`,
+          torre: "Torre A", // TODO: cuando tengas ese campo real
+          sucursal: `Sucursal ${apt.id_sucursal}`, // TODO: puedes reemplazar luego por nombre real
+          tipo: "Sin tipo", // TODO
+          estado: apt.estado_ocupacion === "disponible"
+            ? "Disponible"
+            : apt.estado_ocupacion === "ocupado"
+            ? "Ocupado"
+            : "Mantenimiento",
+          precioMensual: Number(apt.precio_mensual) || 0,
+          habitaciones: 0, // TODO
+          banos: 0, // TODO
+          tamano: 0, // TODO
+          piso: 0, // TODO
+          fechaCreacion: apt.createdAt || "",
+          ultimaActualizacion: apt.updatedAt || "",
+        }));
+
+        setApartamentos(mapped);
+      } catch (error) {
+        console.error("Error fetching apartamentos:", error);
+      }
+    };
+
+    loadData();
+  }, []);
+
 
   const handleClearFilters = () => {
     setSearchTerm("");
