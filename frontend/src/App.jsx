@@ -13,6 +13,7 @@ import { Contratos } from "./pages/contratos";
 import { Reportes } from "./pages/reportes";
 import { KPICard } from "./pages/kpiCards";
 import { Dashboard } from "./pages/dashboard";
+import { Mantenimientos } from "./pages/mantenimientos";
 import { MiPerfil } from "./pages/miPerfil";
 import { CambiarPasswordModal } from "./pages/cambiarPasswordModal";
 
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/reportes" element={<Reportes />} />
           <Route path="/kpiCards" element={<KPICard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/mantenimientos" element={<Mantenimientos />} />
           <Route path="/miPerfil" element={<MiPerfil />} />
           <Route
             path="/cambiarPasswordModal"

@@ -192,18 +192,17 @@ export function ClienteModal({ cliente, onClose, onSave }) {
             {/* Action Buttons */}
             <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
               <button
-                type="submit"
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                {cliente ? "Guardar Cambios" : "Crear Cliente"}
-              </button>
-
-              <button
                 type="button"
                 onClick={onClose}
                 className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancelar
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                {cliente ? "Guardar Cambios" : "Crear Cliente"}
               </button>
             </div>
           </form>
