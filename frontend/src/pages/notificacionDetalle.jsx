@@ -1,5 +1,3 @@
-// Archivo: NotificationDetail.jsx
-
 import { ChevronRight, ArrowLeft, Trash2, User, FileText, CreditCard, CheckCircle2, Circle, DollarSign, AlertTriangle, UserPlus, Bell } from "lucide-react";
 // Asumo que estos son tus componentes de UI (Button y Badge)
 import { Button } from "../components/ui/button"; // Ajusta la ruta si es necesario
@@ -110,12 +108,9 @@ export default function NotificationDetail({ notification, onBack }) {
           <div className="flex-1">
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-lg font-medium text-gray-900">{getNotificationTitle()}</h2>
-              <Badge 
-                variant={notification.estado === 'LEIDA' ? "secondary" : "default"}
-                className={notification.estado === 'LEIDA' ? "bg-gray-100 text-gray-700" : "bg-blue-100 text-blue-700"}
-              >
-                {notification.estado === 'LEIDA' ? "LEÍDA" : "NO LEÍDA"}
-              </Badge>
+              <Badge variant={notification.estado === "LEIDA" ? "secondary" : "default"}>
+                {notification.estado === "LEIDA" ? "LEÍDA" : "NO LEÍDA"}
+                </Badge>
             </div>
             
             <div className="grid grid-cols-2 gap-x-6 gap-y-4 pt-2">
