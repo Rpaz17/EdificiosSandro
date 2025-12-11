@@ -1,6 +1,22 @@
 import { PageHeader } from "../components/PageHeader";
 import { Filters } from "../components/Filters";
-import { Plus, Edit, Eye, Trash2 } from "lucide-react";
+import {
+  Wrench,
+  Search,
+  Plus,
+  Eye,
+  Edit,
+  Trash2,
+  X,
+  Calendar,
+  User,
+  Home,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
+import { Detalle } from "../components/detalle";
+import { useState } from "react";
+import { MantenimientoModal } from "./mantenimientoModal";
 
 const filters = [
   {
@@ -92,22 +108,67 @@ const mockMantenimientos = [
   },
 ];
 export function Mantenimientos() {
+  const [selectedMantenimiento, setSelectedMantenimiento] = useState([]);
+  const [showDetail, setShowDetail] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [showCrear, setShowCrear] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [completado, setCompletado] = useState(false);
+  const [confirmTxt, setConfirmTxt] = useState("Marcar como En Proceso");
+
   const getEstadoBadge = (estado) => {
     return estado === "Activo"
       ? "bg-green-100 text-green-800"
       : "bg-gray-100 text-gray-800";
   };
+  const getPrioridadBadge = (prioridad) => {
+    switch (prioridad) {
+      case "Alta":
+        return "bg-red-100 text-red-700";
+      case "Media":
+        return "bg-yellow-100 text-yellow-700";
+      case "Baja":
+        return "bg-blue-100 text-blue-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+  const handleSaveMantenimiento = (data) => {
+    console.log("Guardando mantenimiento:", data);
+    setShowCrear(false);
+    setShowEdit(false);
+  };
   const handleViewDetails = (mantenimiento) => {
     console.log("Ver detalles de mantenimiento:", mantenimiento);
+    setSelectedMantenimiento(mantenimiento);
+    if (mantenimiento.estado === "Completado") {
+      setCompletado(true);
+    } else {
+      setCompletado(false);
+      const confirmTxt =
+        mantenimiento.estado === "Pendiente"
+          ? "Marcar como En Proceso"
+          : "Marcar como Completado";
+      setConfirmTxt(confirmTxt);
+      console.log(confirmTxt);
+    }
+
+    setShowDetail(true);
   };
   const handleEdit = (mantenimiento) => {
     console.log("Editar mantenimiento:", mantenimiento);
+    setSelectedMantenimiento(mantenimiento);
+    setShowEdit(true);
   };
   const handleDelete = (mantenimiento) => {
     console.log("Eliminar mantenimiento:", mantenimiento);
+    setSelectedMantenimiento(mantenimiento);
+    setShowDelete(true);
   };
   const handleNewMantenimiento = () => {
     console.log("Nuevo mantenimiento");
+    setShowCrear(true);
   };
   return (
     <div className="p-6">
@@ -236,6 +297,180 @@ export function Mantenimientos() {
           </div>
         </div>
       </div>
+      {/** MODALS  */}
+      {showDetail && (
+        <Detalle
+          title="Mantenimiento"
+          onClose={() => setShowDetail(false)}
+          onConfirmButton={
+            !completado
+              ? {
+                  label: confirmTxt,
+                  onClick: () => {
+                    console.log("Confirm clicked");
+                    setShowConfirm(true);
+                  },
+                }
+              : null
+          }
+          onEditButton={{
+            label: "Editar",
+
+            onClick: () => {
+              console.log("Editar clicked");
+
+              setShowEdit(true);
+              console.log(showDetail);
+            },
+          }}
+          onDeleteButton={{
+            label: "Eliminar",
+
+            onClick: () => {
+              console.log("Eliminar clicked");
+              setShowDelete(true);
+            },
+          }}
+        >
+          {/* Información Principal */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+            <h3 className="text-gray-900 mb-4">Información Principal</h3>
+
+            {/* Tipo */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Wrench className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Tipo de mantenimiento</p>
+                <p className="text-sm text-gray-900">
+                  {selectedMantenimiento.tipo}
+                </p>
+              </div>
+            </div>
+
+            {/* Descripción */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Descripción</p>
+                <p className="text-sm text-gray-900">
+                  {selectedMantenimiento.descripcion}
+                </p>
+              </div>
+            </div>
+
+            {/* Estado */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Estado</p>
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
+                    selectedMantenimiento.estado
+                  )}`}
+                >
+                  {selectedMantenimiento.estado}
+                </span>
+              </div>
+            </div>
+
+            {/* Prioridad */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Prioridad</p>
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getPrioridadBadge(
+                    selectedMantenimiento.prioridad
+                  )}`}
+                >
+                  {selectedMantenimiento.prioridad}
+                </span>
+              </div>
+            </div>
+
+            {/* Fecha de Reporte */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Fecha de reporte</p>
+                <p className="text-sm text-gray-900">
+                  {new Date(
+                    selectedMantenimiento.fechaReporte
+                  ).toLocaleDateString("es-ES", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+            </div>
+
+            {/* Cliente */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Cliente</p>
+                <p className="text-sm text-gray-900">
+                  {selectedMantenimiento.cliente}
+                </p>
+              </div>
+            </div>
+
+            {/* Apartamento */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Home className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Apartamento</p>
+                <p className="text-sm text-gray-900">
+                  {selectedMantenimiento.apartamento}
+                </p>
+              </div>
+            </div>
+
+            {/* Reportado por */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-gray-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Reportado por</p>
+                <p className="text-sm text-gray-900">
+                  {selectedMantenimiento.reportadoPor}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Detalle>
+      )}
+      {showEdit && (
+        <MantenimientoModal
+          modalMode={"edit"}
+          selectedMantenimiento={selectedMantenimiento}
+          onClose={() => setShowEdit(false)}
+          onSave={handleSaveMantenimiento}
+        />
+      )}
+      {showCrear && (
+        <MantenimientoModal
+          modalMode={"create"}
+          onClose={() => setShowCrear(false)}
+          onSave={handleSaveMantenimiento}
+        />
+      )}
     </div>
   );
 }
