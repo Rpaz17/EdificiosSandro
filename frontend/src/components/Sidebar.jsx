@@ -25,7 +25,7 @@ const menuItems = [
   { icon: Wrench, label: "Mantenimientos", id: "mantenimientos" },
   { icon: Receipt, label: "Comprobantes", id: "comprobantes" },
   { icon: BarChart3, label: "Reportes", id: "reportes" },
-  { icon: UserCircle, label: "Mi Perfil", id: "mi-perfil" },
+  { icon: UserCircle, label: "Mi Perfil", id: "miPerfil" },
 ];
 
 export default function Sidebar(props) {
