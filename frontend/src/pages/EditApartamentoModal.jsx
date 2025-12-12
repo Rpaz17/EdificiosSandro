@@ -9,7 +9,6 @@ export function EditApartamentoModal({ apartamento, onClose, onSave }) {
     torre: apartamento.torre,
     sucursal: apartamento.sucursal,
     tipo: apartamento.tipo,
-    // Convertimos números a string para los inputs de formulario
     habitaciones: String(apartamento.habitaciones),
     banos: String(apartamento.banos),
     metrosCuadrados: String(apartamento.tamano),
@@ -21,8 +20,14 @@ export function EditApartamentoModal({ apartamento, onClose, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // onSave recibe el objeto formData
-    onSave(formData);
+    const payload = {
+      id_sucursal: Number(formData.sucursal),
+      numero_apartamento: Number(formData.numero),
+      descripcion: formData.descripcion,
+      precio_mensual: Number(formData.precioMensual),
+      estado_ocupacion: formData.estado,
+    };
+    onSave(payload);
   };
 
   const handleChange = (e) => {
@@ -104,10 +109,10 @@ export function EditApartamentoModal({ apartamento, onClose, onSave }) {
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option>Centro</option>
-                  <option>Norte</option>
-                  <option>Sur</option>
-                  <option>Este</option>
+                  <option value={1}>Centro</option>
+                  <option value={2}>Norte</option>
+                  <option value={3}>Sur</option>
+                  <option value={4}>Este</option>
                 </select>
               </div>
 
