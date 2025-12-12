@@ -5,6 +5,7 @@ const router = express.Router();
 const { crearApartamento, getApartamentos, getApartamentosById, editarApartamento, eliminarApartamento } = require("../controllers/apartamentos.controller");
 
 router.post("/apartamentos", crearApartamento);
+router.get("/apartamentos", getApartamentos);
 router.get("/getApt", getApartamentos);
 router.get("/getAptById/:id", getApartamentosById);
 router.put("/apartamentos/:id", editarApartamento);

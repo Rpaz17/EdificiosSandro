@@ -1,5 +1,5 @@
 import { use, useEffect } from "react";
-import { fetchApartamentos } from "../services/apartamentoServices";
+import { fetchApartamentos, createApartamento, updateApartamento, deleteApartamento } from "../services/apartamentoServices";
 import { useState } from "react";
 import { Search, Filter, Plus, Edit, Trash2, Home, Eye } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
@@ -192,6 +192,7 @@ export function Apartamentos() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
 
+
   const filteredApartamentos = apartamentos.filter((apt) => {
     const matchesSearch = apt.numero
       .toLowerCase()
@@ -214,39 +215,33 @@ export function Apartamentos() {
     );
   });
 
-  useEffect(() => {
-    const loadData = async () => {
-      try{
-        const response = await fetchApartamentos();
-        const apiApts = response.data;
+  const loadApartamentos = async () => {
+      const res = await fetchApartamentos();
+      const apiApts = res.data;
 
-        const mapped = apiApts.map((apt) => ({
-          id: apt.id,
-          numero: `Apt ${apt.numero_apartamento}`,
-          torre: "Torre A", // TODO: cuando tengas ese campo real
-          sucursal: `Sucursal ${apt.id_sucursal}`, // TODO: puedes reemplazar luego por nombre real
-          tipo: "Sin tipo", // TODO
-          estado: apt.estado_ocupacion === "disponible"
-            ? "Disponible"
-            : apt.estado_ocupacion === "ocupado"
-            ? "Ocupado"
-            : "Mantenimiento",
-          precioMensual: Number(apt.precio_mensual) || 0,
-          habitaciones: 0, // TODO
-          banos: 0, // TODO
-          tamano: 0, // TODO
-          piso: 0, // TODO
-          fechaCreacion: apt.createdAt || "",
-          ultimaActualizacion: apt.updatedAt || "",
-        }));
+      const mapped = apiApts.map((apt) => ({
+        id: String(apt.id),
+        numero: `Apt ${apt.numero_apartamento}`,
+        torre: "-",
+        sucursal: `Sucursal ${apt.id_sucursal}`,
+        tipo: "-",
+        estado: apt.estado_ocupacion,
+        precioMensual: Number(apt.precio_mensual) || 0,
+        habitaciones: 0,
+        banos: 0,
+        tamano: 0,
+        piso: 0,
+        descripcion: apt.descripcion || "",
+        fechaCreacion: apt.createdAt || "",
+        ultimaActualizacion: apt.updatedAt || "",
+      }));
 
-        setApartamentos(mapped);
-      } catch (error) {
-        console.error("Error fetching apartamentos:", error);
-      }
+      setApartamentos(mapped);
     };
 
-    loadData();
+
+  useEffect(() => {
+  loadApartamentos();
   }, []);
 
 
@@ -567,9 +562,15 @@ export function Apartamentos() {
       {isCreateModalOpen && (
         <CreateApartamentoModal
           onClose={() => setIsCreateModalOpen(false)}
-          onSave={(data) => {
-            // TODO: crear apartamento real
-            setIsCreateModalOpen(false);
+          onSave={async (data) => {
+            try{
+              await createApartamento(data);
+              setIsCreateModalOpen(false);
+              await loadApartamentos();
+            }catch(error){
+              console.error(error);
+              alert(error?.response?.data?.error || "Error al crear el apartamento");
+            }
           }}
         />
       )}
@@ -581,10 +582,16 @@ export function Apartamentos() {
             setIsEditModalOpen(false);
             setSelectedApartamento(null);
           }}
-          onSave={(data) => {
-            // TODO: actualizar apartamento real
-            setIsEditModalOpen(false);
-            setSelectedApartamento(null);
+          onSave={async (data) => {
+            try{
+              await updateApartamento(selectedApartamento.id, data);
+              setIsEditModalOpen(false);
+              setSelectedApartamento(null);
+              await loadApartamentos();
+            }catch(error){
+              console.error(error);
+              alert(error?.response?.data?.error || "Error al actualizar el apartamento");
+            }
           }}
         />
       )}
@@ -596,10 +603,18 @@ export function Apartamentos() {
             setIsChangeEstadoModalOpen(false);
             setSelectedApartamento(null);
           }}
-          onSave={(data) => {
-            // TODO: cambiar estado real
-            setIsChangeEstadoModalOpen(false);
-            setSelectedApartamento(null);
+          onSave={async (data) => {
+            try{
+              await updateApartamento(selectedApartamento.id, {
+                estado_ocupacion : data.estado, 
+              });
+              setIsChangeEstadoModalOpen(false);
+              setSelectedApartamento(null);
+              await loadApartamentos();
+            }catch(error){
+              console.error(error);
+              alert(error?.response?.data?.error || "Error al cambiar el estado del apartamento");
+            }
           }}
         />
       )}
@@ -611,10 +626,16 @@ export function Apartamentos() {
             setIsDeleteModalOpen(false);
             setSelectedApartamento(null);
           }}
-          onDelete={() => {
-            // TODO: eliminar apartamento real
-            setIsDeleteModalOpen(false);
-            setSelectedApartamento(null);
+          onDelete={ async () => {
+            try{
+              await deleteApartamento(selectedApartamento.id);
+              setIsDeleteModalOpen(false);
+              setSelectedApartamento(null);
+              await loadApartamentos();
+            }catch(error){
+              console.error(error);
+              alert(error?.response?.data?.error || "Error al eliminar el apartamento");
+            }
           }}
         />
       )}

@@ -176,14 +176,6 @@ export function ApartamentoDetailPanel({
             <h3 className="text-gray-900">Acciones</h3>
             
             <button
-              onClick={() => onViewFull(apartamento)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <ExternalLink className="w-5 h-5" />
-              Ver Detalle Completo
-            </button>
-            
-            <button
               onClick={() => onEdit(apartamento)}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
             >
