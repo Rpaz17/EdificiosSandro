@@ -3,6 +3,8 @@ const router = express.Router();
 const comprobantesController = require("../controllers/comprobantes.controller");
 const upload = require("../middlewares/upload");
 
+router.get("/comprobantes", comprobantesController.listarComprobantes);
+//router.get("/comprobantes/:id", comprobantesController.obtenerComprobante);
 router.post(
   "/comprobantes/subir",
   upload.single("archivo"),

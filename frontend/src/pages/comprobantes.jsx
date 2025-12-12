@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   Calendar,
@@ -10,6 +10,7 @@ import {
 import { PageHeader } from "../components/PageHeader";
 import { Filters } from "../components/Filters";
 import { ComprobanteDetalle } from "../components/comprobanteDetalle";
+import { fetchComprobantes } from "../services/comprobantes.api";
 
 /**
  * @typedef {Object} Comprobante
@@ -127,20 +128,22 @@ const mockComprobantes = [
 ];
 
 export function Comprobantes() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [estadoFilter, setEstadoFilter] = useState("Todos");
-
   const [selectedComprobante, setSelectedComprobante] = useState(null);
   const [comprobantes, setComprobantes] = useState(mockComprobantes);
 
-  const filteredComprobantes = comprobantes.filter((comp) => {
-    const matchesSearch =
-      comp.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comp.cliente.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesEstado =
-      estadoFilter === "Todos" || comp.estado === estadoFilter;
-    return matchesSearch && matchesEstado;
-  });
+  //useEffect
+  useEffect(() => {
+    //loadComprobantes
+    const loadComprobantes = async () => {
+      try {
+        const comprobantes = await fetchComprobantes();
+        console.log(comprobantes);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadComprobantes();
+  }, []);
 
   const getEstadoBadge = (estado) => {
     const badges = {
@@ -198,11 +201,7 @@ export function Comprobantes() {
         </div>
         {/* Results Summary */}
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            Mostrando{" "}
-            <span className="text-gray-900">{filteredComprobantes.length}</span>{" "}
-            comprobantes
-          </p>
+          <p className="text-sm text-gray-600">Mostrando 7 comprobantes</p>
         </div>
         {/* Comprobantes Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -234,7 +233,7 @@ export function Comprobantes() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredComprobantes.map((comp) => (
+                {comprobantes.map((comp) => (
                   <tr
                     key={comp.codigo}
                     className="hover:bg-gray-50 transition-colors"

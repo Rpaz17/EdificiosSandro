@@ -4,8 +4,17 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Comprobante extends Model {
     static associate(models) {
-      Comprobante.belongsTo(models.Pago, { foreignKey: "id_pago" });
-      Comprobante.belongsTo(models.Usuario, { foreignKey: "validado_por" });
+      // 1️⃣ Comprobante ↔ Pago (N–1)
+      Comprobante.belongsTo(models.Pago, {
+        foreignKey: "id_pago",
+        as: "pago",
+      });
+
+      // 2️⃣ Comprobante ↔ Usuario (N–1) — usuario que valida el comprobante
+      Comprobante.belongsTo(models.Usuario, {
+        foreignKey: "validado_por",
+        as: "validador",
+      });
     }
   }
 

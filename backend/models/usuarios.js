@@ -4,11 +4,35 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Usuario extends Model {
     static associate(models) {
-      Usuario.hasOne(models.Cliente, { foreignKey: "id_usuario" });
-      Usuario.hasMany(models.Pago, { foreignKey: "validado_por" });
-      Usuario.hasMany(models.Comprobante, { foreignKey: "validado_por" });
-      Usuario.hasMany(models.Notificacion, { foreignKey: "id_usuario" });
-      Usuario.hasMany(models.AuditEvent, { foreignKey: "changed_by" });
+      // 1️⃣ Usuario ↔ Cliente (1–1)
+      Usuario.hasOne(models.Cliente, {
+        foreignKey: "id_usuario",
+        as: "cliente",
+      });
+
+      // 2️⃣ Usuario ↔ Pago (1–N) — pagos validados por el usuario
+      Usuario.hasMany(models.Pago, {
+        foreignKey: "validado_por",
+        as: "pagos_validados",
+      });
+
+      // 3️⃣ Usuario ↔ Comprobante (1–N) — comprobantes validados por el usuario
+      Usuario.hasMany(models.Comprobante, {
+        foreignKey: "validado_por",
+        as: "comprobantes_validados",
+      });
+
+      // 4️⃣ Usuario ↔ Notificacion (1–N)
+      Usuario.hasMany(models.Notificacion, {
+        foreignKey: "id_usuario",
+        as: "notificaciones",
+      });
+
+      // 5️⃣ Usuario ↔ AuditEvent (1–N)
+      Usuario.hasMany(models.AuditEvent, {
+        foreignKey: "changed_by",
+        as: "audit_events",
+      });
     }
   }
 

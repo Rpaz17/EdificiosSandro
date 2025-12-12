@@ -3,6 +3,17 @@ const comprobantesService = require("../services/comprobantes.service");
 module.exports = {
   //POST /comprobantes
 
+  listarComprobantes: async (req, res) => {
+    // console.log("CONTROLLER HIT");
+    // return res.json({ works: true });
+    try {
+      const comprobantes = await comprobantesService.listarComprobantes();
+      return res.json(comprobantes);
+    } catch (error) {
+      console.error("Error al obtener comprobantes", error);
+      return res.status(500).json({ error: "Error al obtener comprobantes" });
+    }
+  },
   subirComprobante: async (req, response) => {
     const data = {
       id_pago: req.body.id_pago,

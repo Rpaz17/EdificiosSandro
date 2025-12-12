@@ -4,8 +4,17 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class AuditEvent extends Model {
     static associate(models) {
-      AuditEvent.belongsTo(models.Usuario, { foreignKey: "changed_by" });
-      AuditEvent.hasMany(models.AuditChange, { foreignKey: "audit_event_id" });
+      // 1️⃣ AuditEvent ↔ Usuario (N–1) — usuario que realizó el cambio
+      AuditEvent.belongsTo(models.Usuario, {
+        foreignKey: "changed_by",
+        as: "actor",
+      });
+
+      // 2️⃣ AuditEvent ↔ AuditChange (1–N)
+      AuditEvent.hasMany(models.AuditChange, {
+        foreignKey: "audit_event_id",
+        as: "changes",
+      });
     }
   }
 

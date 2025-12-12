@@ -4,7 +4,11 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Sucursal extends Model {
     static associate(models) {
-      Sucursal.hasMany(models.Apartamento, { foreignKey: "id_sucursal" });
+      // 1️⃣ Sucursal ↔ Apartamento (1–N)
+      Sucursal.hasMany(models.Apartamento, {
+        foreignKey: "id_sucursal",
+        as: "apartamentos",
+      });
     }
   }
 

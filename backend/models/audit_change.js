@@ -4,8 +4,10 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class AuditChange extends Model {
     static associate(models) {
+      // 1️⃣ AuditChange ↔ AuditEvent (N–1)
       AuditChange.belongsTo(models.AuditEvent, {
         foreignKey: "audit_event_id",
+        as: "audit_event",
       });
     }
   }

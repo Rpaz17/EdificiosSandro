@@ -119,18 +119,7 @@ export function Clientes() {
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState("");
 
-  const handleToggleEstado = (id) => {
-    setClientes((prev) =>
-      prev.map((cliente) =>
-        cliente.id === id
-          ? {
-              ...cliente,
-              estado: cliente.estado === "Activo" ? "Inactivo" : "Activo",
-            }
-          : cliente
-      )
-    );
-  };
+  const handleToggleEstado = (id) => {};
   const handleEdit = (cliente) => {
     setEditingCliente(cliente);
     setIsModalOpen(true);

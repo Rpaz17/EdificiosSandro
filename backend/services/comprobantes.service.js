@@ -1,10 +1,41 @@
 const fs = require("fs");
 const path = require("path");
-const { Comprobante, Pago } = require("../models");
+const { Comprobante, Pago, Contrato, Cliente } = require("../models");
 const crypto = require("crypto");
 
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
+
+async function listarComprobantes() {
+  //return [{ test: true }];
+
+  return await Comprobante.findAll({
+    //limit: 1,
+    where: { is_deleted: false },
+
+    include: [
+      {
+        model: Pago,
+        as: "pago",
+        required: false,
+        include: [
+          {
+            model: Contrato,
+            as: "contrato",
+            required: false,
+            include: [
+              {
+                model: Cliente,
+                as: "cliente",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+}
 
 async function subirComprobante({
   id_pago,
@@ -123,4 +154,5 @@ module.exports = {
   validarComprobante,
   rechazarComprobante,
   eliminarComprobante,
+  listarComprobantes,
 };

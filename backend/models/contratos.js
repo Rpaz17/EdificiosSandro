@@ -4,10 +4,29 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Contrato extends Model {
     static associate(models) {
-      Contrato.belongsTo(models.Cliente, { foreignKey: "id_cliente" });
-      Contrato.belongsTo(models.Apartamento, { foreignKey: "id_apartamento" });
-      Contrato.hasMany(models.Pago, { foreignKey: "id_contrato" });
-      Contrato.hasMany(models.Notificacion, { foreignKey: "id_contrato" });
+      // 1️⃣ Contrato ↔ Cliente (N–1)
+      Contrato.belongsTo(models.Cliente, {
+        foreignKey: "id_cliente",
+        as: "cliente",
+      });
+
+      // 2️⃣ Contrato ↔ Apartamento (N–1)
+      Contrato.belongsTo(models.Apartamento, {
+        foreignKey: "id_apartamento",
+        as: "apartamento",
+      });
+
+      // 3️⃣ Contrato ↔ Pago (1–N)
+      Contrato.hasMany(models.Pago, {
+        foreignKey: "id_contrato",
+        as: "pagos",
+      });
+
+      // 4️⃣ Contrato ↔ Notificacion (1–N)
+      Contrato.hasMany(models.Notificacion, {
+        foreignKey: "id_contrato",
+        as: "notificaciones",
+      });
     }
   }
 

@@ -2,6 +2,10 @@ import api from "./api";
 
 /**Falta metodo get todos y get by id */
 
+export async function fetchComprobantes() {
+  const res = await api.get("/comprobantes");
+  return res.data;
+}
 export async function uploadComprobante(file) {
   const formData = new FormData();
   formData.append("archivo", file);

@@ -4,10 +4,29 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Notificacion extends Model {
     static associate(models) {
-      Notificacion.belongsTo(models.Usuario, { foreignKey: "id_usuario" });
-      Notificacion.belongsTo(models.Cliente, { foreignKey: "id_cliente" });
-      Notificacion.belongsTo(models.Contrato, { foreignKey: "id_contrato" });
-      Notificacion.belongsTo(models.Pago, { foreignKey: "id_pago" });
+      // 1️⃣ Notificacion ↔ Usuario (N–1)
+      Notificacion.belongsTo(models.Usuario, {
+        foreignKey: "id_usuario",
+        as: "usuario",
+      });
+
+      // 2️⃣ Notificacion ↔ Cliente (N–1)
+      Notificacion.belongsTo(models.Cliente, {
+        foreignKey: "id_cliente",
+        as: "cliente",
+      });
+
+      // 3️⃣ Notificacion ↔ Contrato (N–1)
+      Notificacion.belongsTo(models.Contrato, {
+        foreignKey: "id_contrato",
+        as: "contrato",
+      });
+
+      // 4️⃣ Notificacion ↔ Pago (N–1)
+      Notificacion.belongsTo(models.Pago, {
+        foreignKey: "id_pago",
+        as: "pago",
+      });
     }
   }
 

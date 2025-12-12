@@ -4,10 +4,17 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Mantenimiento extends Model {
     static associate(models) {
+      // 1️⃣ Mantenimiento ↔ Apartamento (N–1)
       Mantenimiento.belongsTo(models.Apartamento, {
         foreignKey: "id_apartamento",
+        as: "apartamento",
       });
-      Mantenimiento.belongsTo(models.Cliente, { foreignKey: "id_cliente" });
+
+      // 2️⃣ Mantenimiento ↔ Cliente (N–1)
+      Mantenimiento.belongsTo(models.Cliente, {
+        foreignKey: "id_cliente",
+        as: "cliente",
+      });
     }
   }
 
