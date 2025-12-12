@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState } from "react";
+import { X } from "lucide-react";
 
 // Se elimina la interfaz CreateApartamentoModalProps
 
 export function CreateApartamentoModal({ onClose, onSave }) {
   const [formData, setFormData] = useState({
-    numero: '',
-    torre: '',
-    sucursal: '',
-    tipo: '',
-    habitaciones: '',
-    banos: '',
-    metrosCuadrados: '',
-    piso: '',
-    precioMensual: '',
-    estado: 'Disponible',
-    descripcion: '',
+    numero: "",
+    sucursal: "",
+    precioMensual: "",
+    estado: "Disponible",
+    descripcion: "",
   });
 
   const handleSubmit = (e) => {
@@ -78,23 +72,6 @@ export function CreateApartamentoModal({ onClose, onSave }) {
               </div>
 
               {/* Torre / Edificio */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Torre / Edificio <span className="text-red-600">*</span>
-                </label>
-                <select
-                  name="torre"
-                  required
-                  value={formData.torre}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Seleccionar torre</option>
-                  <option>Torre A</option>
-                  <option>Torre B</option>
-                  <option>Torre C</option>
-                </select>
-              </div>
 
               {/* Sucursal */}
               <div>
@@ -116,103 +93,15 @@ export function CreateApartamentoModal({ onClose, onSave }) {
                 </select>
               </div>
 
-              {/* Tipo de Apartamento */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Tipo de Apartamento <span className="text-red-600">*</span>
-                </label>
-                <select
-                  name="tipo"
-                  required
-                  value={formData.tipo}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Seleccionar tipo</option>
-                  <option>Estudio</option>
-                  <option>1 Habitación</option>
-                  <option>2 Habitaciones</option>
-                  <option>3 Habitaciones</option>
-                  <option>Penthouse</option>
-                </select>
-              </div>
-
-              {/* Habitaciones */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Habitaciones <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="habitaciones"
-                  min="0"
-                  required
-                  value={formData.habitaciones}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-
-              {/* Baños */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Baños <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="banos"
-                  min="0"
-                  required
-                  value={formData.banos}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-
-              {/* Metros² */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Metros² <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="metrosCuadrados"
-                  min="0"
-                  step="0.01"
-                  required
-                  value={formData.metrosCuadrados}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-
-              {/* Piso */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Piso <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="piso"
-                  min="0"
-                  required
-                  value={formData.piso}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-
               {/* Precio Mensual */}
               <div>
                 <label className="block text-sm text-gray-700 mb-2">
                   Precio Mensual <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                    US$
+                  </span>
                   <input
                     type="number"
                     name="precioMensual"
@@ -248,7 +137,9 @@ export function CreateApartamentoModal({ onClose, onSave }) {
 
             {/* Descripción */}
             <div>
-              <label className="block text-sm text-gray-700 mb-2">Descripción</label>
+              <label className="block text-sm text-gray-700 mb-2">
+                Descripción
+              </label>
               <textarea
                 name="descripcion"
                 value={formData.descripcion}

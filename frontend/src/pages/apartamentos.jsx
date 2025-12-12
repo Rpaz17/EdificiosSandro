@@ -1,5 +1,10 @@
 import { use, useEffect } from "react";
-import { fetchApartamentos, createApartamento, updateApartamento, deleteApartamento } from "../services/apartamentoServices";
+import {
+  fetchApartamentos,
+  createApartamento,
+  updateApartamento,
+  deleteApartamento,
+} from "../services/apartamentoServices";
 import { useState } from "react";
 import { Search, Filter, Plus, Edit, Trash2, Home, Eye } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
@@ -192,7 +197,6 @@ export function Apartamentos() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
 
-
   const filteredApartamentos = apartamentos.filter((apt) => {
     const matchesSearch = apt.numero
       .toLowerCase()
@@ -216,34 +220,26 @@ export function Apartamentos() {
   });
 
   const loadApartamentos = async () => {
-      const res = await fetchApartamentos();
-      const apiApts = res.data;
+    const res = await fetchApartamentos();
+    const apiApts = res.data;
 
-      const mapped = apiApts.map((apt) => ({
-        id: String(apt.id),
-        numero: `Apt ${apt.numero_apartamento}`,
-        torre: "-",
-        sucursal: `Sucursal ${apt.id_sucursal}`,
-        tipo: "-",
-        estado: apt.estado_ocupacion,
-        precioMensual: Number(apt.precio_mensual) || 0,
-        habitaciones: 0,
-        banos: 0,
-        tamano: 0,
-        piso: 0,
-        descripcion: apt.descripcion || "",
-        fechaCreacion: apt.createdAt || "",
-        ultimaActualizacion: apt.updatedAt || "",
-      }));
+    const mapped = apiApts.map((apt) => ({
+      id: String(apt.id),
+      numero: `Apt ${apt.numero_apartamento}`,
+      sucursal: `Sucursal ${apt.id_sucursal}`,
+      estado: apt.estado_ocupacion,
+      precioMensual: Number(apt.precio_mensual) || 0,
+      descripcion: apt.descripcion || "",
+      fechaCreacion: apt.createdAt || "",
+      ultimaActualizacion: apt.updatedAt || "",
+    }));
 
-      setApartamentos(mapped);
-    };
-
+    setApartamentos(mapped);
+  };
 
   useEffect(() => {
-  loadApartamentos();
+    loadApartamentos();
   }, []);
-
 
   const handleClearFilters = () => {
     setSearchTerm("");
@@ -287,251 +283,255 @@ export function Apartamentos() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="Apartamentos"
-        description="Gestiona y supervisa todos los apartamentos disponibles para alquiler"
-        actionButton={{
-          label: "Nuevo Apartamento",
-          icon: <Plus className="w-4 h-4" />,
-          onClick: () => setIsCreateModalOpen(true),
-        }}
-      />
-      {/* Filtros */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="text-gray-900">Filtros de Apartamentos</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
-          {/* Sucursal */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Sucursal</label>
-            <select
-              value={sucursalFilter}
-              onChange={(e) => setSucursalFilter(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
-            >
-              <option>Todas las sucursales</option>
-              <option>Centro</option>
-              <option>Norte</option>
-              <option>Sur</option>
-              <option>Este</option>
-            </select>
+    <div className="p-6 ">
+      <div className="space-y-6">
+        {" "}
+        <PageHeader
+          title="Apartamentos"
+          description="Gestiona y supervisa todos los apartamentos disponibles para alquiler"
+          actionButton={{
+            label: "Nuevo Apartamento",
+            icon: <Plus className="w-4 h-4" />,
+            onClick: () => setIsCreateModalOpen(true),
+          }}
+        />
+        {/* Filtros */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-5 h-5 text-gray-600" />
+            <h3 className="text-gray-900">Filtros de Apartamentos</h3>
           </div>
 
-          {/* Torre */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">
-              Torre o Edificio
-            </label>
-            <select
-              value={torreFilter}
-              onChange={(e) => setTorreFilter(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
-            >
-              <option>Todas las torres</option>
-              <option>Torre A</option>
-              <option>Torre B</option>
-              <option>Torre C</option>
-            </select>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            {/* Sucursal */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">
+                Sucursal
+              </label>
+              <select
+                value={sucursalFilter}
+                onChange={(e) => setSucursalFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
+              >
+                <option>Todas las sucursales</option>
+                <option>Centro</option>
+                <option>Norte</option>
+                <option>Sur</option>
+                <option>Este</option>
+              </select>
+            </div>
 
-          {/* Estado */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">
-              Estado del Apartamento
-            </label>
-            <select
-              value={estadoFilter}
-              onChange={(e) => setEstadoFilter(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
-            >
-              <option>Todos los estados</option>
-              <option>Disponible</option>
-              <option>Ocupado</option>
-              <option>Mantenimiento</option>
-            </select>
-          </div>
+            {/* Torre */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">
+                Torre o Edificio
+              </label>
+              <select
+                value={torreFilter}
+                onChange={(e) => setTorreFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
+              >
+                <option>Todas las torres</option>
+                <option>Torre A</option>
+                <option>Torre B</option>
+                <option>Torre C</option>
+              </select>
+            </div>
 
-          {/* Tipo */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">
-              Tipo de Apartamento
-            </label>
-            <select
-              value={tipoFilter}
-              onChange={(e) => setTipoFilter(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
-            >
-              <option>Todos los tipos</option>
-              <option>Estudio</option>
-              <option>1 Habitación</option>
-              <option>2 Habitaciones</option>
-              <option>3 Habitaciones</option>
-              <option>Penthouse</option>
-            </select>
-          </div>
+            {/* Estado */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">
+                Estado del Apartamento
+              </label>
+              <select
+                value={estadoFilter}
+                onChange={(e) => setEstadoFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
+              >
+                <option>Todos los estados</option>
+                <option>Disponible</option>
+                <option>Ocupado</option>
+                <option>Mantenimiento</option>
+              </select>
+            </div>
 
-          {/* Buscar */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Buscar</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Número de apto..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
+            {/* Tipo */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">
+                Tipo de Apartamento
+              </label>
+              <select
+                value={tipoFilter}
+                onChange={(e) => setTipoFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
+              >
+                <option>Todos los tipos</option>
+                <option>Estudio</option>
+                <option>1 Habitación</option>
+                <option>2 Habitaciones</option>
+                <option>3 Habitaciones</option>
+                <option>Penthouse</option>
+              </select>
+            </div>
+
+            {/* Buscar */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">Buscar</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Número de apto..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Botones filtros */}
-        <div className="flex gap-3">
-          <button className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-            Aplicar Filtros
-          </button>
-          <button
-            onClick={handleClearFilters}
-            className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
-          >
-            Limpiar Filtros
-          </button>
-        </div>
-      </div>
-
-      {/* Tabla */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 flex items-center justify-between border-b border-gray-200">
-          <h3 className="text-gray-900">Listado de Apartamentos</h3>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Apartamento
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Sucursal
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Tipo
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Estado
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Precio Mensual
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredApartamentos.map((apartamento) => (
-                <tr
-                  key={apartamento.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Home className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-900">
-                          {apartamento.numero}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {apartamento.torre}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {apartamento.sucursal}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {apartamento.tipo}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                        apartamento.estado
-                      )}`}
-                    >
-                      {apartamento.estado}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {apartamento.precioMensual.toFixed(2)} US$
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewDetails(apartamento)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Ver detalles"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => handleEdit(apartamento)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Editar"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => handleChangeEstado(apartamento)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Cambiar estado"
-                      >
-                        E
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(apartamento)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Eliminar"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Paginación */}
-        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            Mostrando 1 a {filteredApartamentos.length} de {apartamentos.length}{" "}
-            apartamentos
-          </p>
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-              Anterior
+          {/* Botones filtros */}
+          <div className="flex gap-3">
+            <button className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+              Aplicar Filtros
             </button>
-            <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">
-              1
-            </button>
-            <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-              Siguiente
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
+              Limpiar Filtros
             </button>
           </div>
         </div>
+        {/* Tabla */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 flex items-center justify-between border-b border-gray-200">
+            <h3 className="text-gray-900">Listado de Apartamentos</h3>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Apartamento
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Sucursal
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Tipo
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Estado
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Precio Mensual
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredApartamentos.map((apartamento) => (
+                  <tr
+                    key={apartamento.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Home className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-900">
+                            {apartamento.numero}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {apartamento.torre}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {apartamento.sucursal}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {apartamento.tipo}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
+                          apartamento.estado
+                        )}`}
+                      >
+                        {apartamento.estado}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {apartamento.precioMensual.toFixed(2)} US$
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleViewDetails(apartamento)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Ver detalles"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => handleEdit(apartamento)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Editar"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => handleChangeEstado(apartamento)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Cambiar estado"
+                        >
+                          E
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(apartamento)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              Mostrando 1 a {filteredApartamentos.length} de{" "}
+              {apartamentos.length} apartamentos
+            </p>
+            <div className="flex items-center gap-2">
+              <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                Anterior
+              </button>
+              <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                1
+              </button>
+              <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>{" "}
       </div>
 
       {/* Panel lateral de detalle */}
@@ -563,13 +563,15 @@ export function Apartamentos() {
         <CreateApartamentoModal
           onClose={() => setIsCreateModalOpen(false)}
           onSave={async (data) => {
-            try{
+            try {
               await createApartamento(data);
               setIsCreateModalOpen(false);
               await loadApartamentos();
-            }catch(error){
+            } catch (error) {
               console.error(error);
-              alert(error?.response?.data?.error || "Error al crear el apartamento");
+              alert(
+                error?.response?.data?.error || "Error al crear el apartamento"
+              );
             }
           }}
         />
@@ -583,14 +585,17 @@ export function Apartamentos() {
             setSelectedApartamento(null);
           }}
           onSave={async (data) => {
-            try{
+            try {
               await updateApartamento(selectedApartamento.id, data);
               setIsEditModalOpen(false);
               setSelectedApartamento(null);
               await loadApartamentos();
-            }catch(error){
+            } catch (error) {
               console.error(error);
-              alert(error?.response?.data?.error || "Error al actualizar el apartamento");
+              alert(
+                error?.response?.data?.error ||
+                  "Error al actualizar el apartamento"
+              );
             }
           }}
         />
@@ -604,16 +609,19 @@ export function Apartamentos() {
             setSelectedApartamento(null);
           }}
           onSave={async (data) => {
-            try{
+            try {
               await updateApartamento(selectedApartamento.id, {
-                estado_ocupacion : data.estado, 
+                estado_ocupacion: data.estado,
               });
               setIsChangeEstadoModalOpen(false);
               setSelectedApartamento(null);
               await loadApartamentos();
-            }catch(error){
+            } catch (error) {
               console.error(error);
-              alert(error?.response?.data?.error || "Error al cambiar el estado del apartamento");
+              alert(
+                error?.response?.data?.error ||
+                  "Error al cambiar el estado del apartamento"
+              );
             }
           }}
         />
@@ -626,15 +634,18 @@ export function Apartamentos() {
             setIsDeleteModalOpen(false);
             setSelectedApartamento(null);
           }}
-          onDelete={ async () => {
-            try{
+          onDelete={async () => {
+            try {
               await deleteApartamento(selectedApartamento.id);
               setIsDeleteModalOpen(false);
               setSelectedApartamento(null);
               await loadApartamentos();
-            }catch(error){
+            } catch (error) {
               console.error(error);
-              alert(error?.response?.data?.error || "Error al eliminar el apartamento");
+              alert(
+                error?.response?.data?.error ||
+                  "Error al eliminar el apartamento"
+              );
             }
           }}
         />

@@ -10,7 +10,11 @@ import {
 import { PageHeader } from "../components/PageHeader";
 import { Filters } from "../components/Filters";
 import { ComprobanteDetalle } from "../components/comprobanteDetalle";
-import { fetchComprobantes } from "../services/comprobantes.api";
+import {
+  aprobarComprobante,
+  fetchComprobantes,
+  rechazarComprobante,
+} from "../services/comprobantes.api";
 
 /**
  * @typedef {Object} Comprobante
@@ -129,15 +133,16 @@ const mockComprobantes = [
 
 export function Comprobantes() {
   const [selectedComprobante, setSelectedComprobante] = useState(null);
-  const [comprobantes, setComprobantes] = useState(mockComprobantes);
+  const [comprobantes, setComprobantes] = useState([]);
 
   //useEffect
   useEffect(() => {
     //loadComprobantes
     const loadComprobantes = async () => {
       try {
-        const comprobantes = await fetchComprobantes();
-        console.log(comprobantes);
+        const comprobantesdb = await fetchComprobantes();
+        console.log(comprobantesdb);
+        setComprobantes(comprobantesdb);
       } catch (err) {
         console.error(err);
       }
@@ -153,29 +158,43 @@ export function Comprobantes() {
     };
     return badges[estado] || "";
   };
-  const handleValidate = (codigo) => {
+  const handleValidate = async (id) => {
+    //Actualizar en frontend
     setComprobantes((prev) =>
       prev.map((comp) =>
-        comp.codigo === codigo ? { ...comp, estado: "Validado" } : comp
+        comp.id === id ? { ...comp, estado: "Validado" } : comp
       )
     );
-    if (selectedComprobante?.codigo === codigo) {
+    if (selectedComprobante?.id === id) {
       setSelectedComprobante((prev) =>
         prev ? { ...prev, estado: "Validado" } : null
       );
     }
+
+    try {
+      await aprobarComprobante(id);
+      console.log("comprobante validado:", id);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleReject = (codigo) => {
+  const handleReject = async (id) => {
     setComprobantes((prev) =>
       prev.map((comp) =>
-        comp.codigo === codigo ? { ...comp, estado: "Rechazado" } : comp
+        comp.id === id ? { ...comp, estado: "Rechazado" } : comp
       )
     );
-    if (selectedComprobante?.codigo === codigo) {
+    if (selectedComprobante?.id === id) {
       setSelectedComprobante((prev) =>
         prev ? { ...prev, estado: "Rechazado" } : null
       );
+    }
+    try {
+      await rechazarComprobante(id);
+      console.log("comprobante validado:", id);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -201,7 +220,9 @@ export function Comprobantes() {
         </div>
         {/* Results Summary */}
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-600">Mostrando 7 comprobantes</p>
+          <p className="text-sm text-gray-600">
+            Mostrando {comprobantes.length} comprobantes
+          </p>
         </div>
         {/* Comprobantes Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -235,23 +256,23 @@ export function Comprobantes() {
               <tbody className="divide-y divide-gray-200">
                 {comprobantes.map((comp) => (
                   <tr
-                    key={comp.codigo}
+                    key={comp.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      {comp.codigo}
+                      {comp.id}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      {comp.cliente}
+                      {comp.cliente.nombre}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      ${comp.monto.toLocaleString()}
+                      ${comp.pago.monto.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {comp.metodoPago}
+                      {comp.pago.metodo}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {comp.fechaEnvio}
+                      {comp.fecha_subido}
                     </td>
                     <td className="px-6 py-4">
                       <span

@@ -10,11 +10,12 @@ router.post(
   upload.single("archivo"),
   comprobantesController.subirComprobante
 );
-
+//Agregar middleware de autenticacion para el usuario
 router.patch(
   "/comprobantes/:id/aprobar",
   comprobantesController.validarComprobante
 );
+//Agregar middleware de autenticacion para el usuario
 router.patch(
   "/comprobantes/:id/rechazar",
   comprobantesController.rechazarComprobante
