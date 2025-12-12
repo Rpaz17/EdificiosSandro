@@ -8,7 +8,27 @@ module.exports = {
     // return res.json({ works: true });
     try {
       const comprobantes = await comprobantesService.listarComprobantes();
-      return res.json(comprobantes);
+      const response = comprobantes.map((c) => ({
+        id: c.id,
+        estado: c.estado_validacion,
+        archivo: c.ruta_archivo,
+        fecha_subido: c.subido_en,
+
+        pago: {
+          id: c.pago.id,
+          monto: c.pago.monto,
+          metodo: c.pago.metodo,
+          fecha: c.pago.fecha,
+        },
+
+        cliente: {
+          id: c.pago.contrato.cliente.id,
+          nombre: `${c.pago.contrato.cliente.nombre} ${c.pago.contrato.cliente.apellido}`,
+          telefono: c.pago.contrato.cliente.telefono,
+          correo: c.pago.contrato.cliente.correo,
+        },
+      }));
+      return res.json(response);
     } catch (error) {
       console.error("Error al obtener comprobantes", error);
       return res.status(500).json({ error: "Error al obtener comprobantes" });
@@ -35,7 +55,7 @@ module.exports = {
   //PUT /comprobantes/:id/aprobar
   validarComprobante: async (request, response) => {
     const comprobanteId = request.params.id;
-    const usuarioId = request.body.usuarioId;
+    const usuarioId = 1;
 
     // 1. Validar ID del comprobante
     if (!comprobanteId) {
@@ -84,7 +104,7 @@ module.exports = {
 
   rechazarComprobante: async (request, response) => {
     const comprobanteId = request.params.id;
-    const usuarioId = request.body.usuarioId;
+    const usuarioId = 1;
 
     // 1. Validar ID del comprobante
     if (!comprobanteId) {

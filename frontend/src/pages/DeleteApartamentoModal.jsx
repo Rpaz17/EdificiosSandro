@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { X, AlertTriangle } from "lucide-react";
 
 // Se eliminan las interfaces y las anotaciones de tipos.
 
@@ -40,10 +40,13 @@ export function DeleteApartamentoModal({ apartamento, onClose, onDelete }) {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="text-red-900">Advertencia: Acción Irreversible</h4>
+                  <h4 className="text-red-900">
+                    Advertencia: Acción Irreversible
+                  </h4>
                   <p className="text-sm text-red-700 mt-1">
-                    Estás a punto de eliminar este apartamento de forma permanente. Esta acción no se
-                    puede deshacer. Asegúrate de revisar todos los detalles antes de continuar.
+                    Estás a punto de eliminar este apartamento de forma
+                    permanente. Esta acción no se puede deshacer. Asegúrate de
+                    revisar todos los detalles antes de continuar.
                   </p>
                 </div>
               </div>
@@ -51,33 +54,39 @@ export function DeleteApartamentoModal({ apartamento, onClose, onDelete }) {
 
             {/* Apartment Details */}
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
-              <h3 className="text-gray-900 mb-4">Información del Apartamento</h3>
-              
+              <h3 className="text-gray-900 mb-4">
+                Información del Apartamento
+              </h3>
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <label className="block text-gray-600 mb-1">Estado actual</label>
+                  <label className="block text-gray-600 mb-1">
+                    Estado actual
+                  </label>
                   <p className="text-gray-900">{apartamento.estado}</p>
                 </div>
                 <div>
-                  <label className="block text-gray-600 mb-1">Nombre del apartamento</label>
+                  <label className="block text-gray-600 mb-1">
+                    Nombre del apartamento
+                  </label>
                   <p className="text-gray-900">{apartamento.numero}</p>
                 </div>
                 <div>
                   <label className="block text-gray-600 mb-1">Sucursal</label>
                   <p className="text-gray-900">{apartamento.sucursal}</p>
                 </div>
+
                 <div>
-                  <label className="block text-gray-600 mb-1">Torre</label>
-                  <p className="text-gray-900">{apartamento.torre}</p>
-                </div>
-                <div>
-                  <label className="block text-gray-600 mb-1">Tipo</label>
-                  <p className="text-gray-900">{apartamento.tipo}</p>
-                </div>
-                <div>
-                  <label className="block text-gray-600 mb-1">Precio Mensual</label>
+                  <label className="block text-gray-600 mb-1">
+                    Precio Mensual
+                  </label>
                   {/* Aseguramos que toFixed(2) se pueda llamar si es un número */}
-                  <p className="text-gray-900">{typeof apartamento.precioMensual === 'number' ? apartamento.precioMensual.toFixed(2) : apartamento.precioMensual} US$</p>
+                  <p className="text-gray-900">
+                    {typeof apartamento.precioMensual === "number"
+                      ? apartamento.precioMensual.toFixed(2)
+                      : apartamento.precioMensual}{" "}
+                    US$
+                  </p>
                 </div>
               </div>
 
@@ -86,8 +95,9 @@ export function DeleteApartamentoModal({ apartamento, onClose, onDelete }) {
                 <div className="mt-4 pt-4 border-t border-gray-300">
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <p className="text-sm text-yellow-900">
-                      <strong>Atención:</strong> Este apartamento tiene un contrato activo asociado (
-                      {apartamento.contratoActivo}). Eliminar el apartamento podría afectar el contrato.
+                      <strong>Atención:</strong> Este apartamento tiene un
+                      contrato activo asociado ({apartamento.contratoActivo}).
+                      Eliminar el apartamento podría afectar el contrato.
                     </p>
                   </div>
                 </div>
@@ -97,8 +107,9 @@ export function DeleteApartamentoModal({ apartamento, onClose, onDelete }) {
             {/* Confirmation */}
             <div className="bg-white border border-gray-300 rounded-lg p-4">
               <p className="text-sm text-gray-700">
-                ¿Estás seguro de que deseas eliminar el apartamento <strong>{apartamento.numero}</strong>?
-                Esta acción no se puede revertir.
+                ¿Estás seguro de que deseas eliminar el apartamento{" "}
+                <strong>{apartamento.numero}</strong>? Esta acción no se puede
+                revertir.
               </p>
             </div>
 

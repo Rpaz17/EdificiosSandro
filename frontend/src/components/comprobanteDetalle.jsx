@@ -22,15 +22,16 @@ export function ComprobanteDetalle({
     isOpen: false,
     type: null,
   });
+  const [showImage, setShowImage] = useState(false);
 
   const handleValidate = () => {
     setConfirmDialog({ isOpen: false, type: null });
-    onValidate(comprobante.codigo);
+    onValidate(comprobante.id);
   };
 
   const handleReject = () => {
     setConfirmDialog({ isOpen: false, type: null });
-    onReject(comprobante.codigo);
+    onReject(comprobante.id);
   };
 
   const openConfirmDialog = (type) => {
@@ -65,7 +66,9 @@ export function ComprobanteDetalle({
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-gray-900">Detalle del Comprobante</h2>
-            <p className="text-sm text-gray-500 mt-1">{comprobante.codigo}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Id del comprobante:{comprobante.id}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -99,7 +102,9 @@ export function ComprobanteDetalle({
               </div>
               <div>
                 <p className="text-sm text-gray-600">Cliente</p>
-                <p className="text-sm text-gray-900">{comprobante.cliente}</p>
+                <p className="text-sm text-gray-900">
+                  {comprobante.cliente.nombre}
+                </p>
               </div>
             </div>
           </div>
@@ -116,7 +121,7 @@ export function ComprobanteDetalle({
                 </div>
                 <div>
                   <p className="text-xs text-gray-600">Código</p>
-                  <p className="text-sm text-gray-900">{comprobante.codigo}</p>
+                  <p className="text-sm text-gray-900">{comprobante.id}</p>
                 </div>
               </div>
 
@@ -128,7 +133,7 @@ export function ComprobanteDetalle({
                 <div>
                   <p className="text-xs text-gray-600">Monto</p>
                   <p className="text-sm text-gray-900">
-                    ${comprobante.monto.toLocaleString()}
+                    ${comprobante.pago.monto.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -141,7 +146,7 @@ export function ComprobanteDetalle({
                 <div>
                   <p className="text-xs text-gray-600">Fecha de Envío</p>
                   <p className="text-sm text-gray-900">
-                    {comprobante.fechaEnvio}
+                    {comprobante.fecha_subido}
                   </p>
                 </div>
               </div>
@@ -154,7 +159,7 @@ export function ComprobanteDetalle({
                 <div>
                   <p className="text-xs text-gray-600">Método de Pago</p>
                   <p className="text-sm text-gray-900">
-                    {comprobante.metodoPago}
+                    {comprobante.pago.metodo}
                   </p>
                 </div>
               </div>
@@ -168,7 +173,11 @@ export function ComprobanteDetalle({
               className="w-full h-32 bg-gray-50 border-2 border-dashed border-blue-500 rounded-2xl 
             flex items-center justify-center"
             >
-              <Image className="w-20 h-20 text-blue-500" />
+              <img
+                className="w-40 h-28 object-contain rounded border"
+                src={`http://localhost:3000${comprobante.archivo}`}
+                onClick={() => setShowImage(true)}
+              ></img>
             </div>
             <p className="text-xs text-gray-500 text-center">
               Haz clic en la imagen para ampliar
@@ -176,43 +185,34 @@ export function ComprobanteDetalle({
           </div>
 
           {/* Action Buttons */}
-          {comprobante.estado === "Pendiente" && (
-            <div className="pt-4 border-t border-gray-200 space-y-3">
-              <button
-                onClick={() => openConfirmDialog("validate")}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <CheckCircle className="w-5 h-5" />
-                Validar Comprobante
-              </button>
+          <div className="pt-4 border-t border-gray-200 space-y-3">
+            {comprobante.estado === "pendiente" && (
+              <>
+                <button
+                  onClick={() => openConfirmDialog("validate")}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  <CheckCircle className="w-5 h-5" />
+                  Validar Comprobante
+                </button>
 
-              <button
-                onClick={() => openConfirmDialog("reject")}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                <XCircle className="w-5 h-5" />
-                Rechazar Comprobante
-              </button>
+                <button
+                  onClick={() => openConfirmDialog("reject")}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <XCircle className="w-5 h-5" />
+                  Rechazar Comprobante
+                </button>
+              </>
+            )}
 
-              <button
-                onClick={onClose}
-                className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cerrar
-              </button>
-            </div>
-          )}
-
-          {comprobante.estado !== "Pendiente" && (
-            <div className="pt-4 border-t border-gray-200">
-              <button
-                onClick={onClose}
-                className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Cerrar
-              </button>
-            </div>
-          )}
+            <button
+              onClick={onClose}
+              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
 
         {/* Confirm Dialog */}
@@ -275,6 +275,23 @@ export function ComprobanteDetalle({
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+        {showImage && (
+          <div
+            className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+            onClick={() => setShowImage(false)}
+          >
+            <div
+              className="max-w-5xl max-h-[90vh] bg-white rounded-lg overflow-hidden"
+              onClick={(e) => e.stopPropagation()} // prevent closing when clicking image
+            >
+              <img
+                src={`http://localhost:3000${comprobante.archivo}`}
+                alt="Comprobante grande"
+                className="w-full h-auto max-h-[90vh] object-contain"
+              />
             </div>
           </div>
         )}
