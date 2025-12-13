@@ -145,27 +145,7 @@ export function UsuarioModal({ usuario, onClose, onSave }) {
                 <option value="Cliente">Cliente</option>
               </select>
             </div>
-
-            {/* Estado (solo cuando se edita) */}
-            {usuario && (
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Estado <span className="text-red-500">*</span>
-                </label>
-
-                <select
-                  name="estado"
-                  value={formData.estado}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option>Activo</option>
-                  <option>Inactivo</option>
-                </select>
-              </div>
-            )}
-
+            
             {/* Info Note */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">

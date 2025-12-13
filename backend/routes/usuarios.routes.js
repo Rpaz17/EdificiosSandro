@@ -7,6 +7,7 @@ const {
   crearUsuario,
   editarUsuario,
   eliminarUsuario,
+  listarUsuarios,
 } = require("../controllers/usuarios.controller");
 
 /**
@@ -274,5 +275,7 @@ router.post("/usuarios", crearUsuario);
 router.put("/usuarios/:id", editarUsuario);
 
 router.delete("/usuarios/:id", eliminarUsuario);
+
+router.get("/usuarios", listarUsuarios);
 
 module.exports = router;

@@ -4,6 +4,23 @@ const { Usuario } = require("../models");
 // Sanitizador
 const clean = (str = "") => String(str).trim().toLowerCase();
 
+exports.listarUsuarios = async (req, res) => {
+  console.log("➡️ Entró a listarUsuarios");
+
+  try {
+    const usuarios = await Usuario.findAll({
+      where: { is_deleted: false },
+    });
+
+    console.log("✅ Usuarios obtenidos:", usuarios.length);
+    res.status(200).json(usuarios);
+  } catch (error) {
+    console.error("🔥 ERROR en listarUsuarios:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 //controlador de crear usuario
 exports.crearUsuario = async (req, res) => {
   try {
@@ -216,34 +233,28 @@ exports.editarUsuario = async (req, res) => {
 exports.eliminarUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { updated_by } = req.body;
-
-    //verificar que exista el usuario
+    const { updated_by } = req.body || {};
 
     const usuario = await Usuario.findOne({
-      where: { id, is_deleted: false }, //lo buscamos por id y vemos si ya esta borrado o aun no
+      where: { id, is_deleted: false },
     });
 
-    //ver si existe ese usuario
-
-    if (!usuario)
+    if (!usuario) {
       return res.status(404).json({
         error: "Usuario no encontrado",
       });
-
-    //agarramos la fecha actual
+    }
 
     const fechaActual = new Date();
 
     await usuario.update({
-      is_deleted: true, //actualizamos a que esta borrado ahora si
-      deleted_at: fechaActual, //agarramos la fecha de cuando se borro
-      updated_by: updated_by || null, //agarramos el usuario quien lo borro
+      is_deleted: true,
+      deleted_at: fechaActual,
+      updated_by: updated_by || null,
       updated_at: fechaActual,
-      estado: false, //esto significa que esta borrado
+      estado: false,
     });
 
-    // 7. Armar respuesta limpia
     return res.status(200).json({
       mensaje: "Usuario eliminado correctamente",
       usuario: {
