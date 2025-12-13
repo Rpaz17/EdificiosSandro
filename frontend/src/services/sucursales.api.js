@@ -1,6 +1,9 @@
 import api from "./api";
 
-/** Falta Get all sucursales */
+export async function listarSucursales() {
+  const res = await api.get("/sucursales");
+  return res.data.sucursales;
+}
 
 export async function createSucursal(data) {
   const res = await api.post("/sucursales", data);
@@ -9,7 +12,7 @@ export async function createSucursal(data) {
 
 export async function fetchSucursalById(id) {
   const res = await api.get(`/sucursales/${id}`);
-  return res.data;
+  return res.data.sucursales;
 }
 
 export async function updateSucursal(id, data) {
@@ -17,7 +20,9 @@ export async function updateSucursal(id, data) {
   return res.data;
 }
 
-export async function deleteSucursal(id) {
-  const res = await api.delete(`/sucursales/${id}`);
+export async function deleteSucursal(id, updatedBy) {
+  const res = await api.delete(`/sucursales/${id}`, {
+    data: { updated_by: updatedBy },
+  });
   return res.data;
 }
