@@ -8,8 +8,8 @@ export function ClienteModal({ cliente, onClose, onSave }) {
     identificacion: "",
     telefono: "",
     correo: "",
-    estado: "Activo",
-    sucursal: "Sucursal Centro",
+    estado: "",
+    //sucursal: "Sucursal Centro",
   });
 
   useEffect(() => {
@@ -21,7 +21,6 @@ export function ClienteModal({ cliente, onClose, onSave }) {
         telefono: cliente.telefono,
         correo: cliente.correo,
         estado: cliente.estado,
-        sucursal: cliente.sucursal,
       });
     }
   }, [cliente]);
@@ -152,26 +151,8 @@ export function ClienteModal({ cliente, onClose, onSave }) {
               </div>
             </div>
 
-            {/* Sucursal & Estado */}
+            {/*Estado */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Sucursal Asignada <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="sucursal"
-                  value={formData.sucursal}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  <option>Sucursal Centro</option>
-                  <option>Sucursal Norte</option>
-                  <option>Sucursal Sur</option>
-                  <option>Sucursal Este</option>
-                </select>
-              </div>
-
               <div>
                 <label className="block text-sm text-gray-700 mb-2">
                   Estado <span className="text-red-500">*</span>
@@ -183,8 +164,8 @@ export function ClienteModal({ cliente, onClose, onSave }) {
                   required
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                 >
-                  <option>Activo</option>
-                  <option>Inactivo</option>
+                  <option>activo</option>
+                  <option>inactivo</option>
                 </select>
               </div>
             </div>

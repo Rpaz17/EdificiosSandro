@@ -1,6 +1,45 @@
-const { Cliente } = require("../models");
+const { ConnectionAcquireTimeoutError, Op } = require("sequelize");
+const { Cliente, Contrato, Pago, Sucursal, Apartamento } = require("../models");
 const ServiceError = require("../utils/serviceError");
 
+async function listarClientes() {
+  return Cliente.findAll({
+    where: { is_deleted: false },
+    include: [
+      {
+        model: Contrato,
+        as: "contratos",
+        separate: true,
+        order: [["created_at", "DESC"]],
+        limit: 1,
+        include: [
+          {
+            model: Pago,
+            as: "pagos",
+            where: {
+              periodo: {
+                [Op.gte]: new Date(
+                  new Date().setMonth(new Date().getMonth() - 3)
+                ),
+              },
+            },
+            required: false,
+          },
+          {
+            model: Apartamento,
+            as: "apartamento",
+            include: [
+              {
+                model: Sucursal,
+                as: "sucursal",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+}
 async function editarCliente(clienteId, data, usuarioId) {
   // Validar existencia del cliente
   const cliente = await Cliente.findByPk(clienteId);
@@ -20,6 +59,7 @@ async function editarCliente(clienteId, data, usuarioId) {
   cliente.identificacion = data.identificacion ?? cliente.identificacion;
   cliente.telefono = data.telefono ?? cliente.telefono;
   cliente.correo = data.correo ?? cliente.correo;
+  cliente.estado = data.estado ?? cliente.estado;
 
   // Auditoría
   cliente.updated_at = new Date();
@@ -55,4 +95,5 @@ async function eliminarCliente(clienteId, usuarioId) {
 module.exports = {
   editarCliente,
   eliminarCliente,
+  listarClientes,
 };
