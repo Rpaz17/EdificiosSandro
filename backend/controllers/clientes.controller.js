@@ -7,6 +7,60 @@ const clean = (str = "") => String(str).trim();
 // CONTROLADOR: Crear nuevo cliente
 // ===============================
 module.exports = {
+  listarClientes: async (req, res) => {
+    console.log("Listar clientes");
+    try {
+      const clientes = await clientesService.listarClientes();
+      const response = clientes.map((c) => {
+        const contrato = c.contratos?.[0] ?? null;
+        const pagos = contrato?.pagos ?? [];
+
+        return {
+          id: c.id,
+          nombre: c.nombre,
+          apellido: c.apellido,
+          identificacion: c.identificacion,
+          telefono: c.telefono,
+          correo: c.correo,
+          estado: c.estado,
+          fecha_creacion: c.created_at,
+
+          contrato: contrato
+            ? {
+                id: contrato.id,
+                monto: contrato.monto,
+                estado: contrato.estado,
+              }
+            : null,
+
+          pagos: pagos.map((p) => ({
+            id: p.id,
+            fecha: p.fecha,
+            monto: p.monto,
+            metodo: p.metodo,
+            estado: p.estado_pago,
+          })),
+
+          apartamento: contrato?.apartamento
+            ? {
+                numero: contrato.apartamento.numero_apartamento,
+              }
+            : null,
+
+          sucursal: contrato?.apartamento?.sucursal
+            ? {
+                nombre: contrato.apartamento.sucursal.nombre,
+              }
+            : null,
+        };
+      });
+
+      return res.json(response);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Error al obtener clientes" });
+    }
+  },
   crearCliente: async (req, res) => {
     try {
       let {
@@ -104,7 +158,7 @@ module.exports = {
 
   editarCliente: async (req, res) => {
     const clienteId = req.params.id;
-    const usuarioId = req.body.usuarioId;
+    const usuarioId = 1;
     const data = req.body;
 
     // Validaciones
@@ -170,7 +224,7 @@ module.exports = {
 
   eliminarCliente: async (req, res) => {
     const clienteId = req.params.id;
-    const usuarioId = req.body.usuarioId;
+    const usuarioId = 1;
 
     if (!clienteId) {
       return res

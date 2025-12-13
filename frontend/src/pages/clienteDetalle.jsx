@@ -56,6 +56,10 @@ export function ClienteDetalle({ cliente, onClose, onEdit, onToggleEstado }) {
       concepto: "Renta Septiembre",
     },
   ];
+  const formatDate = (iso) => {
+    if (!iso) return "";
+    return new Date(iso).toLocaleDateString();
+  };
 
   return (
     <>
@@ -161,7 +165,9 @@ export function ClienteDetalle({ cliente, onClose, onEdit, onToggleEstado }) {
                 </div>
                 <div>
                   <p className="text-xs text-gray-600">Sucursal</p>
-                  <p className="text-sm text-gray-900">{cliente.sucursal}</p>
+                  <p className="text-sm text-gray-900">
+                    {cliente.sucursal?.nombre}
+                  </p>
                 </div>
               </div>
 
@@ -173,7 +179,7 @@ export function ClienteDetalle({ cliente, onClose, onEdit, onToggleEstado }) {
                 <div>
                   <p className="text-xs text-gray-600">Fecha de Registro</p>
                   <p className="text-sm text-gray-900">
-                    {cliente.fechaRegistro}
+                    {formatDate(cliente.fecha_creacion)}
                   </p>
                 </div>
               </div>
@@ -181,70 +187,88 @@ export function ClienteDetalle({ cliente, onClose, onEdit, onToggleEstado }) {
           </div>
 
           {/* Contratos Asociados */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-gray-600" />
-              <h3 className="text-sm text-gray-900">Contratos Asociados</h3>
-            </div>
+          {cliente.contrato && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gray-600" />
+                <h3 className="text-sm text-gray-900">Contratos Asociados</h3>
+              </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              {mockContratos.map((contrato) => (
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <div
-                  key={contrato.id}
+                  key={cliente.contrato?.id}
                   className="flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
                 >
                   <div>
-                    <p className="text-sm text-gray-900">{contrato.id}</p>
+                    <p className="text-sm text-gray-900">
+                      CT-0{cliente.contrato?.id}
+                    </p>
                     <p className="text-xs text-gray-600">
-                      {contrato.apartamento}
+                      Apt-{cliente.apartamento?.numero}
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-sm text-gray-900">{contrato.monto}</p>
+                    <p className="text-sm text-gray-900">
+                      {cliente.contrato?.monto}
+                    </p>
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
-                        contrato.estado === "Activo"
+                        cliente.contrato?.estado === "activo"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {contrato.estado}
+                      {cliente.contrato?.estado}
                     </span>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Historial de Pagos */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-gray-600" />
-              <h3 className="text-sm text-gray-900">
-                Historial de Pagos Recientes
-              </h3>
-            </div>
+            {cliente.pagos.length > 0 && (
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-gray-600" />
+                <h3 className="text-sm text-gray-900">
+                  Historial de Pagos Recientes
+                </h3>
+              </div>
+            )}
 
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              {mockPagos.map((pago, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
-                >
-                  <div>
-                    <p className="text-sm text-gray-900">{pago.concepto}</p>
-                    <p className="text-xs text-gray-600">{pago.fecha}</p>
-                  </div>
+              {cliente.pagos &&
+                cliente.pagos.map((pago) => (
+                  <div
+                    key={pago.id}
+                    className="flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
+                  >
+                    <div>
+                      <p>Metodo de pago: {pago.metodo}</p>
+                      <p className="text-xs text-gray-600">
+                        {formatDate(pago.fecha)}
+                      </p>
+                    </div>
 
-                  <div className="text-right">
-                    <p className="text-sm text-gray-900">{pago.monto}</p>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-800">
-                      {pago.estado}
-                    </span>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-900">{pago.monto}</p>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
+                          pago.estado === "activo"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {pago.estado}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              {!cliente.pagos && (
+                <>No se encontraron pagos relacionados a este cliente</>
+              )}
             </div>
           </div>
 
@@ -260,23 +284,10 @@ export function ClienteDetalle({ cliente, onClose, onEdit, onToggleEstado }) {
 
             <button
               onClick={() => onToggleEstado(cliente.id)}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors ${
-                cliente.estado === "Activo"
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-green-600 text-white hover:bg-green-700"
-              }`}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors bg-red-600 text-white hover:bg-red-700"
             >
-              {cliente.estado === "Activo" ? (
-                <>
-                  <UserX className="w-5 h-5" />
-                  Desactivar Cliente
-                </>
-              ) : (
-                <>
-                  <UserCheck className="w-5 h-5" />
-                  Reactivar Cliente
-                </>
-              )}
+              <UserX className="w-5 h-5" />
+              Eliminar Cliente
             </button>
 
             <button

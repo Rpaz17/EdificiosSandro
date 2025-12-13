@@ -45,6 +45,11 @@ module.exports = (sequelize, DataTypes) => {
       telefono: DataTypes.STRING(20),
       correo: DataTypes.STRING(120),
 
+      estado: {
+        type: DataTypes.ENUM("activo", "inactivo"),
+        allowNull: false,
+        defaultValue: "activo",
+      },
       created_at: DataTypes.DATE,
       created_by: DataTypes.INTEGER,
       updated_at: DataTypes.DATE,

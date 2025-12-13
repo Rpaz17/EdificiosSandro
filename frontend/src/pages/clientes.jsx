@@ -4,6 +4,13 @@ import { Plus, Edit, Eye } from "lucide-react";
 import { useState } from "react";
 import { ClienteModal } from "./clienteModal";
 import { ClienteDetalle } from "./clienteDetalle";
+import {
+  fetchClientes,
+  updateCliente,
+  createCliente,
+  deleteCliente,
+} from "../services/clientes.api";
+import { useEffect } from "react";
 
 const filters = [
   {
@@ -118,13 +125,62 @@ export function Clientes() {
   const [selectedCliente, setSelectedCliente] = useState("");
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState("");
+  const [clientes, setClientes] = useState([]);
 
-  const handleToggleEstado = (id) => {};
+  useEffect(() => {
+    const loadClientes = async () => {
+      try {
+        const clients = await fetchClientes();
+        console.log(clients);
+        setClientes(clients);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadClientes();
+  }, []);
+
+  const handleToggleEstado = async (id) => {
+    setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+    //Eliminar del sistema
+    try {
+      await deleteCliente(id);
+      console.log("cliente eliminado");
+      setIsDetailPanelOpen(false);
+      setSelectedCliente(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const handleEdit = (cliente) => {
     setEditingCliente(cliente);
     setIsModalOpen(true);
   };
-  const handleSaveCliente = (clienteData) => {
+  const handleSaveCliente = async (clienteData) => {
+    if (!editingCliente) {
+      //Crear cliente
+      try {
+        await createCliente(clienteData);
+        console.log("cliente creado");
+        const clients = await fetchClientes();
+        setClientes(clients);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      const id = editingCliente.id;
+      setClientes((prev) =>
+        prev.map((client) =>
+          client.id === id ? { ...client, ...clienteData } : client
+        )
+      );
+      try {
+        await updateCliente(id, clienteData);
+        console.log("cliente actualizado");
+      } catch (err) {
+        console.error(err);
+      }
+    }
     console.log("Guardando cliente:", clienteData);
     setIsModalOpen(false);
     setEditingCliente(null);
@@ -142,6 +198,7 @@ export function Clientes() {
     setEditingCliente(null);
     setIsModalOpen(true);
   };
+
   return (
     <div className="p-6">
       <div className="space-y-6">
@@ -196,7 +253,7 @@ export function Clientes() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {mockClientes.map((cliente) => (
+                  {clientes.map((cliente) => (
                     <tr
                       key={cliente.id}
                       className="hover:bg-gray-50 transition-colors"
@@ -214,7 +271,7 @@ export function Clientes() {
                         {cliente.correo}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {cliente.sucursal}
+                        {cliente.sucursal?.nombre}
                       </td>
                       <td className="px-6 py-4">
                         <span
