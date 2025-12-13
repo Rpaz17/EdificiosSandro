@@ -128,6 +128,5 @@ module.exports = {
   getApartamentosById,
   editarApartamento,
   eliminarApartamento,
-  
 
 };
