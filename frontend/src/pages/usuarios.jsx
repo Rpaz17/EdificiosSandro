@@ -1,8 +1,15 @@
-import { useState } from "react";
+
 import { Search, Filter, Plus, Edit, Eye, Trash2 } from "lucide-react";
 import { UsuarioModal } from "./UsuarioModal";
 import { UsuarioViewModal } from "./UsuarioViewModal";
 import { UsuarioDeleteModal } from "./UsuarioDeleteModal";
+import { useEffect, useState } from "react";
+import {
+  createUsuario,
+  updateUsuario,
+  getUsuarios,
+  deleteUsuario,
+} from "../services/usuarios.api";
 
 const mockUsuarios = [
   {
@@ -67,7 +74,11 @@ export function Usuarios() {
   const [emailSearch, setEmailSearch] = useState("");
   const [rolFilter, setRolFilter] = useState("Todos");
   const [estadoFilter, setEstadoFilter] = useState("Todos");
-  const [usuarios, setUsuarios] = useState(mockUsuarios);
+
+  const [usuarios, setUsuarios] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -83,6 +94,64 @@ export function Usuarios() {
       estadoFilter === "Todos" || usuario.estado === estadoFilter;
     return matchesEmail && matchesRol && matchesEstado;
   });
+
+  useEffect(() => {
+  const cargar = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await getUsuarios();
+
+      // Tu backend probablemente devuelve: [{ id, email, rol, estado, created_at, ... }]
+      // Tu UI espera: fechaCreacion + rol en formato "Admin/Cobrador/Cliente" y estado "Activo/Inactivo"
+      const mapped = (data || []).map((u) => ({
+        id: String(u.id),
+        email: u.email,
+        rol:
+          u.rol === "admin"
+            ? "Admin"
+            : u.rol === "cobrador"
+            ? "Cobrador"
+            : "Cliente",
+        estado: u.estado ? "Activo" : "Inactivo",
+        fechaCreacion: u.created_at || new Date().toISOString(),
+      }));
+
+      setUsuarios(mapped);
+    } catch (e) {
+      console.error(e);
+      setError("No se pudieron cargar los usuarios.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  cargar();
+}, []);
+
+const cargarUsuarios = async () => {
+  const data = await getUsuarios();
+
+  const mapped = data.map((u) => ({
+    id: String(u.id),
+    email: u.email,
+    rol:
+      u.rol === "admin"
+        ? "Admin"
+        : u.rol === "cobrador"
+        ? "Cobrador"
+        : "Cliente",
+    estado: u.estado ? "Activo" : "Inactivo",
+    fechaCreacion: u.created_at,
+  }));
+
+  setUsuarios(mapped);
+};
+
+useEffect(() => {
+  cargarUsuarios();
+}, []);
+
 
   const handleApplyFilters = () => {
     console.log("Filters applied");
@@ -114,41 +183,50 @@ export function Usuarios() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleSaveUsuario = (usuarioData) => {
-    if (editingUsuario) {
-      setUsuarios((prev) =>
-        prev.map((u) =>
-          u.id === editingUsuario.id
-            ? {
-                ...u,
-                email: usuarioData.email,
-                rol: usuarioData.rol,
-                estado: usuarioData.estado,
-              }
-            : u
-        )
-      );
-    } else {
-      const newUsuario = {
-        id: String(usuarios.length + 1),
-        email: usuarioData.email,
-        rol: usuarioData.rol,
-        estado: usuarioData.estado,
-        fechaCreacion: new Date().toISOString(),
-      };
-      setUsuarios((prev) => [newUsuario, ...prev]);
+  const handleSaveUsuario = async (usuarioData) => {
+  try {
+    const payload = {
+      email: usuarioData.email,
+      rol: usuarioData.rol.toLowerCase(), // Admin → admin
+    };
+
+    // solo enviar password si el usuario escribió algo
+    if (usuarioData.password) {
+      payload.password = usuarioData.password;
     }
+
+    if (editingUsuario) {
+      await updateUsuario(editingUsuario.id, payload);
+    } else {
+      await createUsuario(payload);
+    }
+
+    await cargarUsuarios(); // refrescar tabla
+
     setIsModalOpen(false);
     setEditingUsuario(null);
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Error al guardar usuario");
+  }
+};
 
-  const handleConfirmDelete = () => {
-    if (selectedUsuario) {
-      setUsuarios((prev) => prev.filter((u) => u.id !== selectedUsuario.id));
-      setIsDeleteModalOpen(false);
-      setSelectedUsuario(null);
-    }
-  };
+  const handleConfirmDelete = async () => {
+  if (!selectedUsuario) return;
+
+  try {
+    await deleteUsuario(selectedUsuario.id);
+
+
+    await cargarUsuarios(); // refrescar tabla desde BD
+
+    setIsDeleteModalOpen(false);
+    setSelectedUsuario(null);
+  } catch (error) {
+    console.error(error);
+    alert("Error al eliminar el usuario");
+  }
+};
 
   const getEstadoBadge = (estado) => {
     return estado === "Activo"
@@ -264,6 +342,9 @@ export function Usuarios() {
       {/* Summary */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
+          {loading && <p className="text-sm text-gray-500">Cargando usuarios...</p>}
+       {error && <p className="text-sm text-red-600">{error}</p>}
+
           Mostrando{" "}
           <span className="text-gray-900">{filteredUsuarios.length}</span>{" "}
           usuarios
