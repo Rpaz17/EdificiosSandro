@@ -1,77 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Plus, Edit, Trash2, Eye } from "lucide-react";
 import { SucursalModal } from "./SucursalModal";
 import { ViewSucursalModal } from "./ViewSucursalModal";
 import { SucursalDeleteModal } from "./SucursalDeleteModal";
 import { PageHeader } from "../components/PageHeader";
+import {
+  listarSucursales,
+  createSucursal,
+  updateSucursal,
+  deleteSucursal,
+} from "../services/sucursales.api";
 
-const mockSucursales = [
-  {
-    id: "1",
-    nombre: "Sucursal Centro",
-    ciudad: "Santo Domingo",
-    sector: "Piantini",
-    calle: "Av. Abraham Lincoln #45",
-    estado: "Activo",
-    fechaCreacion: "2024-01-15",
-    createdBy: "Admin Principal",
-    updatedBy: "Admin Principal",
-    updatedAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    nombre: "Sucursal Norte",
-    ciudad: "Santiago",
-    sector: "Los Jardines",
-    calle: "Calle del Sol #128",
-    estado: "Activo",
-    fechaCreacion: "2024-02-10",
-    createdBy: "Admin Principal",
-    updatedBy: "Carlos Ramírez",
-    updatedAt: "2024-03-05",
-  },
-  {
-    id: "3",
-    nombre: "Sucursal Sur",
-    ciudad: "Santo Domingo",
-    sector: "La Esperilla",
-    calle: "Av. Máximo Gómez #234",
-    estado: "Activo",
-    fechaCreacion: "2024-03-20",
-    createdBy: "Admin Principal",
-    updatedBy: "Admin Principal",
-    updatedAt: "2024-03-20",
-  },
-  {
-    id: "4",
-    nombre: "Sucursal Este",
-    ciudad: "La Romana",
-    sector: "Centro",
-    calle: "Calle Duarte #89",
-    estado: "Activo",
-    fechaCreacion: "2024-04-12",
-    createdBy: "Admin Principal",
-    updatedBy: "María González",
-    updatedAt: "2024-05-01",
-  },
-  {
-    id: "5",
-    nombre: "Sucursal Antigua",
-    ciudad: "Santo Domingo",
-    sector: "Naco",
-    calle: "Calle Principal #56",
-    estado: "Eliminado",
-    fechaCreacion: "2023-08-05",
-    createdBy: "Admin Principal",
-    updatedBy: "Admin Principal",
-    updatedAt: "2024-06-15",
-  },
-];
 
 export function Sucursales() {
   const [searchTerm, setSearchTerm] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("Activo");
-  const [sucursales, setSucursales] = useState(mockSucursales);
+  const [sucursales, setSucursales] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSucursal, setEditingSucursal] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -81,9 +27,9 @@ export function Sucursales() {
 
   const filteredSucursales = sucursales.filter((sucursal) => {
     const matchesSearch =
-      sucursal.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sucursal.ciudad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sucursal.sector.toLowerCase().includes(searchTerm.toLowerCase());
+  (sucursal.nombre ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (sucursal.ciudad ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (sucursal.sector ?? "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesEstado =
       estadoFilter === "Todas" || sucursal.estado === estadoFilter;
@@ -111,58 +57,87 @@ export function Sucursales() {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    if (deletingSucursal) {
-      setSucursales((prev) =>
-        prev.map((s) =>
-          s.id === deletingSucursal.id
-            ? {
-                ...s,
-                estado: "Eliminado",
-                updatedAt: new Date().toISOString().split("T")[0],
-              }
-            : s
-        )
-      );
-      setIsDeleteModalOpen(false);
-      setDeletingSucursal(null);
-    }
-  };
+  const confirmDelete = async () => {
+  if (!deletingSucursal) return;
 
-  const handleSaveSucursal = (sucursalData) => {
+  try {
+    setError(null);
+    await deleteSucursal(deletingSucursal.id);
+
+    setIsDeleteModalOpen(false);
+    setDeletingSucursal(null);
+
+    await loadSucursales(); 
+  } catch (err) {
+    console.error(err);
+    setError(err?.response?.data?.error || "No se pudo eliminar la sucursal");
+  }
+};
+
+  const handleSaveSucursal = async (sucursalData) => {
+  try {
+    setError(null);
+
     if (editingSucursal) {
-      setSucursales((prev) =>
-        prev.map((s) =>
-          s.id === editingSucursal.id
-            ? {
-                ...s,
-                ...sucursalData,
-                updatedAt: new Date().toISOString().split("T")[0],
-              }
-            : s
-        )
-      );
+      await updateSucursal(editingSucursal.id, sucursalData);
     } else {
-      const newSucursal = {
-        ...sucursalData,
-        id: String(sucursales.length + 1),
-        estado: "Activo",
-        fechaCreacion: new Date().toISOString().split("T")[0],
-        updatedAt: new Date().toISOString().split("T")[0],
-      };
-
-      setSucursales((prev) => [newSucursal, ...prev]);
+      await createSucursal(sucursalData);
     }
 
     setIsModalOpen(false);
     setEditingSucursal(null);
-  };
+    await loadSucursales();
+  } catch (err) {
+    console.error(err);
+    setError(err?.response?.data?.error || "No se pudo guardar la sucursal");
+  }
+};
+
 
   const getEstadoBadge = (estado) => {
     return estado === "Activo"
       ? "bg-green-100 text-green-800"
       : "bg-gray-100 text-gray-800";
   };
+
+  async function loadSucursales() {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const data = await listarSucursales();
+    console.log("DATA DESDE SERVICE:", data);
+
+    // Adaptar backend -> UI (estado/fechaCreacion)
+    const mapped = (data || []).map((s) => ({
+      id: String(s.id),
+      nombre: s.nombre ?? "",
+      ciudad: s.ciudad ?? "",
+      sector: s.sector ?? "",
+      calle: s.calle ?? "",
+      // tu backend no tiene "estado", así que lo derivamos:
+      estado: s.is_deleted ? "Eliminado" : "Activo",
+      // tu UI usa fechaCreacion:
+      fechaCreacion: s.created_at ? String(s.created_at).split("T")[0] : "",
+      // opcional: si quieres mostrarlos luego
+      created_by: s.created_by ?? null,
+      updated_by: s.updated_by ?? null,
+      updatedAt: s.updated_at ? String(s.updated_at).split("T")[0] : "",
+    }));
+
+    setSucursales(mapped);
+  } catch (err) {
+    console.error(err);
+    setError(err?.response?.data?.error || "Error al cargar sucursales");
+  } finally {
+    setLoading(false);
+  }
+}
+
+useEffect(() => {
+  loadSucursales();
+}, []);
+
 
   return (
     <div className="p-6 space-y-6">
