@@ -5,12 +5,12 @@ const {
   obtenerNotificacionesUsuarioAutenticado,
 } = require("../controllers/notificaciones.controller");
 
-const authMiddleware = require("../controllers/auth.middleWare");
+const authMiddleware = require("../controllers/auth.middleware");
 
 const router = Router();
 
 // Para uso interno del backend (puedes dejarla sin auth si solo la usa backend)
-router.post("/internal", crearNotificacionInterna);
+router.post("/internal", authMiddleware, crearNotificacionInterna);
 
 /**
  * @swagger
