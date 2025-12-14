@@ -15,8 +15,15 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Detalle } from "../components/detalle";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MantenimientoModal } from "./mantenimientoModal";
+import { fetchMantenimientos } from "../services/mantenimientos.api";
+import {
+  createMantenimiento,
+  updateMantenimiento,
+  deleteMantenimiento,
+} from "../services/mantenimientos.api";
+
 
 const filters = [
   {
@@ -52,63 +59,14 @@ const filters = [
 
 const values = {
   sucursal: 2,
-
   estado: "1",
 };
-const mockMantenimientos = [
-  {
-    id: 1,
-    tipo: "Plomería",
-    descripcion: "Fuga de agua en el baño principal",
-    apartamento: "A101",
-    cliente: "Juan Pérez",
-    fechaReporte: "30/11/2024",
-    prioridad: "Alta",
-    estado: "En proceso",
-  },
-  {
-    id: 2,
-    tipo: "Electricidad",
-    descripcion: "Problema con el interruptor de la sala",
-    apartamento: "B203",
-    cliente: "Ana Martínez",
-    fechaReporte: "2/12/2024",
-    prioridad: "Media",
-    estado: "Pendiente",
-  },
-  {
-    id: 3,
-    tipo: "Aire Acondicionado",
-    descripcion: "El aire acondicionado no enfría correctamente",
-    apartamento: "C305",
-    cliente: "Roberto Silva",
-    fechaReporte: "27/11/2024",
-    prioridad: "Media",
-    estado: "Completado",
-  },
-  {
-    id: 4,
-    tipo: "Pintura",
-    descripcion: "Mancha de humedad en la pared del dormitorio",
-    apartamento: "A205",
-    cliente: "Carmen López",
-    fechaReporte: "3/12/2024",
-    prioridad: "Baja",
-    estado: "Pendiente",
-  },
-  {
-    id: 5,
-    tipo: "Cerrajería",
-    descripcion: "Cerradura de la puerta principal con falla",
-    apartamento: "D102",
-    cliente: "Miguel Rodríguez",
-    fechaReporte: "1/12/2024",
-    prioridad: "Alta",
-    estado: "En proceso",
-  },
-];
+
 export function Mantenimientos() {
-  const [selectedMantenimiento, setSelectedMantenimiento] = useState([]);
+  const [selectedMantenimiento, setSelectedMantenimiento] = useState(null);
+  const [mantenimientos, setMantenimientos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -117,13 +75,34 @@ export function Mantenimientos() {
   const [completado, setCompletado] = useState(false);
   const [confirmTxt, setConfirmTxt] = useState("Marcar como En Proceso");
 
-  const getEstadoBadge = (estado) => {
-    return estado === "Activo"
-      ? "bg-green-100 text-green-800"
-      : "bg-gray-100 text-gray-800";
+  const ESTADO_LABELS = {
+    pendiente: "Pendiente",
+    en_proceso: "En proceso",
+    completado: "Completado",
   };
-  const getPrioridadBadge = (prioridad) => {
-    switch (prioridad) {
+
+  const PRIORIDAD_LABELS = {
+    1: "Baja",
+    2: "Media",
+    3: "Alta",
+  };
+
+  // ✅ Ajustado para tus estados reales (Pendiente / En proceso / Completado)
+  const getEstadoBadge = (estadoLabel) => {
+    switch (estadoLabel) {
+      case "Pendiente":
+        return "bg-yellow-100 text-yellow-800";
+      case "En proceso":
+        return "bg-blue-100 text-blue-800";
+      case "Completado":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getPrioridadBadge = (prioridadLabel) => {
+    switch (prioridadLabel) {
       case "Alta":
         return "bg-red-100 text-red-700";
       case "Media":
@@ -134,46 +113,125 @@ export function Mantenimientos() {
         return "bg-gray-100 text-gray-700";
     }
   };
-  const handleSaveMantenimiento = (data) => {
-    console.log("Guardando mantenimiento:", data);
+
+  const handleSaveMantenimiento = async (data) => {
+  try {
+    if (showEdit && selectedMantenimiento) {
+      // EDITAR
+      await updateMantenimiento(selectedMantenimiento.id, data);
+    } else {
+      // CREAR
+      await createMantenimiento(data);
+    }
+
     setShowCrear(false);
     setShowEdit(false);
-  };
+    setSelectedMantenimiento(null);
+
+    await reloadMantenimientos(); // 🔁 refresca tabla
+  } catch (e) {
+    console.error(e);
+    alert("Error al guardar mantenimiento");
+  }
+};
+
+
   const handleViewDetails = (mantenimiento) => {
     console.log("Ver detalles de mantenimiento:", mantenimiento);
     setSelectedMantenimiento(mantenimiento);
-    if (mantenimiento.estado === "Completado") {
+
+    const estadoLabel = ESTADO_LABELS[mantenimiento.estado];
+
+    if (estadoLabel === "Completado") {
       setCompletado(true);
     } else {
       setCompletado(false);
-      const confirmTxt =
-        mantenimiento.estado === "Pendiente"
+      const nextTxt =
+        estadoLabel === "Pendiente"
           ? "Marcar como En Proceso"
           : "Marcar como Completado";
-      setConfirmTxt(confirmTxt);
-      console.log(confirmTxt);
+      setConfirmTxt(nextTxt);
+      console.log(nextTxt);
     }
 
     setShowDetail(true);
   };
+
   const handleEdit = (mantenimiento) => {
     console.log("Editar mantenimiento:", mantenimiento);
     setSelectedMantenimiento(mantenimiento);
     setShowEdit(true);
   };
-  const handleDelete = (mantenimiento) => {
-    console.log("Eliminar mantenimiento:", mantenimiento);
-    setSelectedMantenimiento(mantenimiento);
-    setShowDelete(true);
-  };
+
+  const handleDelete = async (mantenimiento) => {
+  const confirm = window.confirm(
+    "¿Seguro que deseas eliminar este mantenimiento?"
+  );
+
+  if (!confirm) return;
+
+  try {
+    await deleteMantenimiento(mantenimiento.id);
+    setShowDelete(false);
+    setSelectedMantenimiento(null);
+    await reloadMantenimientos();
+  } catch (e) {
+    console.error(e);
+    alert("Error al eliminar mantenimiento");
+  }
+};
+
+
   const handleNewMantenimiento = () => {
     console.log("Nuevo mantenimiento");
     setShowCrear(true);
   };
+
+  const reloadMantenimientos = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+    const data = await fetchMantenimientos();
+    setMantenimientos(Array.isArray(data) ? data : []);
+  } catch (e) {
+    console.error(e);
+    setError("No se pudieron cargar los mantenimientos");
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  reloadMantenimientos();
+}, []);
+
+
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await fetchMantenimientos();
+
+        // Si tu API devuelve { mensaje, data: [] } cambia aquí a data.data
+        setMantenimientos(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error(e);
+        setError("No se pudieron cargar los mantenimientos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
   return (
     <div className="p-6">
       <div className="space-y-6">
-        {/** HEADER  */}
+        {/** HEADER */}
         <div>
           <PageHeader
             title="Mantenimientos"
@@ -188,11 +246,13 @@ export function Mantenimientos() {
             }}
           />
         </div>
-        {/** FILTERS  */}
+
+        {/** FILTERS */}
         <div>
           <Filters title="mantenimientos" filters={filters} values={values} />
         </div>
-        {/** TABLE  */}
+
+        {/** TABLE */}
         <div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
@@ -225,8 +285,9 @@ export function Mantenimientos() {
                     </th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-gray-200">
-                  {mockMantenimientos.map((mantenimiento) => (
+                  {mantenimientos.map((mantenimiento) => (
                     <tr
                       key={mantenimiento.id}
                       className="hover:bg-gray-50 transition-colors"
@@ -234,36 +295,49 @@ export function Mantenimientos() {
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {mantenimiento.tipo}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {mantenimiento.descripcion}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {mantenimiento.apartamento}
+                        {mantenimiento.apartamento?.numero_apartamento || "-"}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {mantenimiento.cliente}
+                        {mantenimiento.cliente
+                          ? `${mantenimiento.cliente.nombre} ${mantenimiento.cliente.apellido}`
+                          : "-"}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {mantenimiento.fechaReporte}
+                        {mantenimiento.fecha_reporte
+                          ? new Date(
+                              mantenimiento.fecha_reporte
+                            ).toLocaleDateString()
+                          : "-"}
                       </td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getPrioridadBadge(
+                            PRIORIDAD_LABELS[mantenimiento.prioridad]
+                          )}`}
+                        >
+                          {PRIORIDAD_LABELS[mantenimiento.prioridad] || "-"}
+                        </span>
+                      </td>
+
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                            mantenimiento.prioridad
+                            ESTADO_LABELS[mantenimiento.estado]
                           )}`}
                         >
-                          {mantenimiento.prioridad}
+                          {ESTADO_LABELS[mantenimiento.estado] || "-"}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                            mantenimiento.estado
-                          )}`}
-                        >
-                          {mantenimiento.estado}
-                        </span>
-                      </td>
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <button
@@ -273,6 +347,7 @@ export function Mantenimientos() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
+
                           <button
                             onClick={() => handleEdit(mantenimiento)}
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -280,6 +355,7 @@ export function Mantenimientos() {
                           >
                             <Edit className="w-4 h-4" />
                           </button>
+
                           <button
                             onClick={() => handleDelete(mantenimiento)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -291,14 +367,38 @@ export function Mantenimientos() {
                       </td>
                     </tr>
                   ))}
+
+                  {/** (Opcional) feedback visual si quieres */}
+                  {loading && (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-6 py-6 text-sm text-gray-600"
+                      >
+                        Cargando mantenimientos...
+                      </td>
+                    </tr>
+                  )}
+
+                  {!loading && error && (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-6 py-6 text-sm text-red-600"
+                      >
+                        {error}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
-      {/** MODALS  */}
-      {showDetail && (
+
+      {/** MODALS */}
+      {showDetail && selectedMantenimiento && (
         <Detalle
           title="Mantenimiento"
           onClose={() => setShowDetail(false)}
@@ -315,17 +415,14 @@ export function Mantenimientos() {
           }
           onEditButton={{
             label: "Editar",
-
             onClick: () => {
               console.log("Editar clicked");
-
               setShowEdit(true);
               console.log(showDetail);
             },
           }}
           onDeleteButton={{
             label: "Eliminar",
-
             onClick: () => {
               console.log("Eliminar clicked");
               setShowDelete(true);
@@ -371,10 +468,10 @@ export function Mantenimientos() {
                 <p className="text-xs text-gray-600">Estado</p>
                 <span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                    selectedMantenimiento.estado
+                    ESTADO_LABELS[selectedMantenimiento.estado]
                   )}`}
                 >
-                  {selectedMantenimiento.estado}
+                  {ESTADO_LABELS[selectedMantenimiento.estado] || "-"}
                 </span>
               </div>
             </div>
@@ -388,10 +485,10 @@ export function Mantenimientos() {
                 <p className="text-xs text-gray-600">Prioridad</p>
                 <span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getPrioridadBadge(
-                    selectedMantenimiento.prioridad
+                    PRIORIDAD_LABELS[selectedMantenimiento.prioridad]
                   )}`}
                 >
-                  {selectedMantenimiento.prioridad}
+                  {PRIORIDAD_LABELS[selectedMantenimiento.prioridad] || "-"}
                 </span>
               </div>
             </div>
@@ -404,13 +501,15 @@ export function Mantenimientos() {
               <div>
                 <p className="text-xs text-gray-600">Fecha de reporte</p>
                 <p className="text-sm text-gray-900">
-                  {new Date(
-                    selectedMantenimiento.fechaReporte
-                  ).toLocaleDateString("es-ES", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {selectedMantenimiento.fecha_reporte
+                    ? new Date(
+                        selectedMantenimiento.fecha_reporte
+                      ).toLocaleDateString("es-ES", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "-"}
                 </p>
               </div>
             </div>
@@ -423,7 +522,9 @@ export function Mantenimientos() {
               <div>
                 <p className="text-xs text-gray-600">Cliente</p>
                 <p className="text-sm text-gray-900">
-                  {selectedMantenimiento.cliente}
+                  {selectedMantenimiento.cliente
+                    ? `${selectedMantenimiento.cliente.nombre} ${selectedMantenimiento.cliente.apellido}`
+                    : "-"}
                 </p>
               </div>
             </div>
@@ -436,7 +537,7 @@ export function Mantenimientos() {
               <div>
                 <p className="text-xs text-gray-600">Apartamento</p>
                 <p className="text-sm text-gray-900">
-                  {selectedMantenimiento.apartamento}
+                  {selectedMantenimiento.apartamento?.numero_apartamento || "-"}
                 </p>
               </div>
             </div>
@@ -456,6 +557,7 @@ export function Mantenimientos() {
           </div>
         </Detalle>
       )}
+
       {showEdit && (
         <MantenimientoModal
           modalMode={"edit"}
@@ -464,6 +566,7 @@ export function Mantenimientos() {
           onSave={handleSaveMantenimiento}
         />
       )}
+
       {showCrear && (
         <MantenimientoModal
           modalMode={"create"}
