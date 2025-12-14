@@ -4,7 +4,10 @@ const reportesController = require("../controllers/reportes.controller");
 
 router.post("/reportes/pagos", reportesController.pagosMensuales);
 router.post("/reportes/ocupacion", reportesController.ocupacion);
+router.post("/reportes/ocupacionMensual", reportesController.ocupacionMensual);
 router.post("/reportes/morosidad", reportesController.morosidad);
+router.get("/dashboard/ocupacion", reportesController.ocupacionTotal);
+router.get("/dashboard/morosidad", reportesController.morosidadTotal);
 
 module.exports = router;
 

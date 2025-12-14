@@ -13,6 +13,7 @@ export function ReportCard({
   onFechaInicioChange = () => {},
   fechaFin = "",
   onFechaFinChange = () => {},
+  generar,
 }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -98,6 +99,7 @@ export function ReportCard({
       <div>
         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center gap-3">
           <button
+            onClick={generar}
             className={`flex items-center gap-2 px-4 py-2.5  text-white rounded-lg  ${iconColor} hover:brightness-110 transition-colors`}
           >
             <FileText className="w-5 h-5" />

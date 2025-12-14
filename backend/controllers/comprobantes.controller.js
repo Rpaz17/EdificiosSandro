@@ -34,28 +34,42 @@ module.exports = {
       return res.status(500).json({ error: "Error al obtener comprobantes" });
     }
   },
-  subirComprobante: async (req, response) => {
-    const data = {
-      id_pago: req.body.id_pago,
-      usuarioId: req.body.usuarioId,
-      notas: req.body.notas,
+  subirComprobante: async (req, res) => {
+    try {
+      // 1. Validar archivo
+      if (!req.file) {
+        return res.status(400).json({
+          error: "Debe enviar un archivo de comprobante",
+        });
+      }
 
-      archivo: req.file.buffer,
-      nombreArchivo: req.file.originalname,
-    };
+      const data = {
+        usuarioId: 1, // cambiar a req.user.id cuando funcionen tokens
+        notas: req.body.notas || null,
+        contratoId: req.body.contratoId,
+        monto: req.body.monto,
+        metodo: req.body.metodo,
+        archivo: req.file.buffer,
+        nombreArchivo: req.file.originalname,
+      };
 
-    const comprobante = await comprobantesService.subirComprobante(data);
+      const comprobante = await comprobantesService.subirComprobante(data);
 
-    response.status(201).json({
-      mensaje: "voucher uploaded succesfully",
-      voucher: comprobante,
-    });
+      return res.status(201).json({
+        mensaje: "voucher uploaded succesfully",
+        voucher: comprobante,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
   },
 
   //PUT /comprobantes/:id/aprobar
   validarComprobante: async (request, response) => {
     const comprobanteId = request.params.id;
-    const usuarioId = 1;
+    const usuarioId = 1; // cambiar a req.user.id cuando funcionen tokens
 
     // 1. Validar ID del comprobante
     if (!comprobanteId) {
@@ -104,7 +118,7 @@ module.exports = {
 
   rechazarComprobante: async (request, response) => {
     const comprobanteId = request.params.id;
-    const usuarioId = 1;
+    const usuarioId = 1; // cambiar a req.user.id cuando funcionen tokens
 
     // 1. Validar ID del comprobante
     if (!comprobanteId) {
