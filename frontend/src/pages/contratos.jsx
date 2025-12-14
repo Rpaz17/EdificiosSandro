@@ -6,6 +6,9 @@ import { CreateContratoModal } from './CreateContratoModal';
 import { EditContratoModal } from './EditContratoModal';
 import { RenewContratoModal } from './RenewContratoModal';
 import { FinalizeContratoModal } from './FinalizeContratoModal';
+import { createContrato, fetchContratoById, fetchContratos, updateContrato, deleteContrato } from '../services/contratos.api';
+import { fetchApartamentos } from '../services/apartamentoServices';
+import { fetchClientes } from '../services/clientes.api';
 
 
 const mockContratos = [
@@ -131,6 +134,7 @@ export function Contratos() {
   const [sucursalFilter, setSucursalFilter] = useState('Todas las sucursales');
   const [estadoFilter, setEstadoFilter] = useState('Todos');
   const [tipoFilter, setTipoFilter] = useState('Todos');
+
   const [contratos, setContratos] = useState(mockContratos);
 
   const [selectedContrato, setSelectedContrato] = useState(null); 
@@ -140,18 +144,96 @@ export function Contratos() {
   const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
 
+  const loadContratos = async () => {
+    try {
+      const [contratosApi, clientesApi, aptsRes] = await Promise.all([
+      fetchContratos(), 
+      fetchClientes(), 
+      fetchApartamentos(), 
+      ]);
+
+      const aptsApi = aptsRes.data;
+
+      const clientesById = new Map(clientesApi.map((c) => [String(c.id), c]));
+      const aptsById = new Map(aptsApi.map((a) => [String(a.id), a]));
+
+      const mapped = (contratosApi || []).map((c) => {
+        const cliente = clientesById.get(String(c.id_cliente));
+        const apt = aptsById.get(String(c.id_apartamento));
+
+        const nombreCliente =
+          cliente?.nombre ??
+          cliente?.nombre_completo ??
+          cliente?.nombres ??
+          `Cliente ${c.id_cliente}`;
+
+        const aptLabel = apt
+          ? `Apt ${apt.numero_apartamento}`
+          : `Apartamento ${c.id_apartamento}`;
+
+        const sucursalLabel = apt?.id_sucursal
+          ? `Sucursal ${apt.id_sucursal}`
+          : "-";
+
+        return {
+          id: String(c.id),
+
+          cliente: nombreCliente,
+
+          codigoContrato: `CTR-${String(c.id).padStart(4, "0")}`,
+
+          apartamento: aptLabel,
+          sucursal: sucursalLabel,
+
+          fechaInicio: c.periodo_inicio || "",
+          fechaFin: c.periodo_fin || "",
+          montoMensual: Number(c.monto) || 0,
+          deposito: Number(c.deposito) || 0,
+          estado: c.estado || "—",
+
+          tipoContrato: "-",
+          duracion: "-",
+          fechaCreacion: c.created_at || "",
+          ultimaActualizacion: c.updated_at || "",
+
+          id_cliente: c.id_cliente,
+          id_apartamento: c.id_apartamento,
+        };
+      });
+
+      setContratos(mapped);
+    } catch (error) {
+      console.error(error);
+      alert(error?.response?.data?.mensaje || "Error cargando contratos");
+    }
+  };
   
-  const filteredContratos = contratos.filter((contrato) => {
-    const matchesSearch =
-      contrato.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contrato.codigoContrato.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSucursal = sucursalFilter === 'Todas las sucursales' || contrato.sucursal === sucursalFilter;
-    const matchesEstado = estadoFilter === 'Todos' || contrato.estado === estadoFilter;
-    const matchesTipo = tipoFilter === 'Todos' || contrato.tipoContrato === tipoFilter;
-    
-    
-    return matchesSearch && matchesSucursal && matchesEstado && matchesTipo;
-  });
+  const filteredContratos = useMemo(() => {
+    return contratos.filter((contrato) => {
+      const matchesSearch =
+        (contrato.cliente || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (contrato.codigoContrato || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesSucursal =
+        sucursalFilter === "Todas las sucursales" || contrato.sucursal === sucursalFilter;
+
+      const matchesEstado = estadoFilter === "Todos" || contrato.estado === estadoFilter;
+      const matchesTipo = tipoFilter === "Todos" || contrato.tipoContrato === tipoFilter;
+
+      // fechas (opcional; si luego guardas fechas como string YYYY-MM-DD funciona)
+      const matchesFechaInicio = !fechaInicio || (contrato.fechaInicio >= fechaInicio);
+      const matchesFechaFin = !fechaFin || (contrato.fechaFin <= fechaFin);
+
+      return (
+        matchesSearch &&
+        matchesSucursal &&
+        matchesEstado &&
+        matchesTipo &&
+        matchesFechaInicio &&
+        matchesFechaFin
+      );
+    });
+  }, [contratos, searchTerm, sucursalFilter, estadoFilter, tipoFilter, fechaInicio, fechaFin]);
 
   const handleClearFilters = () => {
     setSearchTerm('');
@@ -368,27 +450,25 @@ export function Contratos() {
                       <div className="text-sm text-gray-600">{contrato.codigoContrato}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      {/* En JSX, aseguramos el manejo si split falla (aunque con los mock data no debería) */}
-                      <div className="text-sm text-gray-900">{contrato.apartamento.split(' - ')[0]}</div>
-                      <div className="text-sm text-gray-600">{contrato.apartamento.split(' - ')[1]}</div>
-                    </div>
-                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{contrato.apartamento}</td>
+
                   <td className="px-6 py-4 text-sm text-gray-900">{contrato.fechaInicio}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{contrato.fechaFin}</td>
-                  {/* Aseguramos que toFixed(2) se use en los números */}
-                  <td className="px-6 py-4 text-sm text-gray-900">{typeof contrato.montoMensual === 'number' ? contrato.montoMensual.toFixed(2) : contrato.montoMensual} US$</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{typeof contrato.deposito === 'number' ? contrato.deposito.toFixed(2) : contrato.deposito} US$</td>
+
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {Number(contrato.montoMensual).toFixed(2)} US$
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {Number(contrato.deposito).toFixed(2)} US$
+                  </td>
+
                   <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                        contrato.estado
-                      )}`}
-                    >
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(contrato.estado)}`}>
                       {contrato.estado}
                     </span>
                   </td>
+
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
@@ -398,6 +478,7 @@ export function Contratos() {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
+
                       <button
                         onClick={() => handleEdit(contrato)}
                         className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -405,18 +486,24 @@ export function Contratos() {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      {/* Se pueden añadir botones adicionales para Renovar y Finalizar si es necesario */}
                     </div>
                   </td>
                 </tr>
               ))}
+              {filteredContratos.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="px-6 py-10 text-center text-sm text-gray-500">
+                    No hay contratos para mostrar.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <p className="text-sm text-gray-600">Mostrando 1-7 de 7 contratos</p>
+          <p className="text-sm text-gray-600">Mostrando {filteredContratos.length} contrato(s)</p>
           <div className="flex items-center gap-2">
             <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
               <ChevronLeft className="w-4 h-4" />
@@ -458,9 +545,15 @@ export function Contratos() {
       {isCreateModalOpen && (
         <CreateContratoModal
           onClose={() => setIsCreateModalOpen(false)}
-          onSave={(contratoData) => {
-            // Handle create
-            setIsCreateModalOpen(false);
+          onSave={ async (contratoData) => {
+            try{
+              await createContrato(contratoData);
+              setIsCreateModalOpen(false);
+              loadContratos();
+            }catch(Error){
+              console.error(error);
+              alert(error?.response?.data?.mensaje || "Error creando contrato");
+            }
           }}
         />
       )}
@@ -473,10 +566,16 @@ export function Contratos() {
             setIsEditModalOpen(false);
             setSelectedContrato(null);
           }}
-          onSave={(contratoData) => {
-            // Handle edit
-            setIsEditModalOpen(false);
-            setSelectedContrato(null);
+          onSave={async (contratoData) => {
+            try{
+              await updateContrato(selectedContrato.id, contratoData);
+              setIsEditModalOpen(false);
+              setSelectedContrato(null);
+              await loadContratos();
+            }catch (error){
+              console.error(error);
+              alert(error?.response?.data?.mensaje || "Error actualizando contrato");
+            }
           }}
         />
       )}
@@ -490,9 +589,8 @@ export function Contratos() {
             setSelectedContrato(null);
           }}
           onRenew={(renewData) => {
-            // Handle renew
-            setIsRenewModalOpen(false);
-            setSelectedContrato(null);
+              setIsRenewModalOpen(false);
+              setSelectedContrato(null);            
           }}
         />
       )}
@@ -506,7 +604,6 @@ export function Contratos() {
             setSelectedContrato(null);
           }}
           onFinalize={(finalizeData) => {
-            // Handle finalize
             setIsFinalizeModalOpen(false);
             setSelectedContrato(null);
           }}

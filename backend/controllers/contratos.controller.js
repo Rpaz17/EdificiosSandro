@@ -116,6 +116,22 @@ const getContratos = async (req, res) => {
   }
 };
 
+const getContratosById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const contrato = await Contrato.findOne({
+      where: { id: id, is_deleted: false },
+    });
+    if (!contrato) {
+      return res.status(404).json({ mensaje: "Contrato no encontrado" });
+    } 
+    res.status(200).json(contrato);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al obtener el contrato" });
+  } 
+};
+
 const eliminarContrato = async (req, res) => {
   try {
     const { id } = req.params;
@@ -143,4 +159,6 @@ module.exports = {
   editarContrato,
   getContratos,
   eliminarContrato,
+  getContratosById,
+  
 };

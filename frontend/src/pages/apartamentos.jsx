@@ -6,13 +6,14 @@ import {
   deleteApartamento,
 } from "../services/apartamentoServices";
 import { useState } from "react";
-import { Search, Filter, Plus, Edit, Trash2, Home, Eye } from "lucide-react";
+import { Search, Filter, Plus, Edit, Trash2, Home, Eye, AlertOctagon } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { CreateApartamentoModal } from "./CreateApartamentoModal";
 import { EditApartamentoModal } from "./EditApartamentoModal";
 import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamento";
 import { ApartamentoDetailPanel } from "./ApartamentoDetallesModal";
 import { DeleteApartamentoModal } from "./DeleteApartamentoModal";
+import api from "../services/api";
 
 /**
  * Modelo de datos de un Apartamento
