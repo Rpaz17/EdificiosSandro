@@ -1,30 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogOut, Mail, User, Calendar, Clock, Shield } from "lucide-react";
 import { CambiarPasswordModal } from "./CambiarPasswordModal";
+import { fetchPerfilUsuario } from "../services/usuarios.api";
 
 export function MiPerfil() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [perfil, setPerfil] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock user data
-  const userData = {
-    email: "admin@edificiossandro.com",
-    rol: "Admin",
-    estado: "Activo",
-    fechaCreacion: "2024-01-10",
-    ultimaActualizacion: "2024-12-01",
-    ultimoInicio: "2024-12-05 09:30 AM",
-  };
+  const mapPerfil = (data) => ({
+  email: data.email,
+  rol: data.rol,
+  estado: data.estado ? "Activo" : "Inactivo",
+  fechaCreacion: data.created_at,
+  ultimaActualizacion: data.updated_at,
+  ultimoInicio: data.last_login_at || null,
+});
+
+
+  useEffect(() => {
+  fetchPerfilUsuario()
+    .then((data) => setPerfil(mapPerfil(data)))
+    .finally(() => setLoading(false));
+}, []);
+
 
   const handleLogout = () => {
     console.log("Logging out...");
     // Aquí se manejaría el cierre de sesión
   };
 
-  const getEstadoBadge = (estado) => {
-    return estado === "Activo"
-      ? "bg-blue-100 text-blue-800"
-      : "bg-gray-100 text-gray-800";
-  };
+  const getEstadoBadge = (estado = "") =>
+  estado === "Activo"
+    ? "bg-blue-100 text-blue-800"
+    : "bg-gray-100 text-gray-800";
+
 
   const getRolBadge = (rol) => {
     switch (rol) {
@@ -38,6 +49,14 @@ export function MiPerfil() {
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  if (loading) {
+  return <div className="p-6">Cargando perfil...</div>;
+}
+
+if (error) {
+  return <div className="p-6 text-red-600">{error}</div>;
+}
 
   return (
     <div className="p-6 space-y-6">
@@ -72,7 +91,7 @@ export function MiPerfil() {
               </div>
               <div>
                 <p className="text-xs text-gray-600">Correo electrónico</p>
-                <p className="text-sm text-gray-900">{userData.email}</p>
+                <p className="text-sm text-gray-900">{perfil.email}</p>
               </div>
             </div>
 
@@ -85,10 +104,10 @@ export function MiPerfil() {
                 <p className="text-xs text-gray-600">Rol del usuario</p>
                 <span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getRolBadge(
-                    userData.rol
+                    perfil.rol
                   )}`}
                 >
-                  {userData.rol}
+                  {perfil.rol}
                 </span>
               </div>
             </div>
@@ -102,10 +121,10 @@ export function MiPerfil() {
                 <p className="text-xs text-gray-600">Estado del usuario</p>
                 <span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                    userData.estado
+                    perfil.estado
                   )}`}
                 >
-                  {userData.estado}
+                  {perfil.estado}
                 </span>
               </div>
             </div>
@@ -118,7 +137,7 @@ export function MiPerfil() {
               <div>
                 <p className="text-xs text-gray-600">Fecha de creación</p>
                 <p className="text-sm text-gray-900">
-                  {new Date(userData.fechaCreacion).toLocaleDateString(
+                  {new Date(perfil.fechaCreacion).toLocaleDateString(
                     "es-ES",
                     {
                       year: "numeric",
@@ -138,7 +157,7 @@ export function MiPerfil() {
               <div>
                 <p className="text-xs text-gray-600">Última actualización</p>
                 <p className="text-sm text-gray-900">
-                  {new Date(userData.ultimaActualizacion).toLocaleDateString(
+                  {new Date(perfil.ultimaActualizacion).toLocaleDateString(
                     "es-ES",
                     {
                       year: "numeric",
@@ -157,22 +176,7 @@ export function MiPerfil() {
           <h2 className="text-gray-900 mb-6">Seguridad de la Cuenta</h2>
 
           <div className="space-y-4">
-            {/* Último inicio de sesión */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600">
-                    Último inicio de sesión
-                  </p>
-                  <p className="text-sm text-gray-900">
-                    {userData.ultimoInicio}
-                  </p>
-                </div>
-              </div>
-            </div>
+            
 
             {/* Security Info */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

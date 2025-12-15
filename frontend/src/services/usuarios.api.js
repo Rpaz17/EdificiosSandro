@@ -26,3 +26,33 @@ export async function deleteUsuario(id, updated_by) {
   });
   return res.data;
 }
+
+export const fetchPerfilUsuario = async () => {
+  const res = await fetch("http://localhost:3000/api/usuarios/perfil");
+
+  if (!res.ok) {
+    throw new Error("Error al obtener perfil");
+  }
+
+  return res.json();
+};
+
+export const cambiarPassword = async (payload) => {
+  const res = await fetch(
+    "http://localhost:3000/api/usuarios/cambiar-password",
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.mensaje || "Error al cambiar contraseña");
+  }
+
+  return data;
+};
+

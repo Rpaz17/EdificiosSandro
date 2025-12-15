@@ -8,6 +8,8 @@ const {
   editarUsuario,
   eliminarUsuario,
   listarUsuarios,
+  obtenerPerfil,
+  cambiarPassword,
 } = require("../controllers/usuarios.controller");
 
 /**
@@ -277,5 +279,9 @@ router.put("/usuarios/:id", editarUsuario);
 router.delete("/usuarios/:id", eliminarUsuario);
 
 router.get("/usuarios", listarUsuarios);
+
+router.get("/usuarios/perfil", obtenerPerfil);
+
+router.patch("/usuarios/cambiarPassword",cambiarPassword);
 
 module.exports = router;
