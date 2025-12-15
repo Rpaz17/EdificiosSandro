@@ -303,7 +303,8 @@ exports.obtenerPerfil = async (req, res) => {
 
 exports.cambiarPassword = async (req, res) => {
   try {
-    const usuarioId = req.user?.id || 1; // porque aun no hay login
+    // 1️⃣ Usuario loggeado (SIN fallback)
+    const usuarioId = req.user.id;
 
     const { password_actual, password_nueva } = req.body;
 
@@ -313,15 +314,17 @@ exports.cambiarPassword = async (req, res) => {
       });
     }
 
+    // 2️⃣ Obtener usuario
     const usuario = await Usuario.findByPk(usuarioId);
 
     if (!usuario) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
+    // 3️⃣ Comparar contra el HASH REAL
     const passwordValida = await bcrypt.compare(
       password_actual,
-      usuario.password
+      usuario.password_hash
     );
 
     if (!passwordValida) {
@@ -330,15 +333,19 @@ exports.cambiarPassword = async (req, res) => {
       });
     }
 
+    // 4️⃣ Hashear nueva contraseña
     const hash = await bcrypt.hash(password_nueva, 10);
 
-    await usuario.update({ password: hash });
+    // 5️⃣ Guardar en el campo correcto
+    await usuario.update({ password_hash: hash });
 
     res.json({ mensaje: "Contraseña actualizada correctamente" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ mensaje: "Error al cambiar contraseña" });
   }
 };
+
 
 
 

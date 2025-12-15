@@ -28,7 +28,17 @@ export async function deleteUsuario(id, updated_by) {
 }
 
 export const fetchPerfilUsuario = async () => {
-  const res = await fetch("http://localhost:3000/api/usuarios/perfil");
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("No hay token");
+  }
+
+  const res = await fetch("http://localhost:3000/api/usuarios/perfil", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Error al obtener perfil");
@@ -38,11 +48,16 @@ export const fetchPerfilUsuario = async () => {
 };
 
 export const cambiarPassword = async (payload) => {
+  const token = localStorage.getItem("token");
+
   const res = await fetch(
-    "http://localhost:3000/api/usuarios/cambiar-password",
+    "http://localhost:3000/api/usuarios/cambiarPassword",
     {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(payload),
     }
   );
@@ -55,4 +70,6 @@ export const cambiarPassword = async (payload) => {
 
   return data;
 };
+
+
 
