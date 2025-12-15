@@ -13,7 +13,7 @@ import {
   Wrench,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", id: "dashboard" },
@@ -37,6 +37,8 @@ export default function Sidebar(props) {
   } = props;
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const base = location.pathname.startsWith("/cliente") ? "/cliente" : "/admin";
 
   return (
     <aside
@@ -68,7 +70,7 @@ export default function Sidebar(props) {
               <button
                 onClick={() => {
                   onMenuClick && onMenuClick(item.id);
-                  navigate(`/${item.id}`);
+                  navigate(`${base}/${item.id}`);
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                   activeMenu === item.id
