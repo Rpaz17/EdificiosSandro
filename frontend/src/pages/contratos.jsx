@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Filter, Plus, Eye, Edit, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { ContratoDetailPanel } from './ContratoDetallesModal';

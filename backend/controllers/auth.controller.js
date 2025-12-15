@@ -84,6 +84,28 @@ async function login(req, res) {
   }
 }
 
+async function me(req, res) {
+  try{
+    const {id} = req.user;
+
+    const usuario = await Usuario.findOne({
+      where: {id, is_deleted: false},
+      attributes: ["id", "email", "rol", "estado"],
+    })
+
+    if(!usuario){
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({ usuario });
+  }catch(error){
+    console.error("Error en me:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
 module.exports = {
   login,
+  me,
+  
 };

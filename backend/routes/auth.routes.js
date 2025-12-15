@@ -1,5 +1,6 @@
 const { Router } = require("express");
-const { login } = require("../controllers/auth.controller");
+const { login, me } = require("../controllers/auth.controller");
+const authMiddleware = require("../controllers/auth.middleware");
 
 const router = Router();
 
@@ -35,5 +36,6 @@ const router = Router();
  *         description: Error interno del servidor
  */
 router.post("/login", login);
+router.get("/me", authMiddleware, me);
 
 module.exports = router;

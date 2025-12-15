@@ -9,7 +9,8 @@ exports.listarUsuarios = async (req, res) => {
 
   try {
     const usuarios = await Usuario.findAll({
-      where: { is_deleted: false },
+      where: { is_deleted: false},
+      attributes: ["id", "email", "rol", "estado", "created_at", "updated_at"],
     });
 
     console.log("✅ Usuarios obtenidos:", usuarios.length);
