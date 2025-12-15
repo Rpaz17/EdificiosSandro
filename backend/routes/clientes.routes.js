@@ -13,6 +13,9 @@ router.patch("/clientes/:id", clientesController.editarCliente);
 // PATCH /api/clientes/:id/ eliminar
 router.delete("/clientes/:id", clientesController.eliminarCliente);
 
+router.patch("/clientes/:id/asociar-usuario",clientesController.asociarUsuario);
+
+
 module.exports = router;
 
 //Swagger documentation
