@@ -6,7 +6,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import { NavigationLayout } from "./layouts/navigation-layout";
-import { ProtectedRoute } from "./auth/protectedRoute";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
 
 import { Login } from "./pages/login";
 import { ForgotPassword } from "./pages/forgotPassword";
@@ -33,7 +33,7 @@ import { Mantenimientos } from "./pages/mantenimientos";
 
 export default function App() {
   return (
-<BrowserRouter>
+  <BrowserRouter>
       <Routes>
         {/* Públicas */}
         <Route path="/" element={<Login />} />

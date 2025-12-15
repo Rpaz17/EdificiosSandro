@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Building2, Eye, EyeOff } from "lucide-react";
 import { login as loginApi, saveSession } from "../services/auth.api";
 
@@ -12,6 +12,8 @@ export function Login({ onLogin }) {
   const [errMessage, setErrMessage] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,18 +21,15 @@ export function Login({ onLogin }) {
     setLoading(true);
 
     try{
-      const { usuario } = await loginApi(email, password);
-      saveSession({ usuario }, rememberMe);
-      if(rememberMe){
-        localStorage.setItem("usuario", JSON.stringify(usuario));
-      } else {
-        sessionStorage.setItem("usuario", JSON.stringify(usuario));
-      }
+      const { token, usuario } = await loginApi(email, password);
+      saveSession({ token, usuario }, rememberMe);
 
       if(usuario?.rol === "admin"){
-        navigate("/admin/comprobantes", { replace: true });
+        navigate(from || "/admin/comprobantes", { replace: true });
       } else if(usuario?.rol === "cliente"){
-        navigate("/cliente/dashboard", { replace: true });
+        navigate( from || "/cliente/dashboard", { replace: true });
+      }else{
+        navigate("/", { replace: true });
       }
     }catch(error){
       const msg = 

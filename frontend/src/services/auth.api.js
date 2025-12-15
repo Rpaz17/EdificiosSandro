@@ -2,10 +2,7 @@ import api from "./api";
 
 export async function login(email, password){
     const res = await api.post("/auth/login", { email, password });
-    const {token, usuario} = res.data;
-
-    localStorage.setItem("token", token);
-    return { token, usuario };
+    return res.data;
 }
 
 export function saveSession({ token, usuario }, rememberMe){

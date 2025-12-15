@@ -36,6 +36,12 @@ const router = Router();
  *         description: Error interno del servidor
  */
 router.post("/login", login);
-router.get("/me", authMiddleware, me);
+router.get("/me", authMiddleware,
+    (req, res, next) => {
+        res.set("Cache-Control", "no-store");
+        next();
+    },
+    me
+);
 
 module.exports = router;

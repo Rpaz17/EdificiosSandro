@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
-import { login as loginApi } from '../services/auth.api';
+import { login as loginApi, getToken , logout as logoutApi} from '../services/auth.api';
 
 const AuthContext = createContext(null);
 
@@ -10,7 +10,7 @@ export function AuthProvider({ children}) {
 
     useEffect(() => {
         const bootstrap = async () => {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             if(!token){
                 setLoading(false);
                 return;
@@ -20,8 +20,11 @@ export function AuthProvider({ children}) {
                 const res = await api.get("/auth/me");
                 setUser(res.data.usuario);
             }catch(error){
-                localStorage.removeItem("token");
-                setUser(null);
+                const status = error?.response?.status;
+                if(status === 400){
+                    await logoutApi();
+                    setUser(null);
+                }
             }finally{
                 setLoading(false);
             }
@@ -35,8 +38,8 @@ export function AuthProvider({ children}) {
         return usuario;
     };
 
-    const logout = () => {
-        localStorage.removeItem("token");
+    const logout = async () => {
+        await logoutApi();
         setUser(null);
     };
 
