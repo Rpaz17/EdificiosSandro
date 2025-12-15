@@ -164,4 +164,30 @@ module.exports = {
       });
     }
   },
+  clientesTotal: async (req, res) => {
+    try {
+      const reporte = await reportesService.clientesTotal();
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
+  contratos: async (req, res) => {
+    try {
+      const reporte = await reportesService.contratos();
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
 };

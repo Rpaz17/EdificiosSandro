@@ -8,6 +8,8 @@ router.post("/reportes/ocupacionMensual", reportesController.ocupacionMensual);
 router.post("/reportes/morosidad", reportesController.morosidad);
 router.get("/dashboard/ocupacion", reportesController.ocupacionTotal);
 router.get("/dashboard/morosidad", reportesController.morosidadTotal);
+router.get("/dashboard/clientes", reportesController.clientesTotal);
+router.get("/dashboard/contratos", reportesController.contratos);
 
 module.exports = router;
 
