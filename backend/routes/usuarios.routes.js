@@ -280,8 +280,8 @@ router.put("/usuarios/:id", authMiddleware, editarUsuario);
 router.delete("/usuarios/:id", authMiddleware, eliminarUsuario);
 router.get("/usuarios", authMiddleware, listarUsuarios);
 
-router.get("/usuarios/perfil", obtenerPerfil);
+router.get("/usuarios/perfil", authMiddleware, obtenerPerfil);
 
-router.patch("/usuarios/cambiarPassword",cambiarPassword);
+router.patch("/usuarios/cambiarPassword", authMiddleware, cambiarPassword);
 
 module.exports = router;

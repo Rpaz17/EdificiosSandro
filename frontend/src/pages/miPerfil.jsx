@@ -18,6 +18,24 @@ export function MiPerfil() {
   ultimoInicio: data.last_login_at || null,
 });
 
+const formatFecha = (fecha) => {
+  if (!fecha) return "No disponible";
+
+  const date = new Date(fecha);
+
+  if (isNaN(date.getTime())) {
+    return "No disponible";
+  }
+
+  return date.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+
+
 
   useEffect(() => {
   fetchPerfilUsuario()
@@ -157,14 +175,7 @@ if (error) {
               <div>
                 <p className="text-xs text-gray-600">Última actualización</p>
                 <p className="text-sm text-gray-900">
-                  {new Date(perfil.ultimaActualizacion).toLocaleDateString(
-                    "es-ES",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
+                  {formatFecha(perfil.updated_at)}
                 </p>
               </div>
             </div>
