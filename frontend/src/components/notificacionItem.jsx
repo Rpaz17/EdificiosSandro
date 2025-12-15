@@ -9,6 +9,14 @@ export function NotificationItem({ notification, onClick }) {
         return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
       case 'nuevo_cliente':
         return <UserPlus className="w-5 h-5 text-blue-600" />;
+      case 'nuevo_apartamento':
+        return <FileText className="w-5 h-5 text-indigo-600" />;
+      case 'comprobante_subido':
+        return <FileText className="w-5 h-5 text-purple-600" />;
+      case 'comprobante_validado':
+        return <FileText className="w-5 h-5 text-emerald-600" />;
+      case 'comprobante_rechazado':
+        return <FileText className="w-5 h-5 text-red-600" />;
       case 'alerta_sistema':
         return <AlertTriangle className="w-5 h-5 text-red-600" />;
       default:
@@ -24,6 +32,14 @@ export function NotificationItem({ notification, onClick }) {
         return 'bg-yellow-100';
       case 'nuevo_cliente':
         return 'bg-blue-100';
+      case 'nuevo_apartamento':
+        return 'bg-indigo-100';
+      case 'comprobante_subido':
+        return 'bg-purple-100';
+      case 'comprobante_validado':
+        return 'bg-emerald-100';
+      case 'comprobante_rechazado':
+        return 'bg-red-100';
       case 'alerta_sistema':
         return 'bg-red-100';
       default:
@@ -33,8 +49,10 @@ export function NotificationItem({ notification, onClick }) {
 
   // Se elimina el tipado de la función
   const formatTime = (dateString) => {
-    // Esto normalmente analizaría la fecha real, pero para la demostración se usa la cadena tal cual
-    return dateString;
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    if (Number.isNaN(d.getTime())) return String(dateString);
+    return d.toLocaleString();
   };
 
   return (

@@ -1,6 +1,34 @@
 const { ConnectionAcquireTimeoutError, Op } = require("sequelize");
 const { Cliente, Contrato, Pago, Sucursal, Apartamento } = require("../models");
 const ServiceError = require("../utils/serviceError");
+const { notificacionARol } = require("./notificaciones.service");
+
+async function createCliente(data, usuarioId) {
+  if (!data.nombre || !data.apellido) {
+    throw new ServiceError("El nombre y apellido son obligatorios", 400);
+  }
+
+  const ahora = new Date();
+
+  const cliente = await Cliente.create({
+    ...data,
+    created_at: ahora,
+    created_by: usuarioId,
+    updated_at: ahora,
+    updated_by: usuarioId,
+    is_deleted: false,
+  });
+
+  await notificacionARol({
+    rol: "admin",
+    tipo: "cliente_creado",
+    mensaje: `Se ha creado un nuevo cliente: ${cliente.nombre} ${cliente.apellido}.`,
+    id_cliente: cliente.id,
+    created_by: usuarioId,
+  });
+
+  return cliente;
+}
 
 async function listarClientes() {
   return Cliente.findAll({
@@ -96,4 +124,6 @@ module.exports = {
   editarCliente,
   eliminarCliente,
   listarClientes,
+  createCliente,
+  
 };

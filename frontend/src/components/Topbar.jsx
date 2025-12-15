@@ -1,6 +1,7 @@
 import { Bell, User, LogOut, ChevronDown } from "lucide-react";
 import { NotificationsDropdown } from "./notificacionDropdown";
 
+
 export default function Topbar(props) {
   const {
     onUserClick, //Para ver info del usuario actual

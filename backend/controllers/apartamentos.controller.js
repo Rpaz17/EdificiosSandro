@@ -1,5 +1,6 @@
 const express = require('express');
 const { Apartamento, Sucursal } = require('../models');
+const { notificacionARol } = require("../services/notificaciones.service");
 
 // ===============================
 // CONTROLADOR: Crear nuevo apartamento
@@ -28,6 +29,13 @@ const crearApartamento = async (req, res) => {
       precio_mensual,
       estado_ocupacion,
       is_deleted: false, // Soft delete inicializado como falso
+    });
+
+    await notificacionARol({
+      rol: "admin",
+      tipo: "nuevo_apartamento",
+      mensaje: `Nuevo apartamento creado: ${nuevoApartamento.codigo || nuevoApartamento.nombre || `ID ${nuevoApartamento.id}`}`,
+      created_by: req.user?.id,
     });
 
     res.status(201).json(nuevoApartamento);

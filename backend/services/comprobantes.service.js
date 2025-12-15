@@ -5,9 +5,17 @@ const crypto = require("crypto");
 
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
+const { notificacionARol } = require("./notificaciones.service");
 
 async function listarComprobantes() {
   //return [{ test: true }];
+  await notificacionARol({
+    rol: "admin",
+    tipo: "comprobante_subido",
+    mensaje: `Se ha subido un nuevo comprobante para el pago #${id_pago}.`,
+    id_pago,
+    created_by: usuarioId,
+  });
 
   return await Comprobante.findAll({
     //limit: 1,

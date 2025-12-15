@@ -1,20 +1,35 @@
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
-//import { NotificationsDropdown } from "./../components/notificacionDropdown";
+import { useState, useEffect, use } from "react";
+import { fetchNotificaciones } from "../services/notificaciones.api";
+
 import NotificationDetail from "../pages/notificacionDetalle";
 export function NavigationLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState("");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
-  const [notifications, setNotifications] = useState([
-    { id: '1', tipo: 'nuevo_cliente', mensaje: 'Nuevo cliente registrado', estado: 'NO_LEIDA', fecha_envio: 'hace 5 min' },
-    { id: '2', tipo: 'pago_recibido', mensaje: 'Pago recibido del Contrato #123', estado: 'LEIDA', fecha_envio: 'hace 1 hr' },
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
   const [selectedNotification, setSelectedNotification] = useState(null);
+
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetchNotificaciones();
+        const data = (res.data || []).map(n => ({
+          ...n, 
+          mensaje: n.mensaje ?? n.payload ?? "",
+        }));
+        setNotifications(data);
+      }catch (error) {
+        console.error("Error al cargar notificaciones:", error);
+      }
+    };
+    load();
+  }, []);
 
   const handleMarkAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, estado: 'LEIDA' })));
@@ -27,7 +42,7 @@ export function NavigationLayout() {
       )
     );
     setIsNotificationsOpen(false);
-    setSelectedNotification(notification);
+    setSelectedNotification({ ...notification, estado: 'LEIDA' });
     console.log('Navegando a la fuente de la notificación:', notification);
   };
 
