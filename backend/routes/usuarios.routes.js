@@ -11,6 +11,7 @@ const {
   obtenerPerfil,
   cambiarPassword,
 } = require("../controllers/usuarios.controller");
+const authMiddleware = require("../controllers/auth.middleware");
 
 /**
  * @swagger
@@ -272,13 +273,12 @@ const {
  */
 
 // POST /api/usuarios → Usar el controller
-router.post("/usuarios", crearUsuario);
+router.post("/usuarios", authMiddleware, crearUsuario);
 
-router.put("/usuarios/:id", editarUsuario);
+router.put("/usuarios/:id", authMiddleware, editarUsuario);
 
-router.delete("/usuarios/:id", eliminarUsuario);
-
-router.get("/usuarios", listarUsuarios);
+router.delete("/usuarios/:id", authMiddleware, eliminarUsuario);
+router.get("/usuarios", authMiddleware, listarUsuarios);
 
 router.get("/usuarios/perfil", obtenerPerfil);
 

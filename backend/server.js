@@ -9,8 +9,19 @@ var swaggerUI = require("swagger-ui-express");
 
 console.log("Cargando rutas desde:", __dirname);
 console.log("Intentando cargar archivo: ./routes/usuarios.routes.js");
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json());
+app.set("etag", false);
+
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Pragma", "no-cache");
+  next();
+});
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 

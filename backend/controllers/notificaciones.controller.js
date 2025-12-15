@@ -6,7 +6,7 @@ async function crearNotificacionInterna(req, res) {
     const {
       tipo,
       medio,
-      mensaje,          // lo guardaremos en payload
+      mensaje,        
       id_usuario,
       id_cliente,
       id_contrato,
@@ -58,7 +58,7 @@ async function obtenerNotificacionesUsuarioAutenticado(req, res) {
   try {
     
     const usuarioId =
-      req.user?.id || req.usuario?.id_usuario; // por si usas otra convención
+      req.user?.id || req.usuario?.id_usuario; 
 
     if (!usuarioId) {
       return res.status(401).json({ mensaje: "Usuario no autenticado" });
