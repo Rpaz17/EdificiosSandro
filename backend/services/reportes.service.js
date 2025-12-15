@@ -370,9 +370,40 @@ async function morosidadTotal() {
     ],
   });
 
-  return { ClientesAtrasados: totalMorosos };
+  return { clientesAtrasados: totalMorosos };
+}
+async function clientesTotal() {
+  const totalClientes = await Cliente.count({
+    where: { is_deleted: false },
+  });
+
+  return { totalClientes: totalClientes };
 }
 
+async function contratos() {
+  const ultimosContratos = await Contrato.findAll({
+    where: {
+      is_deleted: false,
+    },
+    include: [
+      {
+        model: Cliente,
+        as: "cliente",
+        attributes: ["id", "nombre", "apellido"],
+      },
+      {
+        model: Apartamento,
+        as: "apartamento",
+        attributes: ["id", "numero_apartamento"],
+      },
+    ],
+
+    order: [["created_at", "DESC"]],
+    limit: 5,
+  });
+
+  return { contratos: ultimosContratos };
+}
 module.exports = {
   pagosMensuales,
   ocupacion,
@@ -380,4 +411,6 @@ module.exports = {
   clientesAtrasados,
   ocupacionTotal,
   morosidadTotal,
+  clientesTotal,
+  contratos,
 };

@@ -13,13 +13,13 @@ import {
   Cell,
   Legend,
 } from "recharts";
-
-const occupancyData = [
-  { name: "Sucursal Centro", value: 35, color: "#2563eb" },
-  { name: "Sucursal Norte", value: 28, color: "#3b82f6" },
-  { name: "Sucursal Sur", value: 22, color: "#60a5fa" },
-  { name: "Sucursal Este", value: 15, color: "#93c5fd" },
-];
+import {
+  fetchClientes,
+  fetchContratos,
+  fetchMorosidadTotal,
+  fetchOcupacionTotal,
+} from "../services/reportes.api";
+import { useEffect, useState } from "react";
 
 const recentContracts = [
   {
@@ -65,36 +65,81 @@ const recentContracts = [
 ];
 
 export function Dashboard() {
+  const [reporteOcupacion, setOcupacion] = useState([]);
+  const [reporteMorosos, setMorosos] = useState({});
+  const [reporteClientes, setClientes] = useState({});
+  const [contratosRecientes, setContratos] = useState([]);
+
+  const ocupacionData =
+    reporteOcupacion && reporteOcupacion.total > 0
+      ? [
+          {
+            name: "Ocupados",
+            value: reporteOcupacion.ocupados,
+            color: "#2563eb", //#93c5fd #2563eb
+          },
+          {
+            name: "Disponibles",
+            value: reporteOcupacion.disponibles,
+            color: "#93c5fd",
+          },
+        ]
+      : [];
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const ocupacion = await fetchOcupacionTotal();
+        const morosidad = await fetchMorosidadTotal();
+        const clientes = await fetchClientes();
+        const contratos = await fetchContratos();
+
+        console.log(ocupacion);
+        console.log(morosidad);
+        console.log(clientes);
+        setOcupacion(ocupacion.reporte);
+        setMorosos(morosidad.reporte);
+        setClientes(clientes.reporte);
+        setContratos(contratos.reporte.contratos);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadDashboard();
+  }, []);
+
+  const formatDate = (iso) => {
+    if (!iso) return "";
+    return new Date(iso).toLocaleDateString();
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total Departamentos"
-          value="150"
+          value={reporteOcupacion.total}
           icon={Building2}
           color="blue"
         />
         <KPICard
           title="Departamentos Ocupados"
-          value="127"
+          value={reporteOcupacion.ocupados}
           icon={Home}
           color="green"
-          trend={{ value: "8.5%", positive: true }}
         />
         <KPICard
           title="Clientes Activos"
-          value="124"
+          value={reporteClientes.totalClientes}
           icon={Users}
           color="teal"
-          trend={{ value: "5.2%", positive: true }}
         />
         <KPICard
           title="Morosidad del Mes"
-          value="8.3%"
+          value={reporteMorosos.clientesAtrasados}
           icon={AlertTriangle}
           color="red"
-          trend={{ value: "1.2%", positive: false }}
         />
       </div>
 
@@ -102,12 +147,12 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         {/* Pie Chart */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-gray-900 mb-4">Ocupación por Sucursal</h3>
+          <h3 className="text-gray-900 mb-4">Ocupación Global</h3>
 
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={occupancyData}
+                data={ocupacionData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -117,7 +162,7 @@ export function Dashboard() {
                 outerRadius={80}
                 dataKey="value"
               >
-                {occupancyData.map((entry, index) => (
+                {ocupacionData.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
@@ -159,7 +204,7 @@ export function Dashboard() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {recentContracts.map((contract) => (
+              {contratosRecientes.map((contract) => (
                 <tr
                   key={contract.id}
                   className="hover:bg-gray-50 transition-colors"
@@ -168,13 +213,13 @@ export function Dashboard() {
                     {contract.id}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {contract.cliente}
+                    {contract.cliente.nombre} {contract.cliente.apellido}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {contract.apartamento}
+                    {contract.apartamento.numero_apartamento}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {contract.fecha}
+                    {formatDate(contract.created_at)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {contract.monto}
@@ -183,7 +228,7 @@ export function Dashboard() {
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs ${
-                        contract.estado === "Activo"
+                        contract.estado === "activo"
                           ? "bg-green-100 text-green-800"
                           : "bg-yellow-100 text-yellow-800"
                       }`}

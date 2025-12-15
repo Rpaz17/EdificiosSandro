@@ -26,3 +26,11 @@ export async function fetchMorosidadTotal() {
   const res = await api.get("/dashboard/morosidad");
   return res.data;
 }
+export async function fetchClientes() {
+  const res = await api.get("/dashboard/clientes");
+  return res.data;
+}
+export async function fetchContratos() {
+  const res = await api.get("/dashboard/contratos");
+  return res.data;
+}

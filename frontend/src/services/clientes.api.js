@@ -21,3 +21,4 @@ export async function deleteCliente(id) {
   const res = await api.delete(`/clientes/${id}`);
   return res.data;
 }
+
