@@ -272,3 +272,73 @@ exports.eliminarUsuario = async (req, res) => {
     });
   }
 };
+
+// usuarios.controller.js
+exports.obtenerPerfil = async (req, res) => {
+  try {
+    const usuarioId = req.user?.id || 1; //mientras aun no esta el login
+
+    const usuario = await Usuario.findByPk(usuarioId, {
+      attributes: [
+        "id",
+        "email",
+        "rol",
+        "estado",
+        "created_at",
+        "updated_at",
+      ],
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener perfil" });
+  }
+};
+
+
+exports.cambiarPassword = async (req, res) => {
+  try {
+    const usuarioId = req.user?.id || 1; // porque aun no hay login
+
+    const { password_actual, password_nueva } = req.body;
+
+    if (!password_actual || !password_nueva) {
+      return res.status(400).json({
+        mensaje: "Todos los campos son obligatorios",
+      });
+    }
+
+    const usuario = await Usuario.findByPk(usuarioId);
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    const passwordValida = await bcrypt.compare(
+      password_actual,
+      usuario.password
+    );
+
+    if (!passwordValida) {
+      return res.status(401).json({
+        mensaje: "La contraseña actual es incorrecta",
+      });
+    }
+
+    const hash = await bcrypt.hash(password_nueva, 10);
+
+    await usuario.update({ password: hash });
+
+    res.json({ mensaje: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al cambiar contraseña" });
+  }
+};
+
+
+
+

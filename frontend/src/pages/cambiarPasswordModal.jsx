@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
+import { cambiarPassword } from "../services/usuarios.api";
+
 
 export function CambiarPasswordModal({ onClose }) {
   const [formData, setFormData] = useState({
@@ -11,23 +13,34 @@ export function CambiarPasswordModal({ onClose }) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Validar que las contraseñas coincidan
-    if (formData.newPassword !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
+  if (formData.newPassword !== formData.confirmPassword) {
+    alert("Las contraseñas no coinciden");
+    return;
+  }
 
-    console.log("Password change submitted");
+  try {
+    await cambiarPassword({
+      password_actual: formData.currentPassword,
+      password_nueva: formData.newPassword,
+    });
+
+    alert("Contraseña actualizada correctamente");
     onClose();
-  };
+  } catch (error) {
+    alert(error.message || "Error al cambiar contraseña");
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  
 
   return (
     <>
