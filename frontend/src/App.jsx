@@ -28,12 +28,12 @@ import { Reportes } from "./pages/reportes";
 import { KPICard } from "./pages/kpiCards";
 import { Dashboard } from "./pages/dashboard";
 import { Mantenimientos } from "./pages/mantenimientos";
-
-
+import { ClienteComprobantes } from "./pages/clienteComprobantes";
+import { ClienteDashboard } from "./pages/clienteDashboard";
 
 export default function App() {
   return (
-  <BrowserRouter>
+    <BrowserRouter>
       <Routes>
         {/* Públicas */}
         <Route path="/" element={<Login />} />
@@ -73,7 +73,9 @@ export default function App() {
           }
         >
           {/* Placeholder */}
-          <Route path="dashboard" element={<div>Dashboard Cliente</div>} />
+          <Route path="dashboard" element={<ClienteDashboard />} />
+          <Route path="comprobantes" element={<ClienteComprobantes />} />
+          <Route path="miPerfil" element={<MiPerfil />} />
         </Route>
 
         {/* fallback */}

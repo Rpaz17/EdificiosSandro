@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Building2, Eye, EyeOff } from "lucide-react";
-import { login as loginApi, saveSession } from "../services/auth.api";
+import { useAuth } from "../auth/authProvider";
 
 export function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -14,30 +14,30 @@ export function Login({ onLogin }) {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname;
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrMessage("");
     setLoading(true);
 
-    try{
-      const { token, usuario } = await loginApi(email, password);
-      saveSession({ token, usuario }, rememberMe);
+    try {
+      const usuario = await login(email, password, rememberMe);
 
-      if(usuario?.rol === "admin"){
-        navigate(from || "/admin/comprobantes", { replace: true });
-      } else if(usuario?.rol === "cliente"){
-        navigate( from || "/cliente/dashboard", { replace: true });
-      }else{
+      if (usuario?.rol === "admin") {
+        navigate("/admin/comprobantes", { replace: true });
+      } else if (usuario?.rol === "cliente") {
+        navigate("/cliente/dashboard", { replace: true });
+      } else {
         navigate("/", { replace: true });
       }
-    }catch(error){
-      const msg = 
+    } catch (error) {
+      const msg =
         error?.response?.data?.error ||
         error?.response?.data?.mensaje ||
         "Error al iniciar sesión. Inténtelo de nuevo.";
       setErrMessage(msg);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -119,7 +119,10 @@ export function Login({ onLogin }) {
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                 disabled={loading}
               />
-              <label htmlFor="remember-me" className="ml-2 text-sm text-gray-700">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 text-sm text-gray-700"
+              >
                 Recordarme
               </label>
             </div>
