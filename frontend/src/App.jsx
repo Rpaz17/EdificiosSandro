@@ -61,6 +61,7 @@ export default function App() {
           <Route path="contratos" element={<Contratos />} />
           <Route path="reportes" element={<Reportes />} />
           <Route path="miPerfil" element={<MiPerfil />} />
+          <Route path="mantenimientos" element={<Mantenimientos />} />
         </Route>
 
         {/* CLIENTE */}

@@ -16,18 +16,6 @@ import {
   rechazarComprobante,
 } from "../services/comprobantes.api";
 
-/**
- * @typedef {Object} Comprobante
- * @property {string} codigo
- * @property {string} cliente
- * @property {number} monto
- * @property {string} metodoPago
- * @property {string} fechaEnvio
- * @property {'Pendiente' | 'Validado' | 'Rechazado'} estado
- * @property {string} imagenUrl
- */
-
-/** @type {Comprobante[]} */
 const filters = [
   {
     id: "estado",
@@ -60,7 +48,7 @@ const values = {
 
 const mockComprobantes = [
   {
-    codigo: "COMP-2024-156",
+    id: "COMP-2024-156",
     cliente: "María González",
     monto: 850,
     metodoPago: "Transferencia",
@@ -70,8 +58,8 @@ const mockComprobantes = [
       "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
   },
   {
-    codigo: "COMP-2024-155",
-    cliente: "Carlos Ramírez",
+    id: "COMP-2024-155",
+    nombre: "Carlos Ramírez",
     monto: 920,
     metodoPago: "Depósito",
     fechaEnvio: "2024-11-26",
@@ -80,8 +68,8 @@ const mockComprobantes = [
       "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
   },
   {
-    codigo: "COMP-2024-154",
-    cliente: "Ana Martínez",
+    id: "COMP-2024-154",
+    nombre: "Ana Martínez",
     monto: 780,
     metodoPago: "Transferencia",
     fechaEnvio: "2024-11-25",
@@ -90,8 +78,8 @@ const mockComprobantes = [
       "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
   },
   {
-    codigo: "COMP-2024-153",
-    cliente: "Luis Pérez",
+    id: "COMP-2024-153",
+    nombre: "Luis Pérez",
     monto: 1100,
     metodoPago: "Efectivo",
     fechaEnvio: "2024-11-24",
@@ -100,8 +88,8 @@ const mockComprobantes = [
       "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
   },
   {
-    codigo: "COMP-2024-152",
-    cliente: "Sofia Torres",
+    id: "COMP-2024-152",
+    nombre: "Sofia Torres",
     monto: 695,
     metodoPago: "Transferencia",
     fechaEnvio: "2024-11-23",
@@ -110,8 +98,8 @@ const mockComprobantes = [
       "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
   },
   {
-    codigo: "COMP-2024-151",
-    cliente: "Roberto Díaz",
+    id: "COMP-2024-151",
+    nombre: "Roberto Díaz",
     monto: 1250,
     metodoPago: "Depósito",
     fechaEnvio: "2024-11-22",
@@ -120,8 +108,8 @@ const mockComprobantes = [
       "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
   },
   {
-    codigo: "COMP-2024-150",
-    cliente: "Patricia Gómez",
+    id: "COMP-2024-150",
+    nombre: "Patricia Gómez",
     monto: 875,
     metodoPago: "Transferencia",
     fechaEnvio: "2024-11-21",
@@ -254,7 +242,7 @@ export function Comprobantes() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {comprobantes.map((comp) => (
+                {comprobantes?.map((comp) => (
                   <tr
                     key={comp.id}
                     className="hover:bg-gray-50 transition-colors"
