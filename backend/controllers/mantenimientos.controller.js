@@ -53,7 +53,10 @@ exports.listarMantenimientos = async (req, res) => {
   try {
     const mantenimientos = await Mantenimiento.findAll({
       where: { is_deleted: false },
-      include: [{ model: Apartamento }, { model: Cliente }],
+      include: [
+        { model: Apartamento, as: "apartamento" },
+        { model: Cliente, as: "cliente" },
+      ],
     });
 
     res.json(mantenimientos);
@@ -71,7 +74,10 @@ exports.obtenerMantenimiento = async (req, res) => {
 
     const mantenimiento = await Mantenimiento.findOne({
       where: { id, is_deleted: false },
-      include: [{ model: Apartamento }, { model: Cliente }],
+      include: [
+        { model: Apartamento, as: "apartamento" },
+        { model: Cliente, as: "cliente" },
+      ],
     });
 
     if (!mantenimiento) {
@@ -85,7 +91,8 @@ exports.obtenerMantenimiento = async (req, res) => {
   }
 };
 
-//actualizar mantenimiento
+
+// actualizar mantenimiento
 exports.actualizarMantenimiento = async (req, res) => {
   try {
     const { id } = req.params;
@@ -98,18 +105,40 @@ exports.actualizarMantenimiento = async (req, res) => {
       return res.status(404).json({ error: "Mantenimiento no encontrado" });
     }
 
+    const {
+      tipo,
+      descripcion,
+      estado,
+      prioridad,
+      id_apartamento,
+      id_cliente,
+      updated_by,
+    } = req.body;
+
     const estadosValidos = ["pendiente", "en_proceso", "completado"];
-    if (req.body.estado && !estadosValidos.includes(req.body.estado)) {
+    if (estado && !estadosValidos.includes(estado)) {
       return res.status(400).json({ error: "Estado inválido" });
     }
 
+    if (prioridad && (prioridad < 1 || prioridad > 3)) {
+      return res.status(400).json({ error: "Prioridad inválida" });
+    }
+
     await mantenimiento.update({
-      ...req.body,
-      updated_by: req.body.updated_by || null,
+      tipo,
+      descripcion,
+      estado,
+      prioridad,
+      id_apartamento,
+      id_cliente,
+      updated_by: updated_by || null,
       updated_at: new Date(),
     });
 
-    res.json(mantenimiento);
+    res.json({
+      message: "Mantenimiento actualizado correctamente",
+      data: mantenimiento,
+    });
   } catch (error) {
     console.error("Error en actualizar mantenimiento:", error);
     res.status(500).json({ error: "Error al actualizar mantenimiento" });

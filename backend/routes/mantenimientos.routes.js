@@ -18,7 +18,7 @@ const controller = require("../controllers/mantenimientos.controller");
  *     requestBody:
  *       required: true
  *       content:
- *         application/x-www-form-urlencoded:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
@@ -125,7 +125,7 @@ const controller = require("../controllers/mantenimientos.controller");
 /**
  * @swagger
  * /mantenimientos/{id}:
- *   put:
+ *   patch:
  *     summary: Actualizar un mantenimiento
  *     tags: [Mantenimientos]
  *     parameters:
@@ -207,10 +207,10 @@ const controller = require("../controllers/mantenimientos.controller");
  */
 
 // CRUD
-router.post("mantenimientos/", controller.crearMantenimiento);
-router.get("mantenimientos/", controller.listarMantenimientos);
-router.get("mantenimientos/:id", controller.obtenerMantenimiento);
-router.put("mantenimientos/:id", controller.actualizarMantenimiento);
-router.delete("mantenimientos/:id", controller.eliminarMantenimiento);
+router.post("/mantenimientos", controller.crearMantenimiento);
+router.get("/mantenimientos", controller.listarMantenimientos);
+router.get("/mantenimientos/:id", controller.obtenerMantenimiento);
+router.patch("/mantenimientos/:id", controller.actualizarMantenimiento);
+router.delete("/mantenimientos/:id", controller.eliminarMantenimiento);
 
 module.exports = router;

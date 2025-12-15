@@ -16,11 +16,13 @@ export async function fetchMantenimientoById(id) {
 }
 
 export async function updateMantenimiento(id, data) {
-  const res = await api.put(`/mantenimientos/${id}`, data);
+  const res = await api.patch(`/mantenimientos/${id}`, data);
   return res.data;
 }
 
-export async function deleteMantenimiento(id) {
-  const res = await api.delete(`/mantenimientos/${id}`);
+export async function deleteMantenimiento(id, updated_by) {
+  const res = await api.delete(`/mantenimientos/${id}`, {
+    data: { updated_by },
+  });
   return res.data;
 }
