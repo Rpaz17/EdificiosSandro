@@ -222,6 +222,62 @@ module.exports = {
     }
   },
 
+  asociarUsuario: async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { id_usuario } = req.body;
+
+    if (!id_usuario) {
+      return res.status(400).json({
+        message: "id_usuario es requerido",
+      });
+    }
+
+    const cliente = await Cliente.findByPk(id);
+    if (!cliente) {
+      return res.status(404).json({
+        message: "Cliente no existe",
+      });
+    }
+
+    if (cliente.id_usuario) {
+      return res.status(400).json({
+        message: "El cliente ya tiene un usuario asociado",
+      });
+    }
+
+    const usuario = await Usuario.findByPk(id_usuario);
+    if (!usuario) {
+      return res.status(404).json({
+        message: "Usuario no existe",
+      });
+    }
+
+    const clienteConEseUsuario = await Cliente.findOne({
+      where: { id_usuario },
+    });
+
+    if (clienteConEseUsuario) {
+      return res.status(400).json({
+        message: "Este usuario ya está asociado a otro cliente",
+      });
+    }
+
+    cliente.id_usuario = id_usuario;
+    await cliente.save();
+
+    return res.status(200).json({
+      message: "Usuario asociado al cliente correctamente",
+      data: cliente,
+    });
+  } catch (error) {
+    console.error("Error al asociar usuario:", error);
+    return res.status(500).json({
+      message: "Error interno del servidor",
+    });
+  }
+},
+
   eliminarCliente: async (req, res) => {
     const clienteId = req.params.id;
     const usuarioId = 1;
