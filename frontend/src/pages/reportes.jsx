@@ -1,7 +1,7 @@
 import { PageHeader } from "../components/PageHeader";
 import { Plus, DollarSign, Home, AlertCircle } from "lucide-react";
 import { ReportCard } from "../components/reportCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -17,6 +17,12 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import {
+  fetchMorosidad,
+  fetchOcupacion,
+  fetchOcupacionMensual,
+  fetchPagosMensuales,
+} from "../services/reportes.api";
 
 const clientesMorosidadData = [
   {
@@ -58,15 +64,6 @@ const clientesMorosidadData = [
 ];
 const filters = [
   {
-    id: "estado",
-    label: "Estado",
-    placeholder: "Todos",
-    options: [
-      { label: "Activo", value: 1 },
-      { label: "Inactivo", value: 2 },
-    ],
-  },
-  {
     id: "sucursal",
     label: "Sucursal",
     placeholder: "Todas",
@@ -96,11 +93,7 @@ const pagosPorMesData = [
   { mes: "May", pagos: 55, ingresos: 46750 },
   { mes: "Jun", pagos: 58, ingresos: 49300 },
 ];
-const ocupacionData = [
-  { name: "Ocupados", value: 72, color: "#10b981" },
-  { name: "Disponibles", value: 18, color: "#6b7280" },
-  { name: "Mantenimiento", value: 10, color: "#f59e0b" },
-];
+
 const ocupacionHistoricaData = [
   { periodo: "Q1 2024", ocupacion: 68 },
   { periodo: "Q2 2024", ocupacion: 75 },
@@ -113,10 +106,184 @@ const getAtrasoBadge = (dias) => {
   return "bg-red-100 text-red-800";
 };
 export function Reportes() {
-  const [pagoStartDate, setPagoStartDate] = useState("2024-01-01");
-  const [pagoEndDate, setPagoEndDate] = useState("2024-06-30");
-  const [ocupacionStartDate, setOcupacionStartDate] = useState("2024-01-01");
-  const [ocupacionEndDate, setOcupacionEndDate] = useState("2024-06-30");
+  const [pagoStartDate, setPagoStartDate] = useState("2025-01-01");
+  const [pagoEndDate, setPagoEndDate] = useState("2025-12-30");
+  const [ocupacionStartDate, setOcupacionStartDate] = useState("2025-01-01");
+  const [ocupacionEndDate, setOcupacionEndDate] = useState("2025-12-30");
+  const [pagosMensuales, setPagosMensuales] = useState(null);
+  const [ocupacion, setOcupacion] = useState(null);
+  const [morosos, setMorosos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fechaInicio, setFechaInicio] = useState(null);
+  const [fechaFin, setFechaFin] = useState(null);
+  const [ocupacionHistorica, setOcupacionHistorica] = useState([]);
+  const [filtrosAplicados, setFiltrosAplicados] = useState(null);
+
+  //Generar reporte con los filtros aplicados
+  const handlePagos = async () => {
+    setFechaInicio(pagoStartDate);
+    setFechaFin(pagoEndDate);
+    console.log("Handler sees:", pagoStartDate, pagoEndDate);
+    // Validaciones mínimas
+    if (!fechaInicio || !fechaFin) {
+      alert("Debe seleccionar un rango de fechas");
+      return;
+    }
+
+    if (new Date(fechaInicio) > new Date(fechaFin)) {
+      alert("La fecha inicio no puede ser mayor a la fecha fin");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const data = await fetchPagosMensuales({
+        sucursalId: 1,
+        fechaInicio: fechaInicio,
+        fechaFinal: fechaFin,
+      });
+
+      setPagosMensuales(data.reporte);
+    } catch (error) {
+      console.error("Error generando reporte de pagos", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleOcupacion = async () => {
+    setFechaInicio(ocupacionStartDate);
+    setFechaFin(ocupacionEndDate);
+
+    // Validaciones mínimas
+    if (!fechaInicio || !fechaFin) {
+      alert("Debe seleccionar un rango de fechas");
+      return;
+    }
+
+    if (new Date(fechaInicio) > new Date(fechaFin)) {
+      alert("La fecha inicio no puede ser mayor a la fecha fin");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const data = await fetchOcupacion({
+        sucursalId: 1,
+        fechaInicio: fechaInicio,
+        fechaFinal: fechaFin,
+      });
+
+      setOcupacion(data.reporte);
+
+      const data2 = await fetchOcupacionMensual({
+        sucursalId: 1,
+        fechaInicio: fechaInicio,
+        fechaFinal: fechaFin,
+      });
+      setOcupacionHistorica(data2.reporte);
+    } catch (error) {
+      console.error("Error generando reporte de pagos", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleMorosos = async () => {
+    console.log("Cambiando fecha del reporte");
+  };
+
+  //reporte de ocupacion
+  const ocupacionHistoricaData = ocupacionHistorica.map((item) => {
+    const fecha = new Date(item.periodo);
+
+    const meses = [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic",
+    ];
+
+    const porcentaje =
+      item.total > 0 ? Math.round((item.ocupados / item.total) * 100) : 0;
+
+    return {
+      periodo: `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`,
+      ocupacion: porcentaje,
+    };
+  });
+
+  const ocupacionData =
+    ocupacion && ocupacion.total > 0
+      ? [
+          {
+            name: "Ocupados",
+            value: ocupacion.ocupados,
+            color: "#10b981",
+          },
+          {
+            name: "Disponibles",
+            value: ocupacion.disponibles,
+            color: "#6b7280",
+          },
+        ]
+      : [];
+
+  useEffect(() => {
+    const hoy = new Date();
+    const fechaMesPasado = new Date(hoy);
+    fechaMesPasado.setMonth(hoy.getMonth() - 1);
+    setFechaInicio(fechaMesPasado);
+    setFechaFin(hoy);
+
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        const pagos = await fetchPagosMensuales({
+          sucursalId: 1,
+          fechaInicio: fechaMesPasado,
+          fechaFinal: hoy,
+        });
+
+        const ocupacion = await fetchOcupacion({
+          sucursalId: 1,
+          fechaInicio: fechaMesPasado,
+          fechaFinal: hoy,
+        });
+        const ocupacionMensual = await fetchOcupacionMensual({
+          sucursalId: 1,
+          fechaInicio: fechaMesPasado,
+          fechaFinal: hoy,
+        });
+
+        const morososData = await fetchMorosidad({
+          sucursalId: 1,
+        });
+        console.log(pagos);
+        console.log(ocupacion);
+        console.log(ocupacionMensual);
+        console.log(morososData);
+        setPagosMensuales(pagos.reporte);
+        setOcupacion(ocupacion.reporte);
+        setOcupacionHistorica(ocupacionMensual.reporte);
+        setMorosos(morososData.reporte.clientes);
+      } catch (error) {
+        console.error("Error cargando datos del dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -142,13 +309,14 @@ export function Reportes() {
           onFechaInicioChange={setPagoStartDate}
           fechaFin={pagoEndDate}
           onFechaFinChange={setPagoEndDate}
+          generar={handlePagos}
         >
           {" "}
           <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <h3 className="text-sm text-gray-900 mb-4">Pagos por Mes</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={pagosPorMesData}>
+                <BarChart data={pagosMensuales}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="mes" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
@@ -174,7 +342,7 @@ export function Reportes() {
                 Ingresos Generados ($)
               </h3>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={pagosPorMesData}>
+                <LineChart data={pagosMensuales}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="mes" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
@@ -214,6 +382,7 @@ export function Reportes() {
           onFechaInicioChange={setOcupacionStartDate}
           fechaFin={ocupacionEndDate}
           onFechaFinChange={setOcupacionEndDate}
+          generar={handleOcupacion}
         >
           <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
@@ -311,7 +480,7 @@ export function Reportes() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {clientesMorosidadData.map((cliente) => (
+                {morosos.map((cliente) => (
                   <tr
                     key={cliente.id}
                     className="hover:bg-gray-50 transition-colors"
@@ -319,9 +488,7 @@ export function Reportes() {
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {cliente.cliente}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {cliente.apartamento}
-                    </td>
+
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {cliente.monto}
                     </td>

@@ -62,7 +62,9 @@ module.exports = {
   },
 
   ocupacion: async (req, res) => {
-    const { sucursalId } = req.body;
+    const { sucursalId, fechaInicio, fechaFinal } = req.body;
+    const inicio = new Date(fechaInicio);
+    const final = new Date(fechaFinal);
 
     if (!sucursalId) {
       return res.status(400).json({
@@ -70,7 +72,11 @@ module.exports = {
       });
     }
     try {
-      const reporte = await reportesService.ocupacion(sucursalId);
+      const reporte = await reportesService.ocupacion(
+        sucursalId,
+        inicio,
+        final
+      );
 
       return res.status(200).json({
         mensaje: "Reporte generado exitosamente",
@@ -82,6 +88,34 @@ module.exports = {
       });
     }
   },
+  ocupacionMensual: async (req, res) => {
+    const { sucursalId, fechaInicio, fechaFinal } = req.body;
+    const inicio = new Date(fechaInicio);
+    const final = new Date(fechaFinal);
+
+    if (!sucursalId) {
+      return res.status(400).json({
+        error: "El id de la sucursal es obligatorio",
+      });
+    }
+    try {
+      const reporte = await reportesService.ocupacionMensual(
+        sucursalId,
+        inicio,
+        final
+      );
+
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
+
   morosidad: async (req, res) => {
     const { sucursalId } = req.body;
 
@@ -93,6 +127,33 @@ module.exports = {
     try {
       const reporte = await reportesService.clientesAtrasados(sucursalId);
 
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
+  ocupacionTotal: async (req, res) => {
+    try {
+      const reporte = await reportesService.ocupacionTotal();
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
+
+  morosidadTotal: async (req, res) => {
+    try {
+      const reporte = await reportesService.morosidadTotal();
       return res.status(200).json({
         mensaje: "Reporte generado exitosamente",
         reporte,
