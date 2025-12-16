@@ -5,17 +5,10 @@ const crypto = require("crypto");
 const { Op } = require("sequelize");
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
-const { notificacionARol } = require("./notificaciones.service");
+const { notificacionARol, crearNotificacion } = require("./notificaciones.service");
 
 async function listarComprobantes() {
   //return [{ test: true }];
-  // await notificacionARol({
-  //   rol: "admin",
-  //   tipo: "comprobante_subido",
-  //   mensaje: `Se ha subido un nuevo comprobante para el pago #${id_pago}.`,
-  //   id_pago,
-  //   created_by: usuarioId,
-  // });
 
   return await Comprobante.findAll({
     //limit: 1,
@@ -98,17 +91,34 @@ async function subirComprobante({
     is_deleted: false,
   });
 
+  try{
+    const contrato = await Contrato.findByPk(contratoId, {
+      include: [{ model: Cliente, as: "cliente", required:false}],
+    });
+
+    const id_cliente = contrato?.cliente?.id || null;
+
+    await notificacionARol({
+      rol: "admin",
+      tipo: "NUEVO_COMPROBANTE",
+      medio: "APP",
+      mensaje: `Se ha subido un nuevo comprobante de pago. Contrato ID: ${contratoId}, Monto: ${monto}`,
+      id_cliente,
+      id_contrato: contratoId,
+      id_pago: pago.id,
+      created_by: usuarioId,
+    });
+  }catch(error){
+    console.error("Error enviando notificación de nuevo comprobante:", error);
+  }
+
   return comprobante;
 }
 
 async function validarComprobante(comprobanteId, usuarioId) {
   // Validar que exista el comprobante
-  const comprobante = await Comprobante.findByPk(comprobanteId, {
-    transaction: t,
-  });
-  const pago = await Pago.findByPk(comprobante.id_pago, {
-    transaction: t,
-  });
+  const comprobante = await Comprobante.findByPk(comprobanteId);
+  const pago = await Pago.findByPk(comprobante.id_pago);
   if (!comprobante) {
     throw new ServiceError("Comprobante no encontrado", 404);
   }
@@ -121,17 +131,34 @@ async function validarComprobante(comprobanteId, usuarioId) {
   comprobante.estado_validacion = "validado";
   comprobante.validado_por = usuarioId;
   comprobante.validado_en = new Date();
-
-  await comprobante.save({ transaction: t });
+  await comprobante.save();
 
   pago.estado_pago = "pagado";
   pago.updated_at = new Date();
   pago.updated_by = usuarioId;
+  await pago.save();
+try {
+    const contrato = await Contrato.findByPk(pago.id_contrato, {
+      include: [{ model: Cliente, as: "cliente" }],
+    });
 
-  await pago.save({ transaction: t });
+    const id_usuario_cliente = contrato?.cliente?.id_usuario; 
 
-  //IMPORTANTE: Actualizar el estado del pago asociado a 'pagado' (estado_pago)
-
+    if (id_usuario_cliente) {
+      await crearNotificacion({
+        tipo: "PAGO_ACEPTADO",
+        medio: "APP",
+        mensaje: `Tu pago fue aceptado. Monto: ${pago.monto} | Método: ${pago.metodo}`,
+        id_usuario: id_usuario_cliente,
+        id_cliente: contrato.cliente.id,
+        id_contrato: contrato.id,
+        id_pago: pago.id,
+        created_by: usuarioId,
+      });
+    }
+  } catch (e) {
+    console.error("No se pudo crear notificación al cliente (pago aceptado):", e);
+  }
   return comprobante;
 }
 

@@ -1,7 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { Outlet } from "react-router-dom";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { fetchNotificaciones } from "../services/notificaciones.api";
 
 import NotificationDetail from "../pages/notificacionDetalle";

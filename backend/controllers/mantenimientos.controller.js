@@ -1,4 +1,5 @@
 const { Mantenimiento, Apartamento, Cliente } = require("../models");
+const { notificacionARol, crearNotificacion } = require("../services/notificaciones.service");
 
 //crear mantenimientos
 
@@ -40,6 +41,44 @@ exports.crearMantenimiento = async (req, res) => {
       is_deleted: false,
     });
 
+    try{
+      const cliente = await Cliente.findByPk(id_cliente);
+      const usuarioAuditoria = req.user?.id || created_by || null;
+
+      // Primero se notifica al admin
+      await notificacionARol({
+        rol:"admin",
+        tipo:"MANTENIMIENTO_PROGRAMADO",
+        medio: "APP",
+        mensaje: `Se ha programado un nuevo mantenimiento (${tipo}) para el apartamento ID ${id_apartamento}`,
+        id_cliente: id_cliente,
+        id_contrato: null,
+        id_pago: null,
+        created_by: usuarioAuditoria,
+      });
+
+      //Ahora notificamos al cliente si existe
+      const id_user_cliente = cliente?.id_usuario || null;
+
+      if(id_user_cliente){ 
+        await crearNotificacion({
+          tipo:"MANTENIMIENTO_PROGRAMADO",
+          medio: "APP",
+          mensaje: `Se ha programado un nuevo mantenimiento (${tipo}) para su apartamento.`,
+          id_usuario: id_user_cliente,
+          id_cliente: id_cliente,
+          id_contrato: null,
+          id_pago: null,
+          created_by: usuarioAuditoria,
+        });
+      } else {
+        console.warn(`El cliente ID ${id_cliente} no tiene un usuario asociado para notificar.`, {
+          id_cliente,
+        });
+      }
+    }catch(error){
+      console.error("Error creando notificaciones de mantenimiento:", error);
+    }
     res.status(201).json(nuevo);
   } catch (error) {
     console.error("Error en crear mantenimiento:", error);

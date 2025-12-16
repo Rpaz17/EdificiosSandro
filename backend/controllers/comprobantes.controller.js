@@ -72,7 +72,7 @@ module.exports = {
   //PUT /comprobantes/:id/aprobar
   validarComprobante: async (request, response) => {
     const comprobanteId = request.params.id;
-    const usuarioId = 1; // cambiar a req.user.id cuando funcionen tokens
+    const usuarioId = request.user.id; // cambiar a req.user.id cuando funcionen tokens
 
     // 1. Validar ID del comprobante
     if (!comprobanteId) {
@@ -121,7 +121,7 @@ module.exports = {
 
   rechazarComprobante: async (request, response) => {
     const comprobanteId = request.params.id;
-    const usuarioId = 1; // cambiar a req.user.id cuando funcionen tokens
+    const usuarioId = request.user.id; // cambiar a req.user.id cuando funcionen tokens
 
     // 1. Validar ID del comprobante
     if (!comprobanteId) {
