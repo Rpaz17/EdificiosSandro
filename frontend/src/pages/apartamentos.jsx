@@ -1,4 +1,4 @@
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import {
   fetchApartamentos,
   createApartamento,
@@ -14,6 +14,7 @@ import { ChangeEstadoApartamentoModal } from "./ChangeEstadoApartamento";
 import { ApartamentoDetailPanel } from "./ApartamentoDetallesModal";
 import { DeleteApartamentoModal } from "./DeleteApartamentoModal";
 import api from "../services/api";
+import { listarSucursales } from "../services/sucursales.api";
 
 /**
  * Modelo de datos de un Apartamento
@@ -38,151 +39,6 @@ import api from "../services/api";
  * @property {string} ultimaActualizacion
  */
 
-const mockApartamentos = [
-  {
-    id: "1",
-    numero: "Apt 301",
-    torre: "Torre A",
-    sucursal: "Centro",
-    tipo: "2 Habitaciones",
-    estado: "Ocupado",
-    precioMensual: 1500.0,
-    habitaciones: 2,
-    banos: 2,
-    tamano: 85,
-    piso: 3,
-    ocupantesMaximos: 4,
-    deposito: 1500.0,
-    contratoActivo: "CTR-2024-001",
-    descripcion:
-      "Apartamento moderno con vista panorámica, acabados de primera calidad, cocina equipada y balcón amplio.",
-    notas: "Incluye 1 parqueo. No se permiten mascotas.",
-    fechaCreacion: "15 de enero de 2024, 04:00",
-    ultimaActualizacion: "28 de noviembre de 2024, 09:30",
-  },
-  {
-    id: "2",
-    numero: "Apt 502",
-    torre: "Torre B",
-    sucursal: "Norte",
-    tipo: "3 Habitaciones",
-    estado: "Disponible",
-    precioMensual: 2000.0,
-    habitaciones: 3,
-    banos: 2,
-    tamano: 120,
-    piso: 5,
-    ocupantesMaximos: 6,
-    deposito: 2000.0,
-    fechaCreacion: "20 de febrero de 2024, 10:15",
-    ultimaActualizacion: "1 de diciembre de 2024, 14:20",
-  },
-  {
-    id: "3",
-    numero: "Apt 105",
-    torre: "Torre A",
-    sucursal: "Centro",
-    tipo: "Estudio",
-    estado: "Disponible",
-    precioMensual: 900.0,
-    habitaciones: 1,
-    banos: 1,
-    tamano: 45,
-    piso: 1,
-    ocupantesMaximos: 2,
-    deposito: 900.0,
-    fechaCreacion: "5 de marzo de 2024, 08:30",
-    ultimaActualizacion: "30 de noviembre de 2024, 11:00",
-  },
-  {
-    id: "4",
-    numero: "Apt 208",
-    torre: "Torre C",
-    sucursal: "Sur",
-    tipo: "1 Habitación",
-    estado: "Mantenimiento",
-    precioMensual: 1200.0,
-    habitaciones: 1,
-    banos: 1,
-    tamano: 60,
-    piso: 2,
-    ocupantesMaximos: 3,
-    deposito: 1200.0,
-    fechaCreacion: "12 de abril de 2024, 15:45",
-    ultimaActualizacion: "3 de diciembre de 2024, 16:30",
-  },
-  {
-    id: "5",
-    numero: "Apt 410",
-    torre: "Torre B",
-    sucursal: "Norte",
-    tipo: "2 Habitaciones",
-    estado: "Ocupado",
-    precioMensual: 1650.0,
-    habitaciones: 2,
-    banos: 2,
-    tamano: 90,
-    piso: 4,
-    ocupantesMaximos: 4,
-    deposito: 1650.0,
-    contratoActivo: "CTR-2024-002",
-    fechaCreacion: "18 de mayo de 2024, 09:00",
-    ultimaActualizacion: "2 de diciembre de 2024, 10:45",
-  },
-  {
-    id: "6",
-    numero: "Apt 701",
-    torre: "Torre A",
-    sucursal: "Este",
-    tipo: "Penthouse",
-    estado: "Disponible",
-    precioMensual: 3500.0,
-    habitaciones: 4,
-    banos: 3,
-    tamano: 200,
-    piso: 7,
-    ocupantesMaximos: 8,
-    deposito: 3500.0,
-    fechaCreacion: "25 de junio de 2024, 12:30",
-    ultimaActualizacion: "4 de diciembre de 2024, 13:15",
-  },
-  {
-    id: "7",
-    numero: "Apt 315",
-    torre: "Torre A",
-    sucursal: "Centro",
-    tipo: "2 Habitaciones",
-    estado: "Ocupado",
-    precioMensual: 1550.0,
-    habitaciones: 2,
-    banos: 2,
-    tamano: 88,
-    piso: 3,
-    ocupantesMaximos: 4,
-    deposito: 1550.0,
-    contratoActivo: "CTR-2024-003",
-    fechaCreacion: "8 de julio de 2024, 11:00",
-    ultimaActualizacion: "5 de diciembre de 2024, 08:20",
-  },
-  {
-    id: "8",
-    numero: "Apt 120",
-    torre: "Torre B",
-    sucursal: "Norte",
-    tipo: "1 Habitación",
-    estado: "Disponible",
-    precioMensual: 1100.0,
-    habitaciones: 1,
-    banos: 1,
-    tamano: 55,
-    piso: 1,
-    ocupantesMaximos: 2,
-    deposito: 1100.0,
-    fechaCreacion: "14 de agosto de 2024, 16:20",
-    ultimaActualizacion: "5 de diciembre de 2024, 09:40",
-  },
-];
-
 export function Apartamentos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sucursalFilter, setSucursalFilter] = useState("Todas las sucursales");
@@ -197,6 +53,21 @@ export function Apartamentos() {
   const [isChangeEstadoModalOpen, setIsChangeEstadoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
+  const [sucursales, setSucursales] = useState([]);
+  const [sucursalesLoading, setSucursalesLoading] = useState(false);
+
+  const loadSucursales = async() => {
+    setSucursalesLoading(true);
+    try{
+      const res = await listarSucursales();
+      const data = res?.data ?? res;
+      setSucursales(data || []);
+    }catch(error){
+      console.error("Error loading sucursales:", error);
+    }finally{
+      setSucursalesLoading(false);
+    }
+  };
 
   const filteredApartamentos = apartamentos.filter((apt) => {
     const matchesSearch = apt.numero
@@ -204,7 +75,7 @@ export function Apartamentos() {
       .includes(searchTerm.toLowerCase());
     const matchesSucursal =
       sucursalFilter === "Todas las sucursales" ||
-      apt.sucursal === sucursalFilter;
+      String(apt.sucursal) === String(sucursalFilter);
     const matchesTorre =
       torreFilter === "Todas las torres" || apt.torre === torreFilter;
     const matchesEstado =
@@ -240,6 +111,7 @@ export function Apartamentos() {
 
   useEffect(() => {
     loadApartamentos();
+    loadSucursales();
   }, []);
 
   const handleClearFilters = () => {
@@ -314,11 +186,15 @@ export function Apartamentos() {
                 onChange={(e) => setSucursalFilter(e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
               >
-                <option>Todas las sucursales</option>
-                <option>Centro</option>
-                <option>Norte</option>
-                <option>Sur</option>
-                <option>Este</option>
+                <option value="ALL">
+                  {sucursalesLoading ? "Cargando..." : "Todas las sucursales"}
+                </option>
+
+                {sucursales.map((s) => (
+                  <option key={s.id} value={String(s.id)}>
+                    {s.nombre ?? s.descripcion ?? `Sucursal ${s.id}`}
+                  </option>
+                ))}
               </select>
             </div>
 
