@@ -63,7 +63,7 @@ Esta arquitectura permite escalabilidad, mantenibilidad y una clara separación 
 
 1. Clonar el repositorio:
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone (https://github.com/Rpaz17/EdificiosSandro.git)
 cd edificios-sandro
 ```
 2. Configurar las variables de entorno:
