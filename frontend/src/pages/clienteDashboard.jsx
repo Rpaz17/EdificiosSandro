@@ -7,14 +7,15 @@ import {
 } from "lucide-react";
 import { KPICard } from "./kpiCards";
 import { PageHeader } from "../components/PageHeader";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { fetchMiContrato } from "../services/clientesContrato.api";
 
 const mockNotifications = [
   {
     id: "1",
     tipo: "recordatorio_pago",
     titulo: "Próximo pago vence pronto",
-    mensaje: "Tu próximo pago de $850.00 vence el 15 de diciembre de 2024",
+    mensaje: "Tu próximo pago vence pronto",
     fecha: "Hace 1 hora",
     prioridad: "alta",
   },
@@ -27,24 +28,31 @@ const mockNotifications = [
     fecha: "Hace 2 días",
     prioridad: "media",
   },
-  {
-    id: "3",
-    tipo: "comprobante_aprobado",
-    titulo: "Comprobante aprobado",
-    mensaje:
-      "Tu comprobante de pago COMP-2024-155 ha sido aprobado correctamente",
-    fecha: "Hace 3 días",
-    prioridad: "baja",
-  },
 ];
 
 export function ClienteDashboard() {
+  const [contrato, setContrato] = useState(null);
+
   useEffect(() => {
-    //Obtener el id con el token de alguna forma
-    //KPICards: Obtener de contrato: estado, proximo pago, monto
-    //Informacion del contrato: numero_apartamento, periodo_inicio, periodo_fin, monto, id, ultimo pago
-    //Notificaciones: Siguiente pago,
+    fetchMiContrato()
+      .then(setContrato)
+      .catch(() => setContrato(null));
   }, []);
+
+  const formatDate = (date) =>
+    date
+      ? new Date(date).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })
+      : "—";
+
+  const contratoCodigo = contrato
+    ? `CTR-${new Date(contrato.created_at).getFullYear()}-${String(
+        contrato.id
+      ).padStart(3, "0")}`
+    : "—";
 
   return (
     <div className="p-6 space-y-6">
@@ -53,22 +61,25 @@ export function ClienteDashboard() {
         description="Bienvenido a tu panel de inquilino"
       />
 
+      {/* KPI CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Estado del Contrato"
-          value="Activo"
+          value={contrato?.estado === "activo" ? "Activo" : "—"}
           icon={FileCheck}
           color="green"
         />
         <KPICard
           title="Próximo Pago"
-          value="15 Dic"
+          value="15"
           icon={Calendar}
           color="blue"
         />
         <KPICard
           title="Monto del Pago"
-          value="$850"
+          value={
+            contrato ? `$${Number(contrato.monto).toFixed(2)}` : "—"
+          }
           icon={DollarSign}
           color="teal"
         />
@@ -80,115 +91,95 @@ export function ClienteDashboard() {
         />
       </div>
 
-      {/* Informacion del Contrato */}
+      {/* INFORMACIÓN DEL CONTRATO */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-gray-900 mb-4">Información del Contrato</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <p className="text-xs text-gray-600 mb-1">Apartamento</p>
-            <p className="text-sm text-gray-900">Apto 301 - Edificio Centro</p>
+            <p className="text-sm text-gray-900">
+              Apto {contrato?.apartamento?.numero_apartamento || "—"}
+            </p>
           </div>
+
           <div>
             <p className="text-xs text-gray-600 mb-1">Fecha de inicio</p>
-            <p className="text-sm text-gray-900">01 de enero, 2024</p>
+            <p className="text-sm text-gray-900">
+              {formatDate(contrato?.periodo_inicio)}
+            </p>
           </div>
+
           <div>
             <p className="text-xs text-gray-600 mb-1">Fecha de vencimiento</p>
-            <p className="text-sm text-gray-900">31 de diciembre, 2024</p>
+            <p className="text-sm text-gray-900">
+              {formatDate(contrato?.periodo_fin)}
+            </p>
           </div>
+
           <div>
             <p className="text-xs text-gray-600 mb-1">Monto mensual</p>
-            <p className="text-sm text-gray-900">$850.00 US$</p>
+            <p className="text-sm text-gray-900">
+              {contrato
+                ? `$${Number(contrato.monto).toFixed(2)} US$`
+                : "—"}
+            </p>
           </div>
+
           <div>
             <p className="text-xs text-gray-600 mb-1">Día de pago</p>
             <p className="text-sm text-gray-900">15 de cada mes</p>
           </div>
+
           <div>
             <p className="text-xs text-gray-600 mb-1">Contrato</p>
-            <p className="text-sm text-gray-900">CTR-2024-001</p>
+            <p className="text-sm text-gray-900">{contratoCodigo}</p>
           </div>
         </div>
       </div>
 
-      {/* Informacion de los pagos */}
+      {/* PAGOS (SE DEJAN MOCK) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Proximo Pago */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-gray-900 mb-4">Próximo Pago</h2>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <p className="text-sm text-blue-900">Fecha de vencimiento</p>
-                <p className="text-gray-900 mt-1">15 de diciembre, 2024</p>
-              </div>
-              <Calendar className="w-8 h-8 text-blue-600" />
-            </div>
-            <div className="border-t border-blue-200 pt-3 mt-3">
-              <p className="text-sm text-blue-900">Monto a pagar</p>
-              <p className="text-gray-900 mt-1">$850.00 US$</p>
-            </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-gray-900">15 de este mes</p>
+            <p className="text-gray-900 mt-2">
+              {contrato
+                ? `$${Number(contrato.monto).toFixed(2)} US$`
+                : "—"}
+            </p>
           </div>
-          <p className="text-xs text-gray-600">
-            Recuerda realizar el pago antes de la fecha de vencimiento y subir
-            el comprobante en la sección de Comprobantes.
-          </p>
         </div>
 
-        {/* Ultimo Pago Registrado */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-gray-900 mb-4">Último Pago Registrado</h2>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <p className="text-sm text-green-900">Fecha de pago</p>
-                <p className="text-gray-900 mt-1">15 de noviembre, 2024</p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <div className="border-t border-green-200 pt-3 mt-3">
-              <p className="text-sm text-green-900">Monto pagado</p>
-              <p className="text-gray-900 mt-1">$850.00 US$</p>
-            </div>
-            <div className="border-t border-green-200 pt-3 mt-3">
-              <p className="text-sm text-green-900">Estado</p>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 mt-1">
-                Aprobado
-              </span>
-            </div>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <p className="text-gray-900">Aprobado</p>
+            <p className="text-gray-900 mt-2">
+              {contrato
+                ? `$${Number(contrato.monto).toFixed(2)} US$`
+                : "—"}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Notificaciones Importantes */}
+      {/* NOTIFICACIONES */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-gray-900">Notificaciones Importantes</h2>
           <Bell className="w-5 h-5 text-gray-400" />
         </div>
+
         <div className="space-y-3">
-          {mockNotifications.map((notification) => (
+          {mockNotifications.map((n) => (
             <div
-              key={notification.id}
-              className={`p-4 rounded-lg border ${
-                notification.prioridad === "alta"
-                  ? "bg-red-50 border-red-200"
-                  : notification.prioridad === "media"
-                  ? "bg-yellow-50 border-yellow-200"
-                  : "bg-gray-50 border-gray-200"
-              }`}
+              key={n.id}
+              className="p-4 rounded-lg border bg-gray-50 border-gray-200"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">{notification.titulo}</p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {notification.mensaje}
-                  </p>
-                </div>
-                <span className="text-xs text-gray-500 whitespace-nowrap ml-4">
-                  {notification.fecha}
-                </span>
-              </div>
+              <p className="text-sm text-gray-900">{n.titulo}</p>
+              <p className="text-xs text-gray-600 mt-1">{n.mensaje}</p>
             </div>
           ))}
         </div>
