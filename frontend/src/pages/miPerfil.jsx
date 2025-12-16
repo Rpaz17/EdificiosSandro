@@ -3,12 +3,14 @@ import { LogOut, Mail, User, Calendar, Clock, Shield } from "lucide-react";
 import { CambiarPasswordModal } from "./CambiarPasswordModal";
 import { fetchPerfilUsuario } from "../services/usuarios.api";
 import { PageHeader } from "../components/PageHeader";
+import { useNavigate } from "react-router-dom";
 
 export function MiPerfil() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const Navigate = useNavigate();
 
   const mapPerfil = (data) => ({
     email: data.email,
@@ -43,6 +45,7 @@ export function MiPerfil() {
 
   const handleLogout = () => {
     console.log("Logging out...");
+    Navigate("/");
     // Aquí se manejaría el cierre de sesión
   };
 

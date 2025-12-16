@@ -22,3 +22,7 @@ export async function deleteCliente(id) {
   return res.data;
 }
 
+export async function asociarCliente(data) {
+  const res = await api.patch("/clientes/asociar-usuario", data);
+  return res.data;
+}
