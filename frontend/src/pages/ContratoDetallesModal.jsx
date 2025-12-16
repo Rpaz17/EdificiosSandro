@@ -11,13 +11,13 @@ export function ContratoDetailPanel({
 }) {
   const getEstadoBadge = (estado) => {
     switch (estado) {
-      case 'Activo':
+      case 'activo':
         return 'bg-green-100 text-green-800';
-      case 'Próximo a vencer':
+      case 'próximo a vencer':
         return 'bg-yellow-100 text-yellow-800';
-      case 'Finalizado':
+      case 'finalizado':
         return 'bg-gray-100 text-gray-800';
-      case 'Cancelado':
+      case 'cancelado':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
