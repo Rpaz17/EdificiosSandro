@@ -4,6 +4,7 @@ import { CambiarPasswordModal } from "./CambiarPasswordModal";
 import { fetchPerfilUsuario } from "../services/usuarios.api";
 import { PageHeader } from "../components/PageHeader";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/authProvider";
 
 export function MiPerfil() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -11,6 +12,7 @@ export function MiPerfil() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const Navigate = useNavigate();
+  const { logout } = useAuth();
 
   const mapPerfil = (data) => ({
     email: data.email,
@@ -43,9 +45,10 @@ export function MiPerfil() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log("Logging out...");
-    Navigate("/");
+    await logout();
+    Navigate("/", { replace: true });
     // Aquí se manejaría el cierre de sesión
   };
 

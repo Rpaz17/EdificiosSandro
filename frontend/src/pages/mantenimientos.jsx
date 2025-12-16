@@ -81,7 +81,10 @@ export function Mantenimientos() {
   const filteredMantenimientos = mantenimientos.filter((m) => {
     const term = searchTerm.toLowerCase();
     const desc = (m.descripcion || "").toLowerCase();
-    const apt = (m.apartamento?.numero_apartamento || "").toLowerCase();
+    const apt =
+      m.apartamento?.numero_apartamento != null
+        ? String(m.apartamento.numero_apartamento).toLowerCase()
+        : "";
     const clientName = m.cliente
       ? `${m.cliente.nombre} ${m.cliente.apellido}`.toLowerCase()
       : "";
@@ -109,8 +112,6 @@ export function Mantenimientos() {
   const handleFilterChange = (id, value) => {
     setFilterValues((prev) => ({ ...prev, [id]: value }));
   };
-
-
 
   const ESTADO_LABELS = {
     pendiente: "Pendiente",
