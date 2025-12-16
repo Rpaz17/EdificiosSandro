@@ -83,7 +83,6 @@ export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
                 >
                   <option value="ALL">
                     {
-                      //sucursalesLoading ? "Cargando..." :
                       "Todas las sucursales"
                     }
                   </option>
