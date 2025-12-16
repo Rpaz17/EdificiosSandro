@@ -15,119 +15,73 @@ import {
   fetchComprobantes,
   rechazarComprobante,
 } from "../services/comprobantes.api";
+import { listarSucursales } from "../services/sucursales.api";
 
-const filters = [
-  {
-    id: "estado",
-    label: "Estado",
-    placeholder: "Todos",
-    options: [
-      { label: "Pendiente", value: 1 },
-      { label: "Rechazado", value: 2 },
-      { label: "Validado", value: 3 },
-    ],
-  },
-  {
-    id: "sucursal",
-    label: "Sucursal",
-    placeholder: "Todas",
-    options: [
-      { label: "Centro", value: "1" },
-      { label: "Norte", value: "2" },
-      { label: "Sur", value: "3" },
-      { label: "Este", value: "4" },
-    ],
-  },
-];
 
-const values = {
-  sucursal: 2,
-  torre: "A",
-  estado: "1",
-};
-
-const mockComprobantes = [
-  {
-    id: "COMP-2024-156",
-    cliente: "María González",
-    monto: 850,
-    metodoPago: "Transferencia",
-    fechaEnvio: "2024-11-27",
-    estado: "Pendiente",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-  {
-    id: "COMP-2024-155",
-    nombre: "Carlos Ramírez",
-    monto: 920,
-    metodoPago: "Depósito",
-    fechaEnvio: "2024-11-26",
-    estado: "Validado",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-  {
-    id: "COMP-2024-154",
-    nombre: "Ana Martínez",
-    monto: 780,
-    metodoPago: "Transferencia",
-    fechaEnvio: "2024-11-25",
-    estado: "Pendiente",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-  {
-    id: "COMP-2024-153",
-    nombre: "Luis Pérez",
-    monto: 1100,
-    metodoPago: "Efectivo",
-    fechaEnvio: "2024-11-24",
-    estado: "Rechazado",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-  {
-    id: "COMP-2024-152",
-    nombre: "Sofia Torres",
-    monto: 695,
-    metodoPago: "Transferencia",
-    fechaEnvio: "2024-11-23",
-    estado: "Validado",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-  {
-    id: "COMP-2024-151",
-    nombre: "Roberto Díaz",
-    monto: 1250,
-    metodoPago: "Depósito",
-    fechaEnvio: "2024-11-22",
-    estado: "Pendiente",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-  {
-    id: "COMP-2024-150",
-    nombre: "Patricia Gómez",
-    monto: 875,
-    metodoPago: "Transferencia",
-    fechaEnvio: "2024-11-21",
-    estado: "Validado",
-    imagenUrl:
-      "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-  },
-];
 
 export function Comprobantes() {
   const [selectedComprobante, setSelectedComprobante] = useState(null);
   const [comprobantes, setComprobantes] = useState([]);
+  const [sucursales, setSucursales] = useState([]);
+
+  const [filterValues, setFilterValues] = useState({
+    estado: "",
+    sucursal: "",
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filters = [
+    {
+      id: "estado",
+      label: "Estado",
+      placeholder: "Todos",
+      options: [
+        { label: "Pendiente", value: "Pendiente" },
+        { label: "Rechazado", value: "Rechazado" },
+        { label: "Validado", value: "Validado" },
+      ],
+    },
+    {
+      id: "sucursal",
+      label: "Sucursal",
+      placeholder: "Todas",
+      options: sucursales.map((s) => ({
+        label: s.nombre,
+        value: String(s.id),
+      })),
+    },
+  ];
+
+  const filteredComprobantes = comprobantes.filter((comp) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      comp.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comp.cliente?.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesEstado =
+      !filterValues.estado || comp.estado === filterValues.estado;
+
+    // Intentar buscar el ID de sucursal en varias ubicaciones posibles
+    const compSucursalId = String(
+      comp.sucursal_id || comp.sucursal?.id || comp.contrato?.sucursal_id || ""
+    );
+    const matchesSucursal =
+      !filterValues.sucursal || compSucursalId === filterValues.sucursal;
+
+    return matchesSearch && matchesEstado && matchesSucursal;
+  });
+
+  const handleFilterChange = (id, value) => {
+    setFilterValues((prev) => ({ ...prev, [id]: value }));
+  };
 
   //useEffect
   useEffect(() => {
     //loadComprobantes
     const loadComprobantes = async () => {
       try {
+        const sucursales = await listarSucursales();
+        setSucursales(sucursales);
         const comprobantesdb = await fetchComprobantes();
         console.log(comprobantesdb);
         setComprobantes(comprobantesdb);
@@ -203,13 +157,16 @@ export function Comprobantes() {
           <Filters
             title="comprobantes"
             filters={filters}
-            values={values}
+            values={filterValues}
+            onChange={handleFilterChange}
+            searchValue={searchTerm}
+            onSearch={setSearchTerm}
           ></Filters>
         </div>
         {/* Results Summary */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-600">
-            Mostrando {comprobantes.length} comprobantes
+            Mostrando {filteredComprobantes.length} comprobantes
           </p>
         </div>
         {/* Comprobantes Table */}
@@ -242,7 +199,7 @@ export function Comprobantes() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {comprobantes?.map((comp) => (
+                {filteredComprobantes?.map((comp) => (
                   <tr
                     key={comp.id}
                     className="hover:bg-gray-50 transition-colors"

@@ -23,6 +23,7 @@ import {
   fetchOcupacionMensual,
   fetchPagosMensuales,
 } from "../services/reportes.api";
+import { listarSucursales } from "../services/sucursales.api";
 
 const clientesMorosidadData = [
   {
@@ -60,19 +61,6 @@ const clientesMorosidadData = [
     fechaLimite: "2024-11-25",
     diasAtraso: 7,
     estadoContrato: "Activo",
-  },
-];
-const filters = [
-  {
-    id: "sucursal",
-    label: "Sucursal",
-    placeholder: "Todas",
-    options: [
-      { label: "Centro", value: "1" },
-      { label: "Norte", value: "2" },
-      { label: "Sur", value: "3" },
-      { label: "Este", value: "4" },
-    ],
   },
 ];
 
@@ -118,7 +106,19 @@ export function Reportes() {
   const [fechaFin, setFechaFin] = useState(null);
   const [ocupacionHistorica, setOcupacionHistorica] = useState([]);
   const [filtrosAplicados, setFiltrosAplicados] = useState(null);
+  const [sucursales, setSucursales] = useState([]);
 
+  const filters = [
+    {
+      id: "sucursal",
+      label: "Sucursal",
+      placeholder: "Todas",
+      options: sucursales.map((s) => ({
+        label: s.nombre,
+        value: String(s.id),
+      })),
+    },
+  ];
   //Generar reporte con los filtros aplicados
   const handlePagos = async () => {
     setFechaInicio(pagoStartDate);
@@ -247,6 +247,8 @@ export function Reportes() {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
+        const sucursales = await listarSucursales();
+        setSucursales(sucursales);
         const pagos = await fetchPagosMensuales({
           sucursalId: 1,
           fechaInicio: fechaMesPasado,

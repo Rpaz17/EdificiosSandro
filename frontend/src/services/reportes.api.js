@@ -34,3 +34,12 @@ export async function fetchContratos() {
   const res = await api.get("/dashboard/contratos");
   return res.data;
 }
+
+export async function fetchContratosCliente() {
+  const res = await api.get("reportes/contratos/client");
+  return res.data;
+}
+export async function fetchComprobantesCliente() {
+  const res = await api.get("reportes/comprobantes/client");
+  return res.data;
+}

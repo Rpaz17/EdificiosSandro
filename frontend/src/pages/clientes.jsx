@@ -11,125 +11,80 @@ import {
   deleteCliente,
 } from "../services/clientes.api";
 import { useEffect } from "react";
+import { listarSucursales } from "../services/sucursales.api";
 
-const filters = [
-  {
-    id: "estado",
-    label: "Estado",
-    placeholder: "Todos",
-    options: [
-      { label: "Activo", value: 1 },
-      { label: "Inactivo", value: 2 },
-    ],
-  },
-  {
-    id: "sucursal",
-    label: "Sucursal",
-    placeholder: "Todas",
-    options: [
-      { label: "Centro", value: "1" },
-      { label: "Norte", value: "2" },
-      { label: "Sur", value: "3" },
-      { label: "Este", value: "4" },
-    ],
-  },
-];
 
-const values = {
-  sucursal: 2,
-
-  estado: "1",
-};
-
-const mockClientes = [
-  {
-    id: "1",
-    nombre: "María",
-    apellido: "González",
-    identificacion: "12345678",
-    telefono: "+1 555-0101",
-    correo: "maria.gonzalez@email.com",
-    estado: "Activo",
-    sucursal: "Sucursal Centro",
-    fechaRegistro: "2024-01-15",
-  },
-  {
-    id: "2",
-    nombre: "Carlos",
-    apellido: "Ramírez",
-    identificacion: "23456789",
-    telefono: "+1 555-0102",
-    correo: "carlos.ramirez@email.com",
-    estado: "Activo",
-    sucursal: "Sucursal Norte",
-    fechaRegistro: "2024-02-20",
-  },
-  {
-    id: "3",
-    nombre: "Ana",
-    apellido: "Martínez",
-    identificacion: "34567890",
-    telefono: "+1 555-0103",
-    correo: "ana.martinez@email.com",
-    estado: "Inactivo",
-    sucursal: "Sucursal Sur",
-    fechaRegistro: "2024-03-10",
-  },
-  {
-    id: "4",
-    nombre: "Luis",
-    apellido: "Pérez",
-    identificacion: "45678901",
-    telefono: "+1 555-0104",
-    correo: "luis.perez@email.com",
-    estado: "Activo",
-    sucursal: "Sucursal Centro",
-    fechaRegistro: "2024-04-05",
-  },
-  {
-    id: "5",
-    nombre: "Sofia",
-    apellido: "Torres",
-    identificacion: "56789012",
-    telefono: "+1 555-0105",
-    correo: "sofia.torres@email.com",
-    estado: "Activo",
-    sucursal: "Sucursal Este",
-    fechaRegistro: "2024-05-12",
-  },
-  {
-    id: "6",
-    nombre: "Roberto",
-    apellido: "Díaz",
-    identificacion: "67890123",
-    telefono: "+1 555-0106",
-    correo: "roberto.diaz@email.com",
-    estado: "Activo",
-    sucursal: "Sucursal Norte",
-    fechaRegistro: "2024-06-18",
-  },
-  {
-    id: "7",
-    nombre: "Patricia",
-    apellido: "Gómez",
-    identificacion: "78901234",
-    telefono: "+1 555-0107",
-    correo: "patricia.gomez@email.com",
-    estado: "Inactivo",
-    sucursal: "Sucursal Sur",
-    fechaRegistro: "2024-07-25",
-  },
-];
 export function Clientes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState("");
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState("");
   const [clientes, setClientes] = useState([]);
+  const [sucursales, setSucursales] = useState([]);
+
+  const [filterValues, setFilterValues] = useState({
+    estado: "",
+    sucursal: "",
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filters = [
+    {
+      id: "estado",
+      label: "Estado",
+      placeholder: "Todos",
+      options: [
+        { label: "Activo", value: "Activo" },
+        { label: "Inactivo", value: "Inactivo" },
+      ],
+    },
+    {
+      id: "sucursal",
+      label: "Sucursal",
+      placeholder: "Todas",
+      options: sucursales.map((s) => ({
+        label: s.nombre,
+        value: String(s.id),
+      })),
+    },
+  ];
+
+  const filteredClientes = clientes.filter((cliente) => {
+    const term = searchTerm.toLowerCase();
+    const nombreCompleto = `${cliente.nombre || ""} ${
+      cliente.apellido || ""
+    }`.toLowerCase();
+    const identificacion = (cliente.identificacion || "").toLowerCase();
+    const correo = (cliente.correo || "").toLowerCase();
+
+    const matchesSearch =
+      !searchTerm ||
+      nombreCompleto.includes(term) ||
+      identificacion.includes(term) ||
+      correo.includes(term);
+
+    const matchesEstado =
+      !filterValues.estado || cliente.estado === filterValues.estado;
+
+    // Ajustar chequeo de sucursal según formato
+    const clienteSucursalId = String(
+      cliente.sucursal_id || cliente.sucursal?.id || ""
+    );
+    const matchesSucursal =
+      !filterValues.sucursal || clienteSucursalId === filterValues.sucursal;
+
+    return matchesSearch && matchesEstado && matchesSucursal;
+  });
+
+  const handleFilterChange = (id, value) => {
+    setFilterValues((prev) => ({ ...prev, [id]: value }));
+  };
 
   useEffect(() => {
     const loadClientes = async () => {
       try {
+        const sucursales = await listarSucursales();
+        setSucursales(sucursales);
         const clients = await fetchClientes();
         console.log(clients);
         setClientes(clients);
@@ -219,7 +174,14 @@ export function Clientes() {
         </div>
         {/** FILTROS */}
         <div>
-          <Filters title="clientes" filters={filters} values={values} />
+          <Filters
+            title="clientes"
+            filters={filters}
+            values={filterValues}
+            onChange={handleFilterChange}
+            searchValue={searchTerm}
+            onSearch={setSearchTerm}
+          />
         </div>
 
         {/** TABLA CLIENTES */}
@@ -253,7 +215,7 @@ export function Clientes() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {clientes.map((cliente) => (
+                  {filteredClientes.map((cliente) => (
                     <tr
                       key={cliente.id}
                       className="hover:bg-gray-50 transition-colors"

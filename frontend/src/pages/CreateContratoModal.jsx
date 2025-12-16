@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
-//import { fetchClientes } from "../services/clientes.api";
+import { fetchClientes } from "../services/clientes.api";
 import { fetchApartamentos } from "../services/apartamentoServices";
 
 export function CreateContratoModal({ onClose, onSave }) {
@@ -26,19 +26,23 @@ export function CreateContratoModal({ onClose, onSave }) {
 
         const [clientesData, aptRes] = await Promise.all([
           fetchClientes(),
-          fetchApartamentos(), 
+          fetchApartamentos(),
         ]);
 
         setClientes(Array.isArray(clientesData) ? clientesData : []);
 
         // aptRes.data es array de aptos
         const apts = Array.isArray(aptRes.data) ? aptRes.data : [];
+        console.log(clientes);
 
         const disponibles = apts.filter(
-          (a) => (a.estado_ocupacion || "").toLowerCase() !== "ocupado" && a.is_deleted === false
+          (a) =>
+            (a.estado_ocupacion || "").toLowerCase() !== "ocupado" &&
+            a.is_deleted === false
         );
 
         setApartamentos(disponibles);
+        console.log(apartamentos);
       } catch (error) {
         console.error(error);
         alert("Error cargando clientes/apartamentos");
@@ -83,7 +87,10 @@ export function CreateContratoModal({ onClose, onSave }) {
       >
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-gray-900">Crear Nuevo Contrato</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
@@ -102,7 +109,9 @@ export function CreateContratoModal({ onClose, onSave }) {
               disabled={loading}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">{loading ? "Cargando..." : "Seleccionar cliente"}</option>
+              <option value="">
+                {loading ? "Cargando..." : "Seleccionar cliente"}
+              </option>
               {clientes.map((c) => (
                 <option key={c.id} value={c.id}>
                   {/* Ajusta el campo nombre real del cliente */}
@@ -125,7 +134,9 @@ export function CreateContratoModal({ onClose, onSave }) {
               disabled={loading}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">{loading ? "Cargando..." : "Seleccionar apartamento"}</option>
+              <option value="">
+                {loading ? "Cargando..." : "Seleccionar apartamento"}
+              </option>
               {apartamentos.map((a) => (
                 <option key={a.id} value={a.id}>
                   {`Apt ${a.numero_apartamento} (Sucursal ${a.id_sucursal})`}
@@ -171,7 +182,9 @@ export function CreateContratoModal({ onClose, onSave }) {
                 Monto mensual <span className="text-red-600">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                  US$
+                </span>
                 <input
                   name="monto"
                   type="number"
@@ -186,9 +199,13 @@ export function CreateContratoModal({ onClose, onSave }) {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-700 mb-2">Depósito (opcional)</label>
+              <label className="block text-sm text-gray-700 mb-2">
+                Depósito (opcional)
+              </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                  US$
+                </span>
                 <input
                   name="deposito"
                   type="number"
@@ -205,7 +222,8 @@ export function CreateContratoModal({ onClose, onSave }) {
           {/* Estado */}
           <div>
             <label className="block text-sm text-gray-700 mb-2">
-              Estado inicial del contrato <span className="text-red-600">*</span>
+              Estado inicial del contrato{" "}
+              <span className="text-red-600">*</span>
             </label>
             <select
               name="estado"
@@ -233,7 +251,8 @@ export function CreateContratoModal({ onClose, onSave }) {
               placeholder="Añade notas adicionales sobre el contrato..."
             />
             <p className="text-xs text-gray-500 mt-2">
-              *Nota: “Notas” todavía no se guardan en la BD porque el modelo Contrato no tiene ese campo.
+              *Nota: “Notas” todavía no se guardan en la BD porque el modelo
+              Contrato no tiene ese campo.
             </p>
           </div>
 

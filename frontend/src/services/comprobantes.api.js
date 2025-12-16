@@ -6,15 +6,22 @@ export async function fetchComprobantes() {
   const res = await api.get("/comprobantes");
   return res.data;
 }
-export async function uploadComprobante(file) {
+export async function uploadComprobante({
+  file,
+  contratoId,
+  monto,
+  metodo,
+  notas,
+}) {
   const formData = new FormData();
-  formData.append("archivo", file);
 
-  const res = await api.post("/comprobantes/subir", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  formData.append("archivo", file);
+  formData.append("contratoId", contratoId);
+  formData.append("monto", monto);
+  formData.append("metodo", metodo);
+  if (notas) formData.append("notas", notas);
+
+  const res = await api.post("/comprobantes/subir", formData);
 
   return res.data;
 }

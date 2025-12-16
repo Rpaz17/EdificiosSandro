@@ -190,4 +190,33 @@ module.exports = {
       });
     }
   },
+
+  contratosById: async (req, res) => {
+    const usuarioId = req.user.id; //req.user.id
+    try {
+      const reporte = await reportesService.contratosById(usuarioId);
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte: reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
+  comprobantesById: async (req, res) => {
+    const usuarioId = req.user.id; //req.user.id
+    try {
+      const reporte = await reportesService.comprobantesById(usuarioId);
+      return res.status(200).json({
+        mensaje: "Reporte generado exitosamente",
+        reporte: reporte,
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        error: error.message,
+      });
+    }
+  },
 };

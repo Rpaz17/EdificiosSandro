@@ -10,6 +10,7 @@ import {
   getUsuarios,
   deleteUsuario,
 } from "../services/usuarios.api";
+import { PageHeader } from "../components/PageHeader";
 
 const mockUsuarios = [
   {
@@ -249,21 +250,15 @@ useEffect(() => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-gray-900">Usuarios</h1>
-          <p className="text-sm text-gray-600 mt-1">Dashboard → Usuarios</p>
-        </div>
-
-        <button
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={handleNewUsuario}
-        >
-          <Plus className="w-5 h-5" />
-          Nuevo Usuario
-        </button>
-      </div>
+      <PageHeader
+        title="Usuarios"
+        description="Dashboard → Usuarios"
+        actionButton={{
+          label: "Nuevo Usuario",
+          icon: <Plus className="w-5 h-5" />,
+          onClick: handleNewUsuario,
+        }}
+      />
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
