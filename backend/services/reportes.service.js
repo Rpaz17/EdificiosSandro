@@ -561,7 +561,13 @@ async function comprobantesById(usuarioId) {
     where: {
       is_deleted: false,
     },
-    attributes: ["id", "estado_validacion", "notas", "created_at"],
+    attributes: [
+      "id",
+      "estado_validacion",
+      "notas",
+      "created_at",
+      "ruta_archivo",
+    ],
     include: [
       {
         model: Pago,

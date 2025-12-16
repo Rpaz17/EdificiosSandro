@@ -2,20 +2,20 @@ const fs = require("fs");
 const path = require("path");
 const { Comprobante, Pago, Contrato, Cliente } = require("../models");
 const crypto = require("crypto");
-
+const { Op } = require("sequelize");
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
 const { notificacionARol } = require("./notificaciones.service");
 
 async function listarComprobantes() {
   //return [{ test: true }];
-  await notificacionARol({
-    rol: "admin",
-    tipo: "comprobante_subido",
-    mensaje: `Se ha subido un nuevo comprobante para el pago #${id_pago}.`,
-    id_pago,
-    created_by: usuarioId,
-  });
+  // await notificacionARol({
+  //   rol: "admin",
+  //   tipo: "comprobante_subido",
+  //   mensaje: `Se ha subido un nuevo comprobante para el pago #${id_pago}.`,
+  //   id_pago,
+  //   created_by: usuarioId,
+  // });
 
   return await Comprobante.findAll({
     //limit: 1,
@@ -65,7 +65,6 @@ async function subirComprobante({
   const extension = path.extname(nombreArchivo || "") || ".pdf";
   const filename = `comp_${Date.now()}${extension}`;
   const filepath = path.join(UPLOAD_DIR, filename);
-  fechaPago = new Date();
 
   // 4. Guardar el archivo
 
@@ -74,36 +73,30 @@ async function subirComprobante({
   // 5. Crear hash del archivo
   const fileBuffer = fs.readFileSync(filepath);
   const hash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
-  const pago = await Pago.create(
-    {
-      id_contrato: contratoId,
-      fecha: new Date(),
-      periodo,
-      monto,
-      metodo,
-      estado_pago: "pendiente",
-      created_at: new Date(),
-      created_by: usuarioId,
-      is_deleted: false,
-    },
-    { transaction: t }
-  );
+  const pago = await Pago.create({
+    id_contrato: contratoId,
+    fecha: new Date(),
+    periodo,
+    monto,
+    metodo,
+    estado_pago: "pendiente",
+    created_at: new Date(),
+    created_by: usuarioId,
+    is_deleted: false,
+  });
 
   // 6. Crear registro en BD
-  const comprobante = await Comprobante.create(
-    {
-      id_pago: pago.id,
-      ruta_archivo: `/uploads/comprobantes/${filename}`,
-      hash_archivo: hash,
-      estado_validacion: "pendiente",
-      subido_en: new Date(),
-      notas: notas || null,
-      created_at: new Date(),
-      created_by: usuarioId,
-      is_deleted: false,
-    },
-    { transaction: t }
-  );
+  const comprobante = await Comprobante.create({
+    id_pago: pago.id,
+    ruta_archivo: `/uploads/comprobantes/${filename}`,
+    hash_archivo: hash,
+    estado_validacion: "pendiente",
+    subido_en: new Date(),
+    notas: notas || null,
+    created_at: new Date(),
+    created_by: usuarioId,
+    is_deleted: false,
+  });
 
   return comprobante;
 }

@@ -15,6 +15,8 @@ import {
   fetchComprobantesCliente,
   fetchContratosCliente,
 } from "../services/reportes.api";
+import { uploadComprobante } from "../services/comprobantes.api";
+import { capitalize } from "../utils/formatters";
 
 const mockComprobantes = [
   {
@@ -64,6 +66,7 @@ export function ClienteComprobantes() {
   const [comprobantes, setComprobantes] = useState(mockComprobantes);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedComprobante, setSelectedComprobante] = useState(null);
+  const [contratoActual, setContrato] = useState([]);
 
   useEffect(() => {
     //Obtener el id con el token de alguna forma
@@ -76,6 +79,8 @@ export function ClienteComprobantes() {
         console.log(comprobantes);
         const data = await fetchContratosCliente();
         console.log(data);
+        setContrato(data.reporte.infoContrato);
+        setComprobantes(comprobantes.reporte);
       } catch (err) {
         console.error(err);
       }
@@ -93,30 +98,23 @@ export function ClienteComprobantes() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Subiendo Comprobante");
 
-    const newComprobante = {
-      codigo: `COMP-2024-${157 + 1}`,
-      monto: parseFloat(formData.monto),
-      fechaPago: formData.fechaPago,
-      metodoPago: formData.metodoPago,
-      comentario: formData.comentario,
-      estado: "Pendiente",
-      imagenUrl:
-        "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
-      fechaEnvio: new Date().toISOString().split("T")[0],
-    };
+    try {
+      await uploadComprobante({
+        file: formData.archivo, // File object
+        contratoId: contratoActual.id,
+        monto: formData.monto,
+        metodo: formData.metodoPago,
+        notas: formData.comentario,
+      });
 
-    const data = await fetchContratosCliente();
-    console.log(data);
-    await uploadComprobante(
-      newComprobante.imagenUrl,
-      contratoId, //getcontrato
-      newComprobante.monto,
-      newComprobante.metodoPago,
-      newComprobante.comentario
-    );
+      // const comprobantes = await fetchComprobantesCliente();
+      // setComprobantes()
+    } catch (err) {
+      console.log(err);
+    }
 
-    setComprobantes([newComprobante, ...comprobantes]);
     setShowUploadModal(false);
 
     setFormData({
@@ -159,19 +157,19 @@ export function ClienteComprobantes() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <KPICard
           title="Total de comprobantes"
-          value={comprobantes.length}
+          value={comprobantes?.resumen?.total}
           icon={FileText}
           color="blue"
         />
         <KPICard
           title="Pendientes"
-          value={comprobantes.filter((c) => c.estado === "Pendiente").length}
+          value={comprobantes?.resumen?.pendientes}
           icon={Calendar}
           color="orange"
         />
         <KPICard
           title="Aprobados"
-          value={comprobantes.filter((c) => c.estado === "Aprobado").length}
+          value={comprobantes?.resumen?.validados}
           icon={FileText}
           color="green"
         />
@@ -191,21 +189,21 @@ export function ClienteComprobantes() {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {comprobantes.map((c) => (
-              <tr key={c.codigo}>
-                <td className="px-6 py-4">{c.codigo}</td>
+            {comprobantes?.comprobantes?.map((c) => (
+              <tr key={c.id}>
+                <td className="px-6 py-4">C-0{c.id}</td>
                 <td className="px-6 py-4">
-                  {new Date(c.fechaPago).toLocaleDateString("es-ES")}
+                  {new Date(c.fecha).toLocaleDateString("es-ES")}
                 </td>
-                <td className="px-6 py-4">${c.monto.toFixed(2)}</td>
-                <td className="px-6 py-4">{c.metodoPago}</td>
+                <td className="px-6 py-4">${c.monto}</td>
+                <td className="px-6 py-4">{c.metodo}</td>
                 <td className="px-6 py-4">
                   <span
                     className={`px-3 py-1 rounded-full text-xs ${getEstadoBadge(
                       c.estado
                     )}`}
                   >
-                    {c.estado}
+                    {capitalize(c.estado)}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -379,7 +377,7 @@ export function ClienteComprobantes() {
               {/* Image */}
               <div className="bg-gray-100 rounded-lg overflow-hidden">
                 <img
-                  src={selectedComprobante.imagenUrl}
+                  src={selectedComprobante.ruta_archivo}
                   alt="Comprobante"
                   className="w-full h-auto"
                 />
@@ -390,7 +388,7 @@ export function ClienteComprobantes() {
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Código</p>
                   <p className="text-sm text-gray-900">
-                    {selectedComprobante.codigo}
+                    {selectedComprobante.id}
                   </p>
                 </div>
                 <div>
@@ -400,42 +398,35 @@ export function ClienteComprobantes() {
                       selectedComprobante.estado
                     )}`}
                   >
-                    {selectedComprobante.estado}
+                    {capitalize(selectedComprobante.estado)}
                   </span>
                 </div>
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Monto</p>
                   <p className="text-sm text-gray-900">
-                    ${selectedComprobante.monto.toFixed(2)}
+                    ${selectedComprobante.monto}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Método de pago</p>
                   <p className="text-sm text-gray-900">
-                    {selectedComprobante.metodoPago}
+                    {selectedComprobante.metodo}
                   </p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-600 mb-1">Fecha de pago</p>
-                  <p className="text-sm text-gray-900">
-                    {new Date(selectedComprobante.fechaPago).toLocaleDateString(
-                      "es-ES"
-                    )}
-                  </p>
-                </div>
+
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Fecha de envío</p>
                   <p className="text-sm text-gray-900">
-                    {new Date(
-                      selectedComprobante.fechaEnvio
-                    ).toLocaleDateString("es-ES")}
+                    {new Date(selectedComprobante.fecha).toLocaleDateString(
+                      "es-ES"
+                    )}
                   </p>
                 </div>
                 {selectedComprobante.comentario && (
                   <div className="col-span-2">
                     <p className="text-xs text-gray-600 mb-1">Comentario</p>
                     <p className="text-sm text-gray-900">
-                      {selectedComprobante.comentario}
+                      {selectedComprobante.notas}
                     </p>
                   </div>
                 )}
