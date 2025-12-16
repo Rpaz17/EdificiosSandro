@@ -2,6 +2,7 @@ const { Cliente, Usuario } = require("../models");
 const clientesService = require("../services/clientes.service");
 // Sanitizador
 const clean = (str = "") => String(str).trim();
+const { sequelize } = require("../models");
 
 // ===============================
 // CONTROLADOR: Crear nuevo cliente
@@ -223,60 +224,68 @@ module.exports = {
   },
 
   asociarUsuario: async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { id_usuario } = req.body;
+    const t = await sequelize.transaction();
+    try {
+      const { correo } = req.body;
 
-    if (!id_usuario) {
-      return res.status(400).json({
-        message: "id_usuario es requerido",
+      const cliente = await Cliente.findOne({
+        where: {
+          correo,
+          is_deleted: false,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+      if (!cliente) {
+        await t.rollback();
+        return res.status(404).json({
+          message: "Cliente no existe",
+        });
+      }
+      console.log("DEBUG cliente:", {
+        id: cliente.id,
+        correo: cliente.correo,
+        id_usuario: cliente.id_usuario,
+        tipo: typeof cliente.id_usuario,
+      });
+
+      if (cliente.id_usuario) {
+        return res.status(400).json({
+          message: "El cliente ya tiene un usuario asociado",
+        });
+      }
+
+      const usuario = await Usuario.findOne({
+        where: {
+          email: correo,
+        },
+        transaction: t,
+      });
+
+      if (!usuario) {
+        await t.rollback();
+        return res.status(404).json({
+          message: "Usuario no existe",
+        });
+      }
+
+      cliente.id_usuario = usuario.id;
+      await cliente.save({ transaction: t });
+
+      await t.commit();
+
+      return res.status(200).json({
+        message: "Usuario asociado al cliente correctamente",
+        data: cliente,
+      });
+    } catch (error) {
+      await t.rollback();
+      console.error("Error al asociar usuario:", error);
+      return res.status(500).json({
+        message: "Error interno del servidor",
       });
     }
-
-    const cliente = await Cliente.findByPk(id);
-    if (!cliente) {
-      return res.status(404).json({
-        message: "Cliente no existe",
-      });
-    }
-
-    if (cliente.id_usuario) {
-      return res.status(400).json({
-        message: "El cliente ya tiene un usuario asociado",
-      });
-    }
-
-    const usuario = await Usuario.findByPk(id_usuario);
-    if (!usuario) {
-      return res.status(404).json({
-        message: "Usuario no existe",
-      });
-    }
-
-    const clienteConEseUsuario = await Cliente.findOne({
-      where: { id_usuario },
-    });
-
-    if (clienteConEseUsuario) {
-      return res.status(400).json({
-        message: "Este usuario ya está asociado a otro cliente",
-      });
-    }
-
-    cliente.id_usuario = id_usuario;
-    await cliente.save();
-
-    return res.status(200).json({
-      message: "Usuario asociado al cliente correctamente",
-      data: cliente,
-    });
-  } catch (error) {
-    console.error("Error al asociar usuario:", error);
-    return res.status(500).json({
-      message: "Error interno del servidor",
-    });
-  }
-},
+  },
 
   eliminarCliente: async (req, res) => {
     const clienteId = req.params.id;

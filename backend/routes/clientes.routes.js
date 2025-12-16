@@ -7,14 +7,12 @@ const clientesController = require("../controllers/clientes.controller");
 router.get("/clientes", clientesController.listarClientes);
 // POST /api/clientes >>  user controller
 router.post("/clientes", crearCliente);
+router.patch("/clientes/asociar-usuario", clientesController.asociarUsuario);
 
 // PATCH /api/clientes/:id/editar
 router.patch("/clientes/:id", clientesController.editarCliente);
 // PATCH /api/clientes/:id/ eliminar
 router.delete("/clientes/:id", clientesController.eliminarCliente);
-
-router.patch("/clientes/:id/asociar-usuario",clientesController.asociarUsuario);
-
 
 module.exports = router;
 
