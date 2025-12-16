@@ -3,22 +3,18 @@ import { DollarSign, FileText, UserPlus, AlertTriangle } from 'lucide-react';
 export function NotificationItem({ notification, onClick }) {
   const getIcon = () => {
     switch (notification.tipo) {
-      case 'pago_recibido':
-        return <DollarSign className="w-5 h-5 text-green-600" />;
-      case 'contrato_por_vencer':
+      case 'CONTRATO_POR_VENCER':
         return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
-      case 'nuevo_cliente':
-        return <UserPlus className="w-5 h-5 text-blue-600" />;
-      case 'nuevo_apartamento':
-        return <FileText className="w-5 h-5 text-indigo-600" />;
-      case 'comprobante_subido':
+      case 'NUEVO_COMPROBANTE':
         return <FileText className="w-5 h-5 text-purple-600" />;
-      case 'comprobante_validado':
+      case 'COMPROBANTE_VALIDADO':
         return <FileText className="w-5 h-5 text-emerald-600" />;
-      case 'comprobante_rechazado':
+      case 'COMPROBANTE_RECHAZADO':
         return <FileText className="w-5 h-5 text-red-600" />;
-      case 'alerta_sistema':
+      case 'ALERTA_SISTEMA':
         return <AlertTriangle className="w-5 h-5 text-red-600" />;
+      case 'MANTENIMIENTO_PROGRAMADO':
+        return <AlertTriangle className="w-5 h-5 text-blue-600" />;
       default:
         return <FileText className="w-5 h-5 text-gray-600" />;
     }
@@ -26,22 +22,18 @@ export function NotificationItem({ notification, onClick }) {
 
   const getIconBg = () => {
     switch (notification.tipo) {
-      case 'pago_recibido':
-        return 'bg-green-100';
-      case 'contrato_por_vencer':
+      case 'CONTRATO_POR_VENCER':
         return 'bg-yellow-100';
-      case 'nuevo_cliente':
-        return 'bg-blue-100';
-      case 'nuevo_apartamento':
-        return 'bg-indigo-100';
-      case 'comprobante_subido':
+      case 'NUEVO_COMPROBANTE':
         return 'bg-purple-100';
-      case 'comprobante_validado':
+      case 'COMPROBANTE_VALIDADO':
         return 'bg-emerald-100';
-      case 'comprobante_rechazado':
+      case 'COMPROBANTE_RECHAZADO':
         return 'bg-red-100';
-      case 'alerta_sistema':
+      case 'ALERTA_SISTEMA':
         return 'bg-red-100';
+      case 'MANTENIMIENTO_PROGRAMADO':
+        return 'bg-blue-100';
       default:
         return 'bg-gray-100';
     }

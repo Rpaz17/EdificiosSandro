@@ -15,11 +15,13 @@ router.post(
 //Agregar middleware de autenticacion para el usuario
 router.patch(
   "/comprobantes/:id/aprobar",
+  authMiddleware,
   comprobantesController.validarComprobante
 );
 //Agregar middleware de autenticacion para el usuario
 router.patch(
   "/comprobantes/:id/rechazar",
+  authMiddleware,
   comprobantesController.rechazarComprobante
 );
 //cambiar a delete

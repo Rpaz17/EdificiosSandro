@@ -11,7 +11,7 @@ export function CreateContratoModal({ onClose, onSave }) {
     periodo_fin: "",
     monto: "",
     deposito: "",
-    estado: "Activo",
+    estado: "activo",
     notas: "",
   });
 
@@ -232,10 +232,10 @@ export function CreateContratoModal({ onClose, onSave }) {
               onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option>Activo</option>
-              <option>Próximo a vencer</option>
-              <option>Finalizado</option>
-              <option>Cancelado</option>
+              <option>activo</option>
+              <option>próximo a vencer</option>
+              <option>finalizado</option>
+              <option>cancelado</option>
             </select>
           </div>
 

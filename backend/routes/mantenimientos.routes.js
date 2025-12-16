@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/mantenimientos.controller");
+const authMiddleware = require("../controllers/auth.middleware");
 
 /**
  * @swagger
@@ -207,7 +208,7 @@ const controller = require("../controllers/mantenimientos.controller");
  */
 
 // CRUD
-router.post("/mantenimientos", controller.crearMantenimiento);
+router.post("/mantenimientos", authMiddleware, controller.crearMantenimiento);
 router.get("/mantenimientos", controller.listarMantenimientos);
 router.get("/mantenimientos/:id", controller.obtenerMantenimiento);
 router.patch("/mantenimientos/:id", controller.actualizarMantenimiento);
