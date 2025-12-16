@@ -25,6 +25,7 @@ import {
 import { fetchApartamentos } from "../services/apartamentoServices";
 import { fetchClientes } from "../services/clientes.api";
 import { PageHeader } from "../components/PageHeader";
+import { listarSucursales } from "../services/sucursales.api";
 
 const mockContratos = [
   {
@@ -158,9 +159,25 @@ export function Contratos() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
+  const [sucursales, setSucursales] = useState([]);
+  const [sucursalesLoading, setSucursalesLoading] = useState(false);
   useEffect(() => {
     loadContratos();
+    loadSucursales();
   }, []);
+    const loadSucursales = async() => {
+    setSucursalesLoading(true);
+    try{
+      const res = await listarSucursales();
+      const data = res?.data ?? res;
+      setSucursales(data || []);
+    }catch(error){
+      console.error("Error loading sucursales:", error);
+    }finally{
+      setSucursalesLoading(false);
+    }
+  };
+
   const loadContratos = async () => {
     try {
       const [contratosApi, clientesApi, aptsRes] = await Promise.all([
@@ -371,11 +388,15 @@ export function Contratos() {
                 onChange={(e) => setSucursalFilter(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
               >
-                <option>Todas las sucursales</option>
-                <option>Centro</option>
-                <option>Norte</option>
-                <option>Sur</option>
-                <option>Este</option>
+                <option value="ALL">
+                  {sucursalesLoading ? "Cargando..." : "Todas las sucursales"}
+                </option>
+
+                {sucursales.map((s) => (
+                  <option key={s.id} value={String(s.id)}>
+                    {s.nombre ?? s.descripcion ?? `Sucursal ${s.id}`}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
