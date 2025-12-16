@@ -1,155 +1,172 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Filter, Plus, Eye, Edit, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  Search,
+  Filter,
+  Plus,
+  Eye,
+  Edit,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
-import { ContratoDetailPanel } from './ContratoDetallesModal';
-import { CreateContratoModal } from './CreateContratoModal';
-import { EditContratoModal } from './EditContratoModal';
-import { RenewContratoModal } from './RenewContratoModal';
-import { FinalizeContratoModal } from './FinalizeContratoModal';
-import { createContrato, fetchContratoById, fetchContratos, updateContrato, deleteContrato } from '../services/contratos.api';
-import { fetchApartamentos } from '../services/apartamentoServices';
-import { fetchClientes } from '../services/clientes.api';
-
+import { ContratoDetailPanel } from "./ContratoDetallesModal";
+import { CreateContratoModal } from "./CreateContratoModal";
+import { EditContratoModal } from "./EditContratoModal";
+import { RenewContratoModal } from "./RenewContratoModal";
+import { FinalizeContratoModal } from "./FinalizeContratoModal";
+import {
+  createContrato,
+  fetchContratoById,
+  fetchContratos,
+  updateContrato,
+  deleteContrato,
+} from "../services/contratos.api";
+import { fetchApartamentos } from "../services/apartamentoServices";
+import { fetchClientes } from "../services/clientes.api";
+import { PageHeader } from "../components/PageHeader";
 
 const mockContratos = [
   {
-    id: '1',
-    cliente: 'María González',
-    codigoContrato: 'CTR-2024-001',
-    apartamento: 'Apt 301 - Torre A',
-    sucursal: 'Centro',
-    tipoContrato: 'Anual',
-    fechaInicio: '14 ene 2024',
-    fechaFin: '14 ene 2025',
-    montoMensual: 1500.00,
-    deposito: 3000.00,
-    estado: 'Activo',
-    duracion: '12 meses',
-    notas: 'Cliente preferencial, renovación automática acordada.',
-    fechaCreacion: '14 de enero de 2024',
-    ultimaActualizacion: '21 de noviembre de 2024',
+    id: "1",
+    cliente: "María González",
+    codigoContrato: "CTR-2024-001",
+    apartamento: "Apt 301 - Torre A",
+    sucursal: "Centro",
+    tipoContrato: "Anual",
+    fechaInicio: "14 ene 2024",
+    fechaFin: "14 ene 2025",
+    montoMensual: 1500.0,
+    deposito: 3000.0,
+    estado: "Activo",
+    duracion: "12 meses",
+    notas: "Cliente preferencial, renovación automática acordada.",
+    fechaCreacion: "14 de enero de 2024",
+    ultimaActualizacion: "21 de noviembre de 2024",
   },
   {
-    id: '2',
-    cliente: 'Carlos Ramírez',
-    codigoContrato: 'CTR-2024-002',
-    apartamento: 'Apt 502 - Torre B',
-    sucursal: 'Norte',
-    tipoContrato: 'Mensual',
-    fechaInicio: '30 nov 2023',
-    fechaFin: '30 dic 2024',
-    montoMensual: 1200.00,
-    deposito: 2400.00,
-    estado: 'Próximo a vencer',
-    duracion: '13 meses',
-    fechaCreacion: '30 de noviembre de 2023',
-    ultimaActualizacion: '15 de noviembre de 2024',
+    id: "2",
+    cliente: "Carlos Ramírez",
+    codigoContrato: "CTR-2024-002",
+    apartamento: "Apt 502 - Torre B",
+    sucursal: "Norte",
+    tipoContrato: "Mensual",
+    fechaInicio: "30 nov 2023",
+    fechaFin: "30 dic 2024",
+    montoMensual: 1200.0,
+    deposito: 2400.0,
+    estado: "Próximo a vencer",
+    duracion: "13 meses",
+    fechaCreacion: "30 de noviembre de 2023",
+    ultimaActualizacion: "15 de noviembre de 2024",
   },
   {
-    id: '3',
-    cliente: 'Ana Martínez',
-    codigoContrato: 'CTR-2024-003',
-    apartamento: 'Apt 105 - Torre A',
-    sucursal: 'Centro',
-    tipoContrato: 'Anual',
-    fechaInicio: '29 feb 2024',
-    fechaFin: '31 ago 2024',
-    montoMensual: 800.00,
-    deposito: 1600.00,
-    estado: 'Finalizado',
-    duracion: '6 meses',
-    fechaCreacion: '29 de febrero de 2024',
-    ultimaActualizacion: '31 de agosto de 2024',
+    id: "3",
+    cliente: "Ana Martínez",
+    codigoContrato: "CTR-2024-003",
+    apartamento: "Apt 105 - Torre A",
+    sucursal: "Centro",
+    tipoContrato: "Anual",
+    fechaInicio: "29 feb 2024",
+    fechaFin: "31 ago 2024",
+    montoMensual: 800.0,
+    deposito: 1600.0,
+    estado: "Finalizado",
+    duracion: "6 meses",
+    fechaCreacion: "29 de febrero de 2024",
+    ultimaActualizacion: "31 de agosto de 2024",
   },
   {
-    id: '4',
-    cliente: 'Roberto Silva',
-    codigoContrato: 'CTR-2024-004',
-    apartamento: 'Apt 208 - Torre C',
-    sucursal: 'Sur',
-    tipoContrato: 'Anual',
-    fechaInicio: '31 may 2024',
-    fechaFin: '31 may 2025',
-    montoMensual: 1800.00,
-    deposito: 3600.00,
-    estado: 'Activo',
-    duracion: '12 meses',
-    fechaCreacion: '31 de mayo de 2024',
-    ultimaActualizacion: '5 de diciembre de 2024',
+    id: "4",
+    cliente: "Roberto Silva",
+    codigoContrato: "CTR-2024-004",
+    apartamento: "Apt 208 - Torre C",
+    sucursal: "Sur",
+    tipoContrato: "Anual",
+    fechaInicio: "31 may 2024",
+    fechaFin: "31 may 2025",
+    montoMensual: 1800.0,
+    deposito: 3600.0,
+    estado: "Activo",
+    duracion: "12 meses",
+    fechaCreacion: "31 de mayo de 2024",
+    ultimaActualizacion: "5 de diciembre de 2024",
   },
   {
-    id: '5',
-    cliente: 'Lucía Fernández',
-    codigoContrato: 'CTR-2024-005',
-    apartamento: 'Apt 410 - Torre B',
-    sucursal: 'Norte',
-    tipoContrato: 'Mensual',
-    fechaInicio: '31 ene 2024',
-    fechaFin: '30 abr 2024',
-    montoMensual: 950.00,
-    deposito: 1900.00,
-    estado: 'Cancelado',
-    duracion: '3 meses',
-    fechaCreacion: '31 de enero de 2024',
-    ultimaActualizacion: '15 de abril de 2024',
+    id: "5",
+    cliente: "Lucía Fernández",
+    codigoContrato: "CTR-2024-005",
+    apartamento: "Apt 410 - Torre B",
+    sucursal: "Norte",
+    tipoContrato: "Mensual",
+    fechaInicio: "31 ene 2024",
+    fechaFin: "30 abr 2024",
+    montoMensual: 950.0,
+    deposito: 1900.0,
+    estado: "Cancelado",
+    duracion: "3 meses",
+    fechaCreacion: "31 de enero de 2024",
+    ultimaActualizacion: "15 de abril de 2024",
   },
   {
-    id: '6',
-    cliente: 'Jorge Morales',
-    codigoContrato: 'CTR-2024-006',
-    apartamento: 'Apt 701 - Torre A',
-    sucursal: 'Centro',
-    tipoContrato: 'Anual',
-    fechaInicio: '14 abr 2024',
-    fechaFin: '14 abr 2025',
-    montoMensual: 2000.00,
-    deposito: 4000.00,
-    estado: 'Activo',
-    duracion: '12 meses',
-    fechaCreacion: '14 de abril de 2024',
-    ultimaActualizacion: '1 de diciembre de 2024',
+    id: "6",
+    cliente: "Jorge Morales",
+    codigoContrato: "CTR-2024-006",
+    apartamento: "Apt 701 - Torre A",
+    sucursal: "Centro",
+    tipoContrato: "Anual",
+    fechaInicio: "14 abr 2024",
+    fechaFin: "14 abr 2025",
+    montoMensual: 2000.0,
+    deposito: 4000.0,
+    estado: "Activo",
+    duracion: "12 meses",
+    fechaCreacion: "14 de abril de 2024",
+    ultimaActualizacion: "1 de diciembre de 2024",
   },
   {
-    id: '7',
-    cliente: 'Patricia Vargas',
-    codigoContrato: 'CTR-2024-007',
-    apartamento: 'Apt 315 - Torre C',
-    sucursal: 'Este',
-    tipoContrato: 'Anual',
-    fechaInicio: '30 abr 2024',
-    fechaFin: '30 abr 2025',
-    montoMensual: 1350.00,
-    deposito: 2700.00,
-    estado: 'Activo',
-    duracion: '12 meses',
-    fechaCreacion: '30 de abril de 2024',
-    ultimaActualizacion: '28 de noviembre de 2024',
+    id: "7",
+    cliente: "Patricia Vargas",
+    codigoContrato: "CTR-2024-007",
+    apartamento: "Apt 315 - Torre C",
+    sucursal: "Este",
+    tipoContrato: "Anual",
+    fechaInicio: "30 abr 2024",
+    fechaFin: "30 abr 2025",
+    montoMensual: 1350.0,
+    deposito: 2700.0,
+    estado: "Activo",
+    duracion: "12 meses",
+    fechaCreacion: "30 de abril de 2024",
+    ultimaActualizacion: "28 de noviembre de 2024",
   },
 ];
 
 export function Contratos() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFin, setFechaFin] = useState('');
-  const [sucursalFilter, setSucursalFilter] = useState('Todas las sucursales');
-  const [estadoFilter, setEstadoFilter] = useState('Todos');
-  const [tipoFilter, setTipoFilter] = useState('Todos');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+  const [sucursalFilter, setSucursalFilter] = useState("Todas las sucursales");
+  const [estadoFilter, setEstadoFilter] = useState("Todos");
+  const [tipoFilter, setTipoFilter] = useState("Todos");
 
   const [contratos, setContratos] = useState(mockContratos);
 
-  const [selectedContrato, setSelectedContrato] = useState(null); 
+  const [selectedContrato, setSelectedContrato] = useState(null);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
-
+  useEffect(() => {
+    loadContratos();
+  }, []);
   const loadContratos = async () => {
     try {
       const [contratosApi, clientesApi, aptsRes] = await Promise.all([
-      fetchContratos(), 
-      fetchClientes(), 
-      fetchApartamentos(), 
+        fetchContratos(),
+        fetchClientes(),
+        fetchApartamentos(),
       ]);
 
       const aptsApi = aptsRes.data;
@@ -207,22 +224,30 @@ export function Contratos() {
       alert(error?.response?.data?.mensaje || "Error cargando contratos");
     }
   };
-  
+
   const filteredContratos = useMemo(() => {
     return contratos.filter((contrato) => {
       const matchesSearch =
-        (contrato.cliente || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (contrato.codigoContrato || "").toLowerCase().includes(searchTerm.toLowerCase());
+        (contrato.cliente || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        (contrato.codigoContrato || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
       const matchesSucursal =
-        sucursalFilter === "Todas las sucursales" || contrato.sucursal === sucursalFilter;
+        sucursalFilter === "Todas las sucursales" ||
+        contrato.sucursal === sucursalFilter;
 
-      const matchesEstado = estadoFilter === "Todos" || contrato.estado === estadoFilter;
-      const matchesTipo = tipoFilter === "Todos" || contrato.tipoContrato === tipoFilter;
+      const matchesEstado =
+        estadoFilter === "Todos" || contrato.estado === estadoFilter;
+      const matchesTipo =
+        tipoFilter === "Todos" || contrato.tipoContrato === tipoFilter;
 
       // fechas (opcional; si luego guardas fechas como string YYYY-MM-DD funciona)
-      const matchesFechaInicio = !fechaInicio || (contrato.fechaInicio >= fechaInicio);
-      const matchesFechaFin = !fechaFin || (contrato.fechaFin <= fechaFin);
+      const matchesFechaInicio =
+        !fechaInicio || contrato.fechaInicio >= fechaInicio;
+      const matchesFechaFin = !fechaFin || contrato.fechaFin <= fechaFin;
 
       return (
         matchesSearch &&
@@ -233,17 +258,24 @@ export function Contratos() {
         matchesFechaFin
       );
     });
-  }, [contratos, searchTerm, sucursalFilter, estadoFilter, tipoFilter, fechaInicio, fechaFin]);
+  }, [
+    contratos,
+    searchTerm,
+    sucursalFilter,
+    estadoFilter,
+    tipoFilter,
+    fechaInicio,
+    fechaFin,
+  ]);
 
   const handleClearFilters = () => {
-    setSearchTerm('');
-    setFechaInicio('');
-    setFechaFin('');
-    setSucursalFilter('Todas las sucursales');
-    setEstadoFilter('Todos');
-    setTipoFilter('Todos');
+    setSearchTerm("");
+    setFechaInicio("");
+    setFechaFin("");
+    setSucursalFilter("Todas las sucursales");
+    setEstadoFilter("Todos");
+    setTipoFilter("Todos");
   };
-
 
   const handleViewDetails = (contrato) => {
     setSelectedContrato(contrato);
@@ -267,49 +299,41 @@ export function Contratos() {
 
   const getEstadoBadge = (estado) => {
     switch (estado) {
-      case 'Activo':
-        return 'bg-green-100 text-green-800';
-      case 'Próximo a vencer':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Finalizado':
-        return 'bg-gray-100 text-gray-800';
-      case 'Cancelado':
-        return 'bg-red-100 text-red-800';
+      case "Activo":
+        return "bg-green-100 text-green-800";
+      case "Próximo a vencer":
+        return "bg-yellow-100 text-yellow-800";
+      case "Finalizado":
+        return "bg-gray-100 text-gray-800";
+      case "Cancelado":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
     <div className="p-6 space-y-6">
-    {/* El nuevo contenedor que alinea el título y el botón */}
-    <div className="flex items-start justify-between"> 
-        {/* Contenedor del Título y Descripción*/}
-        <div>
-        <h1 className="text-gray-900">Contratos</h1>
-        <p className="text-sm text-gray-600 mt-1">
-            Gestiona y supervisa todos los contratos de alquiler
-        </p>
-        </div>
-        {/* Botón "Nuevo Contrato" */}
-        <button
-        onClick={() => setIsCreateModalOpen(true)}
-        className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mt-1"
-        >
-        <Plus className="w-5 h-5" />
-        Nuevo Contrato
-        </button>
-    </div>
-      
+      <PageHeader
+        title="Contratos"
+        description="Gestiona y supervisa todos los contratos de alquiler"
+        actionButton={{
+          label: "Nuevo Contrato",
+          icon: <Plus className="w-5 h-5" />,
+          onClick: () => setIsCreateModalOpen(true),
+        }}
+      />
 
       {/* Filters Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="text-gray-900 mb-4">Filtros de Contratos</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           {/* Fecha de inicio */}
           <div>
-            <label className="block text-sm text-gray-700 mb-2">Fecha de inicio</label>
+            <label className="block text-sm text-gray-700 mb-2">
+              Fecha de inicio
+            </label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -323,7 +347,9 @@ export function Contratos() {
 
           {/* Fecha de fin */}
           <div>
-            <label className="block text-sm text-gray-700 mb-2">Fecha de fin</label>
+            <label className="block text-sm text-gray-700 mb-2">
+              Fecha de fin
+            </label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -356,7 +382,9 @@ export function Contratos() {
 
           {/* Estado del contrato */}
           <div>
-            <label className="block text-sm text-gray-700 mb-2">Estado del contrato</label>
+            <label className="block text-sm text-gray-700 mb-2">
+              Estado del contrato
+            </label>
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <select
@@ -375,7 +403,9 @@ export function Contratos() {
 
           {/* Tipo de contrato */}
           <div>
-            <label className="block text-sm text-gray-700 mb-2">Tipo de contrato</label>
+            <label className="block text-sm text-gray-700 mb-2">
+              Tipo de contrato
+            </label>
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <select
@@ -431,29 +461,58 @@ export function Contratos() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Cliente</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Apartamento</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Fecha de inicio</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Fecha de fin</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Monto mensual</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Depósito</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Estado</th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">Acciones</th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Cliente
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Apartamento
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Fecha de inicio
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Fecha de fin
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Monto mensual
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Depósito
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Estado
+                </th>
+                <th className="px-6 py-4 text-left text-xs text-gray-600">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredContratos.map((contrato) => (
-                <tr key={contrato.id} className="hover:bg-gray-50 transition-colors">
+                <tr
+                  key={contrato.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
                   <td className="px-6 py-4">
                     <div>
-                      <div className="text-sm text-gray-900">{contrato.cliente}</div>
-                      <div className="text-sm text-gray-600">{contrato.codigoContrato}</div>
+                      <div className="text-sm text-gray-900">
+                        {contrato.cliente}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {contrato.codigoContrato}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{contrato.apartamento}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {contrato.apartamento}
+                  </td>
 
-                  <td className="px-6 py-4 text-sm text-gray-900">{contrato.fechaInicio}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{contrato.fechaFin}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {contrato.fechaInicio}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {contrato.fechaFin}
+                  </td>
 
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {Number(contrato.montoMensual).toFixed(2)} US$
@@ -464,7 +523,11 @@ export function Contratos() {
                   </td>
 
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(contrato.estado)}`}>
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
+                        contrato.estado
+                      )}`}
+                    >
                       {contrato.estado}
                     </span>
                   </td>
@@ -492,7 +555,10 @@ export function Contratos() {
               ))}
               {filteredContratos.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-sm text-gray-500">
+                  <td
+                    colSpan={8}
+                    className="px-6 py-10 text-center text-sm text-gray-500"
+                  >
                     No hay contratos para mostrar.
                   </td>
                 </tr>
@@ -503,7 +569,9 @@ export function Contratos() {
 
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <p className="text-sm text-gray-600">Mostrando {filteredContratos.length} contrato(s)</p>
+          <p className="text-sm text-gray-600">
+            Mostrando {filteredContratos.length} contrato(s)
+          </p>
           <div className="flex items-center gap-2">
             <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
               <ChevronLeft className="w-4 h-4" />
@@ -545,12 +613,12 @@ export function Contratos() {
       {isCreateModalOpen && (
         <CreateContratoModal
           onClose={() => setIsCreateModalOpen(false)}
-          onSave={ async (contratoData) => {
-            try{
+          onSave={async (contratoData) => {
+            try {
               await createContrato(contratoData);
               setIsCreateModalOpen(false);
               loadContratos();
-            }catch(Error){
+            } catch (Error) {
               console.error(error);
               alert(error?.response?.data?.mensaje || "Error creando contrato");
             }
@@ -567,14 +635,16 @@ export function Contratos() {
             setSelectedContrato(null);
           }}
           onSave={async (contratoData) => {
-            try{
+            try {
               await updateContrato(selectedContrato.id, contratoData);
               setIsEditModalOpen(false);
               setSelectedContrato(null);
               await loadContratos();
-            }catch (error){
+            } catch (error) {
               console.error(error);
-              alert(error?.response?.data?.mensaje || "Error actualizando contrato");
+              alert(
+                error?.response?.data?.mensaje || "Error actualizando contrato"
+              );
             }
           }}
         />
@@ -589,8 +659,8 @@ export function Contratos() {
             setSelectedContrato(null);
           }}
           onRenew={(renewData) => {
-              setIsRenewModalOpen(false);
-              setSelectedContrato(null);            
+            setIsRenewModalOpen(false);
+            setSelectedContrato(null);
           }}
         />
       )}

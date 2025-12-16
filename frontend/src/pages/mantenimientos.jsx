@@ -23,44 +23,7 @@ import {
   updateMantenimiento,
   deleteMantenimiento,
 } from "../services/mantenimientos.api";
-
-
-const filters = [
-  {
-    id: "estado",
-    label: "Estado del mantenimiento",
-    placeholder: "Todos",
-    options: [
-      { label: "Activo", value: 1 },
-      { label: "Inactivo", value: 2 },
-    ],
-  },
-  {
-    id: "sucursal",
-    label: "Prioridad",
-    placeholder: "Todas",
-    options: [
-      { label: "Centro", value: "1" },
-      { label: "Norte", value: "2" },
-      { label: "Sur", value: "3" },
-      { label: "Este", value: "4" },
-    ],
-  },
-  {
-    id: "apartamento",
-    label: "Apartamento",
-    placeholder: "Todos",
-    options: [
-      { label: "1", value: 1 },
-      { label: "2", value: 2 },
-    ],
-  },
-];
-
-const values = {
-  sucursal: 2,
-  estado: "1",
-};
+import { fetchApartamentos } from "../services/apartamentoServices";
 
 export function Mantenimientos() {
   const [selectedMantenimiento, setSelectedMantenimiento] = useState(null);
@@ -74,6 +37,80 @@ export function Mantenimientos() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [completado, setCompletado] = useState(false);
   const [confirmTxt, setConfirmTxt] = useState("Marcar como En Proceso");
+  const [apartamentos, setApartamentos] = useState([]);
+
+  const [filterValues, setFilterValues] = useState({
+    estado: "",
+    prioridad: "",
+    apartamento: "",
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filters = [
+    {
+      id: "estado",
+      label: "Estado",
+      placeholder: "Todos",
+      options: [
+        { label: "Pendiente", value: "pendiente" },
+        { label: "En Proceso", value: "en_proceso" },
+        { label: "Completado", value: "completado" },
+      ],
+    },
+    {
+      id: "prioridad",
+      label: "Prioridad",
+      placeholder: "Todas",
+      options: [
+        { label: "Alta", value: "3" },
+        { label: "Media", value: "2" },
+        { label: "Baja", value: "1" },
+      ],
+    },
+    {
+      id: "apartamento",
+      label: "Apartamento",
+      placeholder: "Todos",
+      options: apartamentos.map((s) => ({
+        label: s.numero_apartamento,
+        value: String(s.id),
+      })),
+    },
+  ];
+
+  const filteredMantenimientos = mantenimientos.filter((m) => {
+    const term = searchTerm.toLowerCase();
+    const desc = (m.descripcion || "").toLowerCase();
+    const apt = (m.apartamento?.numero_apartamento || "").toLowerCase();
+    const clientName = m.cliente
+      ? `${m.cliente.nombre} ${m.cliente.apellido}`.toLowerCase()
+      : "";
+
+    const matchesSearch =
+      !searchTerm ||
+      desc.includes(term) ||
+      apt.includes(term) ||
+      clientName.includes(term);
+
+    const matchesEstado =
+      !filterValues.estado || m.estado === filterValues.estado;
+
+    const matchesPrioridad =
+      !filterValues.prioridad || String(m.prioridad) === filterValues.prioridad;
+
+    const matchesApt =
+      !filterValues.apartamento ||
+      String(m.apartamento_id || m.apartamento?.id) ===
+        filterValues.apartamento;
+
+    return matchesSearch && matchesEstado && matchesPrioridad && matchesApt;
+  });
+
+  const handleFilterChange = (id, value) => {
+    setFilterValues((prev) => ({ ...prev, [id]: value }));
+  };
+
+
 
   const ESTADO_LABELS = {
     pendiente: "Pendiente",
@@ -115,26 +152,25 @@ export function Mantenimientos() {
   };
 
   const handleSaveMantenimiento = async (data) => {
-  try {
-    if (showEdit && selectedMantenimiento) {
-      // EDITAR
-      await updateMantenimiento(selectedMantenimiento.id, data);
-    } else {
-      // CREAR
-      await createMantenimiento(data);
+    try {
+      if (showEdit && selectedMantenimiento) {
+        // EDITAR
+        await updateMantenimiento(selectedMantenimiento.id, data);
+      } else {
+        // CREAR
+        await createMantenimiento(data);
+      }
+
+      setShowCrear(false);
+      setShowEdit(false);
+      setSelectedMantenimiento(null);
+
+      await reloadMantenimientos(); // 🔁 refresca tabla
+    } catch (e) {
+      console.error(e);
+      alert("Error al guardar mantenimiento");
     }
-
-    setShowCrear(false);
-    setShowEdit(false);
-    setSelectedMantenimiento(null);
-
-    await reloadMantenimientos(); // 🔁 refresca tabla
-  } catch (e) {
-    console.error(e);
-    alert("Error al guardar mantenimiento");
-  }
-};
-
+  };
 
   const handleViewDetails = (mantenimiento) => {
     console.log("Ver detalles de mantenimiento:", mantenimiento);
@@ -164,23 +200,22 @@ export function Mantenimientos() {
   };
 
   const handleDelete = async (mantenimiento) => {
-  const confirm = window.confirm(
-    "¿Seguro que deseas eliminar este mantenimiento?"
-  );
+    const confirm = window.confirm(
+      "¿Seguro que deseas eliminar este mantenimiento?"
+    );
 
-  if (!confirm) return;
+    if (!confirm) return;
 
-  try {
-    await deleteMantenimiento(mantenimiento.id);
-    setShowDelete(false);
-    setSelectedMantenimiento(null);
-    await reloadMantenimientos();
-  } catch (e) {
-    console.error(e);
-    alert("Error al eliminar mantenimiento");
-  }
-};
-
+    try {
+      await deleteMantenimiento(mantenimiento.id);
+      setShowDelete(false);
+      setSelectedMantenimiento(null);
+      await reloadMantenimientos();
+    } catch (e) {
+      console.error(e);
+      alert("Error al eliminar mantenimiento");
+    }
+  };
 
   const handleNewMantenimiento = () => {
     console.log("Nuevo mantenimiento");
@@ -188,24 +223,18 @@ export function Mantenimientos() {
   };
 
   const reloadMantenimientos = async () => {
-  try {
-    setLoading(true);
-    setError(null);
-    const data = await fetchMantenimientos();
-    setMantenimientos(Array.isArray(data) ? data : []);
-  } catch (e) {
-    console.error(e);
-    setError("No se pudieron cargar los mantenimientos");
-  } finally {
-    setLoading(false);
-  }
-};
-
-useEffect(() => {
-  reloadMantenimientos();
-}, []);
-
-
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fetchMantenimientos();
+      setMantenimientos(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error(e);
+      setError("No se pudieron cargar los mantenimientos");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -214,6 +243,8 @@ useEffect(() => {
         setError(null);
 
         const data = await fetchMantenimientos();
+        const apts = await fetchApartamentos();
+        setApartamentos(apts.data);
 
         // Si tu API devuelve { mensaje, data: [] } cambia aquí a data.data
         setMantenimientos(Array.isArray(data) ? data : []);
@@ -249,7 +280,14 @@ useEffect(() => {
 
         {/** FILTERS */}
         <div>
-          <Filters title="mantenimientos" filters={filters} values={values} />
+          <Filters
+            title="mantenimientos"
+            filters={filters}
+            values={filterValues}
+            onChange={handleFilterChange}
+            searchValue={searchTerm}
+            onSearch={setSearchTerm}
+          />
         </div>
 
         {/** TABLE */}
@@ -287,7 +325,7 @@ useEffect(() => {
                 </thead>
 
                 <tbody className="divide-y divide-gray-200">
-                  {mantenimientos.map((mantenimiento) => (
+                  {filteredMantenimientos.map((mantenimiento) => (
                     <tr
                       key={mantenimiento.id}
                       className="hover:bg-gray-50 transition-colors"

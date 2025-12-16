@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const reportesController = require("../controllers/reportes.controller");
+const authMiddleware = require("../controllers/auth.middleware");
 
 router.post("/reportes/pagos", reportesController.pagosMensuales);
 router.post("/reportes/ocupacion", reportesController.ocupacion);
@@ -10,6 +11,16 @@ router.get("/dashboard/ocupacion", reportesController.ocupacionTotal);
 router.get("/dashboard/morosidad", reportesController.morosidadTotal);
 router.get("/dashboard/clientes", reportesController.clientesTotal);
 router.get("/dashboard/contratos", reportesController.contratos);
+router.get(
+  "/reportes/comprobantes/client",
+  authMiddleware,
+  reportesController.comprobantesById
+);
+router.get(
+  "/reportes/contratos/client",
+  authMiddleware,
+  reportesController.contratosById
+);
 
 module.exports = router;
 

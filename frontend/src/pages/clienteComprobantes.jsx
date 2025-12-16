@@ -10,6 +10,11 @@ import {
 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { KPICard } from "./kpiCards";
+import { useEffect } from "react";
+import {
+  fetchComprobantesCliente,
+  fetchContratosCliente,
+} from "../services/reportes.api";
 
 const mockComprobantes = [
   {
@@ -60,6 +65,24 @@ export function ClienteComprobantes() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedComprobante, setSelectedComprobante] = useState(null);
 
+  useEffect(() => {
+    //Obtener el id con el token de alguna forma
+    //Con el id obtener: reporte de comprobantes del cliente loggedin (Total,Pendientes,Validados)
+    //Obtener un objeto con los ultimos 5 reportes que tenga: id,fecha,monto,metodo,estado,notas
+
+    const loadComprobantes = async () => {
+      try {
+        const comprobantes = await fetchComprobantesCliente();
+        console.log(comprobantes);
+        const data = await fetchContratosCliente();
+        console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadComprobantes();
+  }, []);
+
   const [formData, setFormData] = useState({
     monto: "",
     fechaPago: "",
@@ -68,11 +91,11 @@ export function ClienteComprobantes() {
     archivo: null,
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newComprobante = {
-      codigo: `COMP-2024-${157 + comprobantes.length}`,
+      codigo: `COMP-2024-${157 + 1}`,
       monto: parseFloat(formData.monto),
       fechaPago: formData.fechaPago,
       metodoPago: formData.metodoPago,
@@ -82,6 +105,16 @@ export function ClienteComprobantes() {
         "https://images.unsplash.com/photo-1554224311-beee4ece91af?w=800",
       fechaEnvio: new Date().toISOString().split("T")[0],
     };
+
+    const data = await fetchContratosCliente();
+    console.log(data);
+    await uploadComprobante(
+      newComprobante.imagenUrl,
+      contratoId, //getcontrato
+      newComprobante.monto,
+      newComprobante.metodoPago,
+      newComprobante.comentario
+    );
 
     setComprobantes([newComprobante, ...comprobantes]);
     setShowUploadModal(false);
@@ -216,7 +249,6 @@ export function ClienteComprobantes() {
                     onChange={handleFileChange}
                     className="hidden"
                     id="file-upload"
-                    required
                   />
                   <label htmlFor="file-upload" className="cursor-pointer">
                     <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />

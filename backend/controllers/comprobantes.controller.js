@@ -44,7 +44,7 @@ module.exports = {
       }
 
       const data = {
-        usuarioId: 1, // cambiar a req.user.id cuando funcionen tokens
+        usuarioId: req.user.id, // cambiar a req.user.id cuando funcionen tokens
         notas: req.body.notas || null,
         contratoId: req.body.contratoId,
         monto: req.body.monto,

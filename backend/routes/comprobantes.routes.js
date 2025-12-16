@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const comprobantesController = require("../controllers/comprobantes.controller");
 const upload = require("../middlewares/upload");
+const authMiddleware = require("../controllers/auth.middleware");
 
 router.get("/comprobantes", comprobantesController.listarComprobantes);
 //router.get("/comprobantes/:id", comprobantesController.obtenerComprobante);
 router.post(
   "/comprobantes/subir",
+  authMiddleware,
   upload.single("archivo"),
   comprobantesController.subirComprobante
 );

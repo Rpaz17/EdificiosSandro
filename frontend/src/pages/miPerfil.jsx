@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { LogOut, Mail, User, Calendar, Clock, Shield } from "lucide-react";
 import { CambiarPasswordModal } from "./CambiarPasswordModal";
 import { fetchPerfilUsuario } from "../services/usuarios.api";
+import { PageHeader } from "../components/PageHeader";
 
 export function MiPerfil() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -10,39 +11,35 @@ export function MiPerfil() {
   const [error, setError] = useState(null);
 
   const mapPerfil = (data) => ({
-  email: data.email,
-  rol: data.rol,
-  estado: data.estado ? "Activo" : "Inactivo",
-  fechaCreacion: data.created_at,
-  ultimaActualizacion: data.updated_at,
-  ultimoInicio: data.last_login_at || null,
-});
-
-const formatFecha = (fecha) => {
-  if (!fecha) return "No disponible";
-
-  const date = new Date(fecha);
-
-  if (isNaN(date.getTime())) {
-    return "No disponible";
-  }
-
-  return date.toLocaleDateString("es-ES", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    email: data.email,
+    rol: data.rol,
+    estado: data.estado ? "Activo" : "Inactivo",
+    fechaCreacion: data.created_at,
+    ultimaActualizacion: data.updated_at,
+    ultimoInicio: data.last_login_at || null,
   });
-};
 
+  const formatFecha = (fecha) => {
+    if (!fecha) return "No disponible";
 
+    const date = new Date(fecha);
 
+    if (isNaN(date.getTime())) {
+      return "No disponible";
+    }
+
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   useEffect(() => {
-  fetchPerfilUsuario()
-    .then((data) => setPerfil(mapPerfil(data)))
-    .finally(() => setLoading(false));
-}, []);
-
+    fetchPerfilUsuario()
+      .then((data) => setPerfil(mapPerfil(data)))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleLogout = () => {
     console.log("Logging out...");
@@ -50,10 +47,9 @@ const formatFecha = (fecha) => {
   };
 
   const getEstadoBadge = (estado = "") =>
-  estado === "Activo"
-    ? "bg-blue-100 text-blue-800"
-    : "bg-gray-100 text-gray-800";
-
+    estado === "Activo"
+      ? "bg-blue-100 text-blue-800"
+      : "bg-gray-100 text-gray-800";
 
   const getRolBadge = (rol) => {
     switch (rol) {
@@ -69,31 +65,27 @@ const formatFecha = (fecha) => {
   };
 
   if (loading) {
-  return <div className="p-6">Cargando perfil...</div>;
-}
+    return <div className="p-6">Cargando perfil...</div>;
+  }
 
-if (error) {
-  return <div className="p-6 text-red-600">{error}</div>;
-}
+  if (error) {
+    return <div className="p-6 text-red-600">{error}</div>;
+  }
 
   return (
     <div className="p-6 space-y-6">
       {/* Page Header */}
-      <div className="max-w-[1400px] mx-auto">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-gray-900">Mi Perfil</h1>
-            <p className="text-sm text-gray-600 mt-1">Dashboard → Mi Perfil</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            Cerrar Sesión
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Mi Perfil"
+        description="Dashboard → Mi Perfil"
+        actionButton={{
+          label: "Cerrar Sesión",
+          icon: <LogOut className="w-5 h-5" />,
+          onClick: handleLogout,
+          variant: "outline",
+        }}
+        className="max-w-[1400px] mx-auto"
+      />
 
       {/* Centered Content Container */}
       <div className="max-w-[1400px] mx-auto space-y-5">
@@ -155,14 +147,11 @@ if (error) {
               <div>
                 <p className="text-xs text-gray-600">Fecha de creación</p>
                 <p className="text-sm text-gray-900">
-                  {new Date(perfil.fechaCreacion).toLocaleDateString(
-                    "es-ES",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
+                  {new Date(perfil.fechaCreacion).toLocaleDateString("es-ES", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </p>
               </div>
             </div>
@@ -187,8 +176,6 @@ if (error) {
           <h2 className="text-gray-900 mb-6">Seguridad de la Cuenta</h2>
 
           <div className="space-y-4">
-            
-
             {/* Security Info */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">

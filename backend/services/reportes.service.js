@@ -1,4 +1,11 @@
-const { Pago, Apartamento, Cliente, Sucursal, Contrato } = require("../models");
+const {
+  Pago,
+  Apartamento,
+  Cliente,
+  Sucursal,
+  Contrato,
+  Comprobante,
+} = require("../models");
 const { Op, fn, col, literal } = require("sequelize");
 const ServiceError = require("../utils/serviceError");
 
@@ -342,7 +349,7 @@ async function ocupacionTotal() {
 }
 
 async function morosidadTotal() {
-  const hoy = new Date(); // o usa CURRENT_DATE con literal si prefieres
+  const hoy = new Date();
 
   const totalMorosos = await Cliente.count({
     distinct: true,
@@ -404,6 +411,189 @@ async function contratos() {
 
   return { contratos: ultimosContratos };
 }
+
+async function contratosById(usuarioId) {
+  const cliente = await Cliente.findOne({
+    where: {
+      id_usuario: usuarioId,
+      is_deleted: false,
+    },
+  });
+  // buscar contrato activo del cliente
+  const contratoActual = await Contrato.findOne({
+    where: {
+      id_cliente: cliente.id,
+      is_deleted: false,
+      estado: "activo",
+    },
+    include: [
+      {
+        model: Apartamento,
+        as: "apartamento",
+        attributes: ["id", "numero_apartamento"],
+      },
+    ],
+    order: [["created_at", "DESC"]],
+  });
+
+  if (!contratoActual) {
+    return {
+      infoContrato: null,
+      siguientePago: null,
+    };
+  }
+
+  // buscar el siguiente pago pendiente
+  const hoy = new Date();
+
+  const siguientePago = await Pago.findOne({
+    where: {
+      id_contrato: contratoActual.id,
+      is_deleted: false,
+      estado_pago: { [Op.ne]: "pagado" },
+      periodo: { [Op.gte]: hoy },
+    },
+    order: [["periodo", "ASC"]],
+  });
+
+  return {
+    infoContrato: contratoActual,
+    siguientePago,
+  };
+}
+
+async function comprobantesById(usuarioId) {
+  // 1️⃣ Cliente desde usuario
+  const cliente = await Cliente.findOne({
+    where: {
+      id_usuario: usuarioId,
+      is_deleted: false,
+    },
+  });
+
+  if (!cliente) {
+    throw new ServiceError("Cliente no encontrado para este usuario", 404);
+  }
+
+  // 2️⃣ Contratos del cliente
+  const contratos = await Contrato.findAll({
+    where: {
+      id_cliente: cliente.id,
+      is_deleted: false,
+    },
+    attributes: ["id"],
+    raw: true,
+  });
+
+  if (contratos.length === 0) {
+    return {
+      resumen: {
+        total: 0,
+        validados: 0,
+        pendientes: 0,
+        rechazados: 0,
+      },
+      comprobantes: [],
+    };
+  }
+
+  const contratoIds = contratos.map((c) => c.id);
+
+  // 3️⃣ Conteo de comprobantes por estado (JOIN lógico vía Pago)
+  const resumenRaw = await Comprobante.findAll({
+    attributes: [
+      [fn("COUNT", col("Comprobante.id")), "total"],
+      [
+        fn(
+          "SUM",
+          literal(
+            `CASE WHEN "Comprobante"."estado_validacion" = 'validado' THEN 1 ELSE 0 END`
+          )
+        ),
+        "validados",
+      ],
+      [
+        fn(
+          "SUM",
+          literal(
+            `CASE WHEN "Comprobante"."estado_validacion" = 'pendiente' THEN 1 ELSE 0 END`
+          )
+        ),
+        "pendientes",
+      ],
+      [
+        fn(
+          "SUM",
+          literal(
+            `CASE WHEN "Comprobante"."estado_validacion" = 'rechazado' THEN 1 ELSE 0 END`
+          )
+        ),
+        "rechazados",
+      ],
+    ],
+    include: [
+      {
+        model: Pago,
+        as: "pago",
+        required: true,
+        where: {
+          id_contrato: contratoIds,
+          is_deleted: false,
+        },
+        attributes: [],
+      },
+    ],
+    where: {
+      is_deleted: false,
+    },
+    raw: true,
+  });
+
+  const resumen = {
+    total: Number(resumenRaw[0].total) || 0,
+    validados: Number(resumenRaw[0].validados) || 0,
+    pendientes: Number(resumenRaw[0].pendientes) || 0,
+    rechazados: Number(resumenRaw[0].rechazados) || 0,
+  };
+
+  // 4️⃣ Últimos 5 comprobantes con info del pago
+  const comprobantes = await Comprobante.findAll({
+    where: {
+      is_deleted: false,
+    },
+    attributes: ["id", "estado_validacion", "notas", "created_at"],
+    include: [
+      {
+        model: Pago,
+        as: "pago",
+        required: true,
+        where: {
+          id_contrato: contratoIds,
+          is_deleted: false,
+        },
+        attributes: ["monto", "metodo", "fecha"],
+      },
+    ],
+    order: [["created_at", "DESC"]],
+    limit: 5,
+  });
+
+  // 5️⃣ Normalizar salida para frontend
+  const comprobantesFormateados = comprobantes.map((c) => ({
+    id: c.id,
+    fecha: c.pago.fecha,
+    monto: c.pago.monto,
+    metodo: c.pago.metodo,
+    estado: c.estado_validacion,
+    notas: c.notas,
+  }));
+
+  return {
+    resumen,
+    comprobantes: comprobantesFormateados,
+  };
+}
+
 module.exports = {
   pagosMensuales,
   ocupacion,
@@ -413,4 +603,6 @@ module.exports = {
   morosidadTotal,
   clientesTotal,
   contratos,
+  comprobantesById,
+  contratosById,
 };

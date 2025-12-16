@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { KPICard } from "./kpiCards";
 import { PageHeader } from "../components/PageHeader";
+import { useEffect } from "react";
 
 const mockNotifications = [
   {
@@ -38,6 +39,13 @@ const mockNotifications = [
 ];
 
 export function ClienteDashboard() {
+  useEffect(() => {
+    //Obtener el id con el token de alguna forma
+    //KPICards: Obtener de contrato: estado, proximo pago, monto
+    //Informacion del contrato: numero_apartamento, periodo_inicio, periodo_fin, monto, id, ultimo pago
+    //Notificaciones: Siguiente pago,
+  }, []);
+
   return (
     <div className="p-6 space-y-6">
       <PageHeader
