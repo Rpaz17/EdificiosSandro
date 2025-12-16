@@ -22,29 +22,14 @@ export async function updateUsuario(id, data) {
 
 export async function deleteUsuario(id, updated_by) {
   const res = await api.delete(`/usuarios/${id}`, {
-    data: { updated_by }, 
+    data: { updated_by },
   });
   return res.data;
 }
 
 export const fetchPerfilUsuario = async () => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("No hay token");
-  }
-
-  const res = await fetch("http://localhost:3000/api/usuarios/perfil", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error("Error al obtener perfil");
-  }
-
-  return res.json();
+  const res = await api.get("/usuarios/perfil");
+  return res.data;
 };
 
 export const cambiarPassword = async (payload) => {
@@ -70,6 +55,3 @@ export const cambiarPassword = async (payload) => {
 
   return data;
 };
-
-
-
