@@ -198,23 +198,6 @@ export function Apartamentos() {
               </select>
             </div>
 
-            {/* Torre */}
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">
-                Torre o Edificio
-              </label>
-              <select
-                value={torreFilter}
-                onChange={(e) => setTorreFilter(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
-              >
-                <option>Todas las torres</option>
-                <option>Torre A</option>
-                <option>Torre B</option>
-                <option>Torre C</option>
-              </select>
-            </div>
-
             {/* Estado */}
             <div>
               <label className="block text-sm text-gray-700 mb-2">
@@ -229,25 +212,6 @@ export function Apartamentos() {
                 <option>Disponible</option>
                 <option>Ocupado</option>
                 <option>Mantenimiento</option>
-              </select>
-            </div>
-
-            {/* Tipo */}
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">
-                Tipo de Apartamento
-              </label>
-              <select
-                value={tipoFilter}
-                onChange={(e) => setTipoFilter(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm"
-              >
-                <option>Todos los tipos</option>
-                <option>Estudio</option>
-                <option>1 Habitación</option>
-                <option>2 Habitaciones</option>
-                <option>3 Habitaciones</option>
-                <option>Penthouse</option>
               </select>
             </div>
 
@@ -297,9 +261,6 @@ export function Apartamentos() {
                     Sucursal
                   </th>
                   <th className="px-6 py-4 text-left text-xs text-gray-600">
-                    Tipo
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs text-gray-600">
                     Estado
                   </th>
                   <th className="px-6 py-4 text-left text-xs text-gray-600">
@@ -333,9 +294,6 @@ export function Apartamentos() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {apartamento.sucursal}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {apartamento.tipo}
                     </td>
                     <td className="px-6 py-4">
                       <span
@@ -438,6 +396,7 @@ export function Apartamentos() {
       {/* Modales */}
       {isCreateModalOpen && (
         <CreateApartamentoModal
+          sucursales={sucursales}
           onClose={() => setIsCreateModalOpen(false)}
           onSave={async (data) => {
             try {

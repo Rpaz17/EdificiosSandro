@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 
-// Se elimina la interfaz CreateApartamentoModalProps
 
-export function CreateApartamentoModal({ onClose, onSave }) {
+export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
   const [formData, setFormData] = useState({
     numero: "",
     sucursal: "",
@@ -71,8 +70,6 @@ export function CreateApartamentoModal({ onClose, onSave }) {
                 />
               </div>
 
-              {/* Torre / Edificio */}
-
               {/* Sucursal */}
               <div>
                 <label className="block text-sm text-gray-700 mb-2">
@@ -86,10 +83,11 @@ export function CreateApartamentoModal({ onClose, onSave }) {
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Seleccionar sucursal</option>
-                  <option value="1">Centro</option>
-                  <option value="2">Norte</option>
-                  <option value="3">Sur</option>
-                  <option value="4">Este</option>
+                  {sucursales.map((s) => (
+                    <option key={s.id} value={String(s.id)}>
+                      {s.nombre ?? s.descripcion ?? `Sucursal ${s.id}`}
+                    </option>
+                  ))}
                 </select>
               </div>
 
