@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 
-
 export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
   const [formData, setFormData] = useState({
     numero: "",
@@ -83,7 +82,10 @@ export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="ALL">
-                    {sucursalesLoading ? "Cargando..." : "Todas las sucursales"}
+                    {
+                      //sucursalesLoading ? "Cargando..." :
+                      "Todas las sucursales"
+                    }
                   </option>
                   {sucursales.map((s) => (
                     <option key={s.id} value={String(s.id)}>

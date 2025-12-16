@@ -46,12 +46,15 @@ module.exports = {
       const data = {
         usuarioId: req.user.id, // cambiar a req.user.id cuando funcionen tokens
         notas: req.body.notas || null,
-        contratoId: req.body.contratoId,
-        monto: req.body.monto,
+        contratoId: Number(req.body.contratoId),
+        monto: Number(req.body.monto),
         metodo: req.body.metodo,
         archivo: req.file.buffer,
         nombreArchivo: req.file.originalname,
       };
+      console.log("📦 req.body:", req.body);
+      console.log("📎 req.file:", req.file);
+      console.log("👤 req.user:", req.user);
 
       const comprobante = await comprobantesService.subirComprobante(data);
 
