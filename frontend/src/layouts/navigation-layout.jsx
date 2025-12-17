@@ -14,9 +14,7 @@ export function NavigationLayout() {
 
   const [selectedNotification, setSelectedNotification] = useState(null);
 
-
-  useEffect(() => {
-    const load = async () => {
+  const load = async () => {
       try {
         const res = await fetchNotificaciones();
         const data = (res.data || []).map(n => ({
@@ -28,7 +26,13 @@ export function NavigationLayout() {
         console.error("Error al cargar notificaciones:", error);
       }
     };
+
+  useEffect(() => {
     load();
+    const interval = setInterval(() =>{
+      load();
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleMarkAllAsRead = () => {
