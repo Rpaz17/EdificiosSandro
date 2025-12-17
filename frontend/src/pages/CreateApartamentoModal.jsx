@@ -6,7 +6,7 @@ export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
     numero: "",
     sucursal: "",
     precioMensual: "",
-    estado: "Disponible",
+    estado: "disponible",
     descripcion: "",
   });
 
