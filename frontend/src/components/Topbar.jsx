@@ -1,48 +1,50 @@
 import { Bell, User, LogOut, ChevronDown } from "lucide-react";
 import { NotificationsDropdown } from "./notificacionDropdown";
-
-
+import { useAuth } from "../auth/authProvider";
 export default function Topbar(props) {
+  const { user } = useAuth();
   const {
     onUserClick, //Para ver info del usuario actual
     onNotificationsToggle,
     isNotificationsOpen,
-    unreadCount, 
-    notifications, 
+    unreadCount,
+    notifications,
     onNotificationClick,
-    onMarkAllAsRead
+    onMarkAllAsRead,
   } = props;
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
-        <h1 className="text-gray-900">Panel de Control</h1>
+        <h1 className="text-gray-900"></h1>
       </div>
       <div className="flex items-center gap-4">
-      {/* Zona de Notificaciones (es 'relative') */}
-      <div className="relative"> 
-        <button 
-          onClick={onNotificationsToggle} 
-          className={`relative p-2 text-gray-500 rounded-lg transition-colors ${
-            isNotificationsOpen ? 'bg-gray-100 text-blue-600' : 'hover:bg-gray-100'
-          }`}
-        >
-          <Bell className="w-5 h-5" />
-          
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 border border-white" />
-          )}
-        </button>
+        {/* Zona de Notificaciones (es 'relative') */}
+        <div className="relative">
+          <button
+            onClick={onNotificationsToggle}
+            className={`relative p-2 text-gray-500 rounded-lg transition-colors ${
+              isNotificationsOpen
+                ? "bg-gray-100 text-blue-600"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <Bell className="w-5 h-5" />
 
-        {/* AHORA SE RENDERIZA AQUÍ, DENTRO DEL CONTENEDOR RELATIVE */}
-        {isNotificationsOpen && (
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 border border-white" />
+            )}
+          </button>
+
+          {/* AHORA SE RENDERIZA AQUÍ, DENTRO DEL CONTENEDOR RELATIVE */}
+          {isNotificationsOpen && (
             <NotificationsDropdown
-                notifications={notifications}
-                onClose={onNotificationsToggle} 
-                onNotificationClick={onNotificationClick}
-                onMarkAllAsRead={onMarkAllAsRead}
+              notifications={notifications}
+              onClose={onNotificationsToggle}
+              onNotificationClick={onNotificationClick}
+              onMarkAllAsRead={onMarkAllAsRead}
             />
-        )}
-      </div>
+          )}
+        </div>
 
         {/* User Menu */}
         <div className="relative">
@@ -51,8 +53,8 @@ export default function Topbar(props) {
               <User className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
-              <div className="text-sm text-gray-900">Admin Usuario</div>
-              <div className="text-xs text-gray-500">Administrador</div>
+              <div className="text-sm text-gray-900">{user.email}</div>
+              <div className="text-xs text-gray-500">{user.rol}</div>
             </div>
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </button>

@@ -118,13 +118,13 @@ export function Dashboard() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="Total Departamentos"
+          title="Total de Apartamentos"
           value={reporteOcupacion.total}
           icon={Building2}
           color="blue"
         />
         <KPICard
-          title="Departamentos Ocupados"
+          title="Apartamentos Ocupados"
           value={reporteOcupacion.ocupados}
           icon={Home}
           color="green"
