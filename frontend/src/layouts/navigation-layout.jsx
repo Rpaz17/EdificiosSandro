@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { fetchNotificaciones } from "../services/notificaciones.api";
 
 import NotificationDetail from "../pages/notificacionDetalle";
-export function NavigationLayout() {
+export function NavigationLayout({user}) {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState("");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -66,6 +66,7 @@ export function NavigationLayout() {
       <div className="flex flex-col flex-1 h-screen">
         {/* PASA TODAS LAS PROPS AL TOPBAR */}
         <Topbar 
+            user={user}
             onNotificationsToggle={() => setIsNotificationsOpen(prev => !prev)}
             isNotificationsOpen={isNotificationsOpen}
             unreadCount={notifications.filter(n => n.estado === 'NO_LEIDA').length}

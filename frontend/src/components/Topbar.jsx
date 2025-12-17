@@ -4,6 +4,7 @@ import { NotificationsDropdown } from "./notificacionDropdown";
 
 export default function Topbar(props) {
   const {
+    user,
     onUserClick, //Para ver info del usuario actual
     onNotificationsToggle,
     isNotificationsOpen,
@@ -12,6 +13,20 @@ export default function Topbar(props) {
     onNotificationClick,
     onMarkAllAsRead
   } = props;
+
+  const rolLabel = (() => {
+  if (!user?.rol) return "";
+
+  const rol = user.rol.toLowerCase();
+
+  if (rol === "admin") return "Admin Usuario";
+  if (rol === "cliente") return "Admin Cliente";
+  if (rol === "usuario") return "Usuario";
+
+  return rol;
+})();
+
+
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
@@ -51,8 +66,10 @@ export default function Topbar(props) {
               <User className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
-              <div className="text-sm text-gray-900">Admin Usuario</div>
-              <div className="text-xs text-gray-500">Administrador</div>
+              <div className="text-sm text-gray-900">{rolLabel}</div>
+              <div className="text-xs text-gray-500">{user?.email}</div>
+
+  
             </div>
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </button>
