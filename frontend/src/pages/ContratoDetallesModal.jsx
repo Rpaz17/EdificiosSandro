@@ -167,13 +167,7 @@ export function ContratoDetailPanel({
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <button
-              onClick={() => onEdit(contrato)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <FileText className="w-5 h-5" />
-              Ver Detalle Completo
-            </button>
+            
             
             <button
               onClick={() => onEdit(contrato)}

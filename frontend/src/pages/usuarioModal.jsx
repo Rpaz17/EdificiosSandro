@@ -141,7 +141,6 @@ export function UsuarioModal({ usuario, onClose, onSave }) {
                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="Admin">Admin</option>
-                <option value="Cobrador">Cobrador</option>
                 <option value="Cliente">Cliente</option>
               </select>
             </div>
