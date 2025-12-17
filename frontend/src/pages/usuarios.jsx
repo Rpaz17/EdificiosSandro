@@ -296,7 +296,6 @@ export function Usuarios() {
                 >
                   <option>Todos</option>
                   <option>Admin</option>
-                  <option>Cobrador</option>
                   <option>Cliente</option>
                 </select>
               </div>
