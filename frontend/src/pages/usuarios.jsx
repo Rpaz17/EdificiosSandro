@@ -252,199 +252,203 @@ export function Usuarios() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="Usuarios"
-        description="Dashboard → Usuarios"
-        actionButton={{
-          label: "Nuevo Usuario",
-          icon: <Plus className="w-5 h-5" />,
-          onClick: handleNewUsuario,
-        }}
-      />
+    <div className="p-6">
+      <div className="space-y-6">
+        <PageHeader
+          title="Usuarios"
+          description="Dashboard → Usuarios"
+          actionButton={{
+            label: "Nuevo Usuario",
+            icon: <Plus className="w-5 h-5" />,
+            onClick: handleNewUsuario,
+          }}
+        />
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Email Search */}
-          <div className="lg:col-span-2">
-            <label className="block text-sm text-gray-700 mb-2">
-              Buscar por correo
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Ingrese el correo electrónico"
-                value={emailSearch}
-                onChange={(e) => setEmailSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Email Search */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm text-gray-700 mb-2">
+                Buscar por correo
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Ingrese el correo electrónico"
+                  value={emailSearch}
+                  onChange={(e) => setEmailSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Rol */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">Rol</label>
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <select
+                  value={rolFilter}
+                  onChange={(e) => setRolFilter(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
+                >
+                  <option>Todos</option>
+                  <option>Admin</option>
+                  <option>Cobrador</option>
+                  <option>Cliente</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Estado */}
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">Estado</label>
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <select
+                  value={estadoFilter}
+                  onChange={(e) => setEstadoFilter(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
+                >
+                  <option>Todos</option>
+                  <option>Activo</option>
+                  <option>Inactivo</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Rol */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Rol</label>
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <select
-                value={rolFilter}
-                onChange={(e) => setRolFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
-              >
-                <option>Todos</option>
-                <option>Admin</option>
-                <option>Cobrador</option>
-                <option>Cliente</option>
-              </select>
-            </div>
-          </div>
+          {/* Buttons */}
+          <div className="flex gap-3 mt-4">
+            <button
+              onClick={handleApplyFilters}
+              className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar Filtros
+            </button>
 
-          {/* Estado */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Estado</label>
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <select
-                value={estadoFilter}
-                onChange={(e) => setEstadoFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
-              >
-                <option>Todos</option>
-                <option>Activo</option>
-                <option>Inactivo</option>
-              </select>
-            </div>
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              Limpiar Filtros
+            </button>
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={handleApplyFilters}
-            className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Aplicar Filtros
-          </button>
-
-          <button
-            onClick={handleClearFilters}
-            className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-          >
-            Limpiar Filtros
-          </button>
+        {/* Summary */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-600">
+            {loading && (
+              <p className="text-sm text-gray-500">Cargando usuarios...</p>
+            )}
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            Mostrando{" "}
+            <span className="text-gray-900">
+              {filteredUsuarios.length}
+            </span>{" "}
+            usuarios
+          </p>
         </div>
-      </div>
 
-      {/* Summary */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          {loading && (
-            <p className="text-sm text-gray-500">Cargando usuarios...</p>
-          )}
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          Mostrando{" "}
-          <span className="text-gray-900">{filteredUsuarios.length}</span>{" "}
-          usuarios
-        </p>
-      </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  ID
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Email
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Rol
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Estado
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Fecha creación
-                </th>
-                <th className="px-6 py-4 text-left text-xs text-gray-600">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-200">
-              {filteredUsuarios.map((usuario) => (
-                <tr key={usuario.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm">{usuario.id}</td>
-                  <td className="px-6 py-4 text-sm">{usuario.email}</td>
-
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getRolBadge(
-                        usuario.rol
-                      )}`}
-                    >
-                      {usuario.rol}
-                    </span>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                        usuario.estado
-                      )}`}
-                    >
-                      {usuario.estado}
-                    </span>
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(usuario.fechaCreacion).toLocaleDateString(
-                      "es-ES",
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      }
-                    )}
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                        title="Ver detalles"
-                        onClick={() => handleViewUsuario(usuario)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                        title="Editar"
-                        onClick={() => handleEditUsuario(usuario)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                        title="Eliminar"
-                        onClick={() => handleDeleteUsuario(usuario)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        {/* Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    ID
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Email
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Rol
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Estado
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Fecha creación
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs text-gray-600">
+                    Acciones
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200">
+                {filteredUsuarios.map((usuario) => (
+                  <tr key={usuario.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm">{usuario.id}</td>
+                    <td className="px-6 py-4 text-sm">{usuario.email}</td>
+
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getRolBadge(
+                          usuario.rol
+                        )}`}
+                      >
+                        {usuario.rol}
+                      </span>
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs ${getEstadoBadge(
+                          usuario.estado
+                        )}`}
+                      >
+                        {usuario.estado}
+                      </span>
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {new Date(usuario.fechaCreacion).toLocaleDateString(
+                        "es-ES",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                          title="Ver detalles"
+                          onClick={() => handleViewUsuario(usuario)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                          title="Editar"
+                          onClick={() => handleEditUsuario(usuario)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                          title="Eliminar"
+                          onClick={() => handleDeleteUsuario(usuario)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

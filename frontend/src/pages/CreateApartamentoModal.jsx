@@ -31,7 +31,7 @@ export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Modal */}
@@ -81,11 +81,7 @@ export function CreateApartamentoModal({ onClose, onSave, sucursales = [] }) {
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="ALL">
-                    {
-                      "Todas las sucursales"
-                    }
-                  </option>
+                  <option value="ALL">{"Todas las sucursales"}</option>
                   {sucursales.map((s) => (
                     <option key={s.id} value={String(s.id)}>
                       {s.nombre ?? s.descripcion ?? `Sucursal ${s.id}`}

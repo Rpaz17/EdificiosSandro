@@ -5,7 +5,7 @@ export function SucursalDeleteModal({ sucursal, onConfirm, onCancel }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-30 z-50"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
         onClick={onCancel}
       />
 

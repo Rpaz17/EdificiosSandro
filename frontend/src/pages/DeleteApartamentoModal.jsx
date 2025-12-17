@@ -14,7 +14,7 @@ export function DeleteApartamentoModal({ apartamento, onClose, onDelete }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Modal */}

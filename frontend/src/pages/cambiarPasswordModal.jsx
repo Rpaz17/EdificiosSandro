@@ -2,8 +2,6 @@ import { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { cambiarPassword } from "../services/usuarios.api";
 
-
-
 export function CambiarPasswordModal({ onClose }) {
   const [formData, setFormData] = useState({
     currentPassword: "",
@@ -15,39 +13,36 @@ export function CambiarPasswordModal({ onClose }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (formData.newPassword !== formData.confirmPassword) {
-    alert("Las contraseñas no coinciden");
-    return;
-  }
+    if (formData.newPassword !== formData.confirmPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
 
-  try {
-    await cambiarPassword({
-      password_actual: formData.currentPassword,
-      password_nueva: formData.newPassword,
-    });
+    try {
+      await cambiarPassword({
+        password_actual: formData.currentPassword,
+        password_nueva: formData.newPassword,
+      });
 
-    alert("Contraseña actualizada correctamente");
-    onClose();
-  } catch (error) {
-    alert(error.message || "Error al cambiar contraseña");
-  }
-};
-
+      alert("Contraseña actualizada correctamente");
+      onClose();
+    } catch (error) {
+      alert(error.message || "Error al cambiar contraseña");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  
-
   return (
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-20 z-40"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
         onClick={onClose}
       />
 
