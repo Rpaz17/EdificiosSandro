@@ -5,7 +5,10 @@ const crypto = require("crypto");
 const { Op } = require("sequelize");
 const ServiceError = require("../utils/serviceError");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "comprobantes");
-const { notificacionARol, crearNotificacion } = require("./notificaciones.service");
+const {
+  notificacionARol,
+  crearNotificacion,
+} = require("./notificaciones.service");
 
 async function listarComprobantes() {
   //return [{ test: true }];
@@ -91,9 +94,9 @@ async function subirComprobante({
     is_deleted: false,
   });
 
-  try{
+  try {
     const contrato = await Contrato.findByPk(contratoId, {
-      include: [{ model: Cliente, as: "cliente", required:false}],
+      include: [{ model: Cliente, as: "cliente", required: false }],
     });
 
     const id_cliente = contrato?.cliente?.id || null;
@@ -108,7 +111,7 @@ async function subirComprobante({
       id_pago: pago.id,
       created_by: usuarioId,
     });
-  }catch(error){
+  } catch (error) {
     console.error("Error enviando notificación de nuevo comprobante:", error);
   }
 
@@ -137,12 +140,12 @@ async function validarComprobante(comprobanteId, usuarioId) {
   pago.updated_at = new Date();
   pago.updated_by = usuarioId;
   await pago.save();
-try {
+  try {
     const contrato = await Contrato.findByPk(pago.id_contrato, {
       include: [{ model: Cliente, as: "cliente" }],
     });
 
-    const id_usuario_cliente = contrato?.cliente?.id_usuario; 
+    const id_usuario_cliente = contrato?.cliente?.id_usuario;
 
     if (id_usuario_cliente) {
       await crearNotificacion({
@@ -157,19 +160,18 @@ try {
       });
     }
   } catch (e) {
-    console.error("No se pudo crear notificación al cliente (pago aceptado):", e);
+    console.error(
+      "No se pudo crear notificación al cliente (pago aceptado):",
+      e
+    );
   }
   return comprobante;
 }
 
 async function rechazarComprobante(comprobanteId, usuarioId) {
   // Validar que exista el comprobante
-  const comprobante = await Comprobante.findByPk(comprobanteId, {
-    transaction: t,
-  });
-  const pago = await Pago.findByPk(comprobante.id_pago, {
-    transaction: t,
-  });
+  const comprobante = await Comprobante.findByPk(comprobanteId);
+  const pago = await Pago.findByPk(comprobante.id_pago);
   if (!comprobante) {
     throw new ServiceError("Comprobante no encontrado", 404);
   }
@@ -182,13 +184,13 @@ async function rechazarComprobante(comprobanteId, usuarioId) {
   comprobante.validado_por = usuarioId;
   comprobante.validado_en = new Date();
 
-  await comprobante.save({ transaction: t });
+  await comprobante.save();
 
   pago.estado_pago = "rechazado";
   pago.updated_at = new Date();
   pago.updated_by = usuarioId;
 
-  await pago.save({ transaction: t });
+  await pago.save();
 
   return comprobante;
 }
