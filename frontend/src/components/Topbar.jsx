@@ -56,7 +56,6 @@ export default function Topbar(props) {
               <div className="text-sm text-gray-900">{user.email}</div>
               <div className="text-xs text-gray-500">{user.rol}</div>
             </div>
-            <ChevronDown className="w-4 h-4 text-gray-500" />
           </button>
         </div>
       </div>

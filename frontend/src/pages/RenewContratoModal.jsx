@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { X, RefreshCw } from 'lucide-react';
+import React, { useState } from "react";
+import { X, RefreshCw } from "lucide-react";
 
 export function RenewContratoModal({ contrato, onClose, onRenew }) {
   const [formData, setFormData] = useState({
-    nuevaFechaInicio: '',
-    nuevaFechaFin: '',
+    nuevaFechaInicio: "",
+    nuevaFechaFin: "",
     nuevoMontoMensual: String(contrato.montoMensual),
     nuevoDeposito: String(contrato.deposito),
-    notasRenovacion: '',
+    notasRenovacion: "",
   });
 
   const handleSubmit = (e) => {
@@ -19,7 +19,7 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Modal */}
@@ -31,7 +31,9 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-gray-900">Renovar Contrato</h2>
-              <p className="text-sm text-gray-600 mt-1">{contrato.codigoContrato}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {contrato.codigoContrato}
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -48,8 +50,8 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
               <div>
                 <h4 className="text-green-900">Renovación de Contrato</h4>
                 <p className="text-sm text-green-700 mt-1">
-                  Estás a punto de renovar el contrato de **{contrato.cliente}** para{' '}
-                  **{contrato.apartamento}**
+                  Estás a punto de renovar el contrato de **{contrato.cliente}**
+                  para **{contrato.apartamento}**
                 </p>
               </div>
             </div>
@@ -67,7 +69,12 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
                   type="date"
                   required
                   value={formData.nuevaFechaInicio}
-                  onChange={(e) => setFormData({ ...formData, nuevaFechaInicio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      nuevaFechaInicio: e.target.value,
+                    })
+                  }
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -79,7 +86,9 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
                   type="date"
                   required
                   value={formData.nuevaFechaFin}
-                  onChange={(e) => setFormData({ ...formData, nuevaFechaFin: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nuevaFechaFin: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -88,28 +97,46 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
             {/* Nuevo monto mensual y depósito */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-700 mb-2">Nuevo monto mensual (opcional)</label>
+                <label className="block text-sm text-gray-700 mb-2">
+                  Nuevo monto mensual (opcional)
+                </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                    US$
+                  </span>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.nuevoMontoMensual}
-                    onChange={(e) => setFormData({ ...formData, nuevoMontoMensual: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        nuevoMontoMensual: e.target.value,
+                      })
+                    }
                     className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="0.00"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-700 mb-2">Nuevo depósito (opcional)</label>
+                <label className="block text-sm text-gray-700 mb-2">
+                  Nuevo depósito (opcional)
+                </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                    US$
+                  </span>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.nuevoDeposito}
-                    onChange={(e) => setFormData({ ...formData, nuevoDeposito: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        nuevoDeposito: e.target.value,
+                      })
+                    }
                     className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="0.00"
                   />
@@ -119,10 +146,14 @@ export function RenewContratoModal({ contrato, onClose, onRenew }) {
 
             {/* Notas de renovación */}
             <div>
-              <label className="block text-sm text-gray-700 mb-2">Notas de renovación</label>
+              <label className="block text-sm text-gray-700 mb-2">
+                Notas de renovación
+              </label>
               <textarea
                 value={formData.notasRenovacion}
-                onChange={(e) => setFormData({ ...formData, notasRenovacion: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notasRenovacion: e.target.value })
+                }
                 rows={4}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Añade notas sobre la renovación del contrato..."

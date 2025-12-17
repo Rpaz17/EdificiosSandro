@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState } from "react";
+import { X } from "lucide-react";
 
 export function EditContratoModal({ contrato, onClose, onSave }) {
   const [formData, setFormData] = useState({
@@ -10,7 +10,7 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
     montoMensual: String(contrato.montoMensual),
     deposito: String(contrato.deposito),
     estado: contrato.estado,
-    notas: contrato.notas || '',
+    notas: contrato.notas || "",
   });
 
   const handleSubmit = (e) => {
@@ -22,7 +22,7 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Modal */}
@@ -34,7 +34,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-gray-900">Editar Contrato</h2>
-              <p className="text-sm text-gray-600 mt-1">{contrato.codigoContrato}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {contrato.codigoContrato}
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -48,7 +50,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             {/* Cliente (Disabled) */}
             <div>
-              <label className="block text-sm text-gray-700 mb-2">Cliente</label>
+              <label className="block text-sm text-gray-700 mb-2">
+                Cliente
+              </label>
               <input
                 type="text"
                 disabled
@@ -65,7 +69,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
               <select
                 required
                 value={formData.apartamento}
-                onChange={(e) => setFormData({ ...formData, apartamento: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, apartamento: e.target.value })
+                }
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option>Apt 301 - Torre A</option>
@@ -86,7 +92,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
                   type="text"
                   required
                   value={formData.fechaInicio}
-                  onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fechaInicio: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -98,7 +106,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
                   type="text"
                   required
                   value={formData.fechaFin}
-                  onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fechaFin: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -111,26 +121,36 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
                   Monto mensual <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                    US$
+                  </span>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.montoMensual}
-                    onChange={(e) => setFormData({ ...formData, montoMensual: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, montoMensual: e.target.value })
+                    }
                     className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-700 mb-2">Depósito</label>
+                <label className="block text-sm text-gray-700 mb-2">
+                  Depósito
+                </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">US$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">
+                    US$
+                  </span>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.deposito}
-                    onChange={(e) => setFormData({ ...formData, deposito: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, deposito: e.target.value })
+                    }
                     className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -145,7 +165,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
               <select
                 required
                 value={formData.estado}
-                onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, estado: e.target.value })
+                }
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option>Activo</option>
@@ -160,7 +182,9 @@ export function EditContratoModal({ contrato, onClose, onSave }) {
               <label className="block text-sm text-gray-700 mb-2">Notas</label>
               <textarea
                 value={formData.notas}
-                onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notas: e.target.value })
+                }
                 rows={4}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Añade notas adicionales sobre el contrato..."

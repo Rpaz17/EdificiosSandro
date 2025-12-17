@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import React, { useState } from "react";
+import { X, AlertTriangle } from "lucide-react";
 
 export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
   const [formData, setFormData] = useState({
-    fechaFinalizacion: '',
-    motivoFinalizacion: '',
-    notasAdicionales: '',
+    fechaFinalizacion: "",
+    motivoFinalizacion: "",
+    notasAdicionales: "",
   });
 
   const handleSubmit = (e) => {
@@ -17,7 +17,7 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Modal */}
@@ -29,7 +29,9 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-gray-900">Finalizar Contrato</h2>
-              <p className="text-sm text-gray-600 mt-1">{contrato.codigoContrato}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {contrato.codigoContrato}
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -44,10 +46,12 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
               <div>
-                <h4 className="text-red-900">Advertencia: Finalizar Contrato</h4>
+                <h4 className="text-red-900">
+                  Advertencia: Finalizar Contrato
+                </h4>
                 <p className="text-sm text-red-700 mt-1">
-                  Esta acción finalizará el contrato de manera permanente. Asegúrate de revisar todos
-                  los detalles antes de continuar.
+                  Esta acción finalizará el contrato de manera permanente.
+                  Asegúrate de revisar todos los detalles antes de continuar.
                 </p>
               </div>
             </div>
@@ -66,7 +70,9 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
                 <p className="text-gray-900">{contrato.apartamento}</p>
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">Fecha de inicio</label>
+                <label className="block text-gray-600 mb-1">
+                  Fecha de inicio
+                </label>
                 <p className="text-gray-900">{contrato.fechaInicio}</p>
               </div>
               <div>
@@ -87,7 +93,12 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
                 type="date"
                 required
                 value={formData.fechaFinalizacion}
-                onChange={(e) => setFormData({ ...formData, fechaFinalizacion: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    fechaFinalizacion: e.target.value,
+                  })
+                }
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -100,7 +111,12 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
               <select
                 required
                 value={formData.motivoFinalizacion}
-                onChange={(e) => setFormData({ ...formData, motivoFinalizacion: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    motivoFinalizacion: e.target.value,
+                  })
+                }
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Seleccionar motivo</option>
@@ -114,10 +130,14 @@ export function FinalizeContratoModal({ contrato, onClose, onFinalize }) {
 
             {/* Notas adicionales */}
             <div>
-              <label className="block text-sm text-gray-700 mb-2">Notas adicionales</label>
+              <label className="block text-sm text-gray-700 mb-2">
+                Notas adicionales
+              </label>
               <textarea
                 value={formData.notasAdicionales}
-                onChange={(e) => setFormData({ ...formData, notasAdicionales: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notasAdicionales: e.target.value })
+                }
                 rows={4}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Añade notas adicionales sobre la finalización del contrato..."

@@ -142,86 +142,88 @@ export function ClienteComprobantes() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="Comprobantes"
-        description="Sube y gestiona tus comprobantes de pago"
-        actionButton={{
-          label: "Subir Comprobante",
-          icon: <Upload className="w-5 h-5" />,
-          onClick: () => setShowUploadModal(true),
-        }}
-      />
+    <div className="p-6">
+      <div className="space-y-6">
+        <PageHeader
+          title="Comprobantes"
+          description="Sube y gestiona tus comprobantes de pago"
+          actionButton={{
+            label: "Subir Comprobante",
+            icon: <Upload className="w-5 h-5" />,
+            onClick: () => setShowUploadModal(true),
+          }}
+        />
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <KPICard
-          title="Total de comprobantes"
-          value={comprobantes?.resumen?.total}
-          icon={FileText}
-          color="blue"
-        />
-        <KPICard
-          title="Pendientes"
-          value={comprobantes?.resumen?.pendientes}
-          icon={Calendar}
-          color="orange"
-        />
-        <KPICard
-          title="Aprobados"
-          value={comprobantes?.resumen?.validados}
-          icon={FileText}
-          color="green"
-        />
-      </div>
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <KPICard
+            title="Total de comprobantes"
+            value={comprobantes?.resumen?.total}
+            icon={FileText}
+            color="blue"
+          />
+          <KPICard
+            title="Pendientes"
+            value={comprobantes?.resumen?.pendientes}
+            icon={Calendar}
+            color="orange"
+          />
+          <KPICard
+            title="Aprobados"
+            value={comprobantes?.resumen?.validados}
+            icon={FileText}
+            color="green"
+          />
+        </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="px-6 py-4 text-left text-xs">Código</th>
-              <th className="px-6 py-4 text-left text-xs">Fecha</th>
-              <th className="px-6 py-4 text-left text-xs">Monto</th>
-              <th className="px-6 py-4 text-left text-xs">Método</th>
-              <th className="px-6 py-4 text-left text-xs">Estado</th>
-              <th className="px-6 py-4 text-left text-xs">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {comprobantes?.comprobantes?.map((c) => (
-              <tr key={c.id}>
-                <td className="px-6 py-4">C-0{c.id}</td>
-                <td className="px-6 py-4">
-                  {new Date(c.fecha).toLocaleDateString("es-ES")}
-                </td>
-                <td className="px-6 py-4">${c.monto}</td>
-                <td className="px-6 py-4">{c.metodo}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs ${getEstadoBadge(
-                      c.estado
-                    )}`}
-                  >
-                    {capitalize(c.estado)}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => setSelectedComprobante(c)}
-                    className="text-blue-600"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </button>
-                </td>
+        {/* Table */}
+        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs">Código</th>
+                <th className="px-6 py-4 text-left text-xs">Fecha</th>
+                <th className="px-6 py-4 text-left text-xs">Monto</th>
+                <th className="px-6 py-4 text-left text-xs">Método</th>
+                <th className="px-6 py-4 text-left text-xs">Estado</th>
+                <th className="px-6 py-4 text-left text-xs">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y">
+              {comprobantes?.comprobantes?.map((c) => (
+                <tr key={c.id}>
+                  <td className="px-6 py-4">C-0{c.id}</td>
+                  <td className="px-6 py-4">
+                    {new Date(c.fecha).toLocaleDateString("es-ES")}
+                  </td>
+                  <td className="px-6 py-4">${c.monto}</td>
+                  <td className="px-6 py-4">{c.metodo}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${getEstadoBadge(
+                        c.estado
+                      )}`}
+                    >
+                      {capitalize(c.estado)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => setSelectedComprobante(c)}
+                      className="text-blue-600"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
               <h2 className="text-gray-900">Subir Comprobante de Pago</h2>
@@ -361,7 +363,7 @@ export function ClienteComprobantes() {
 
       {/* Detail Modal */}
       {selectedComprobante && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
               <h2 className="text-gray-900">Detalle del Comprobante</h2>

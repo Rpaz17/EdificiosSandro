@@ -78,7 +78,7 @@ export function CreateContratoModal({ onClose, onSave }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
       onClick={onClose}
     >
       <div
