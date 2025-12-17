@@ -7,9 +7,6 @@ import {
 } from "react-router-dom";
 import { NavigationLayout } from "./layouts/navigation-layout";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
-import { useEffect, useState } from "react";
-import { fetchPerfilUsuario } from "./services/usuarios.api";
-
 
 import { Login } from "./pages/login";
 import { ForgotPassword } from "./pages/forgotPassword";
@@ -35,18 +32,8 @@ import { ClienteComprobantes } from "./pages/clienteComprobantes";
 import { ClienteDashboard } from "./pages/clienteDashboard";
 
 export default function App() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-  fetchPerfilUsuario()
-    .then(setUser)
-    .catch(console.error);
-}, []);
-
-
   return (
     <BrowserRouter>
-
       <Routes>
         {/* Públicas */}
         <Route path="/" element={<Login />} />
@@ -58,9 +45,7 @@ export default function App() {
           path="/admin"
           element={
             <ProtectedRoute roles={["admin"]}>
-              
-
-              <NavigationLayout user={user} />
+              <NavigationLayout />
             </ProtectedRoute>
           }
         >
@@ -84,7 +69,7 @@ export default function App() {
           path="/cliente"
           element={
             <ProtectedRoute roles={["cliente"]}>
-              <NavigationLayout user={user} />
+              <NavigationLayout />
             </ProtectedRoute>
           }
         >
