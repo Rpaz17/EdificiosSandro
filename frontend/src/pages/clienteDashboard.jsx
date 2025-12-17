@@ -69,17 +69,10 @@ export function ClienteDashboard() {
           icon={FileCheck}
           color="green"
         />
-        <KPICard
-          title="Próximo Pago"
-          value="15"
-          icon={Calendar}
-          color="blue"
-        />
+        <KPICard title="Próximo Pago" value="15" icon={Calendar} color="blue" />
         <KPICard
           title="Monto del Pago"
-          value={
-            contrato ? `$${Number(contrato.monto).toFixed(2)}` : "—"
-          }
+          value={contrato ? `$${Number(contrato.monto).toFixed(2)}` : "—"}
           icon={DollarSign}
           color="teal"
         />
@@ -120,9 +113,7 @@ export function ClienteDashboard() {
           <div>
             <p className="text-xs text-gray-600 mb-1">Monto mensual</p>
             <p className="text-sm text-gray-900">
-              {contrato
-                ? `$${Number(contrato.monto).toFixed(2)} US$`
-                : "—"}
+              {contrato ? `$${Number(contrato.monto).toFixed(2)} US$` : "—"}
             </p>
           </div>
 
@@ -145,9 +136,7 @@ export function ClienteDashboard() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-gray-900">15 de este mes</p>
             <p className="text-gray-900 mt-2">
-              {contrato
-                ? `$${Number(contrato.monto).toFixed(2)} US$`
-                : "—"}
+              {contrato ? `$${Number(contrato.monto).toFixed(2)} US$` : "—"}
             </p>
           </div>
         </div>
@@ -157,33 +146,13 @@ export function ClienteDashboard() {
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <p className="text-gray-900">Aprobado</p>
             <p className="text-gray-900 mt-2">
-              {contrato
-                ? `$${Number(contrato.monto).toFixed(2)} US$`
-                : "—"}
+              {contrato ? `$${Number(contrato.monto).toFixed(2)} US$` : "—"}
             </p>
           </div>
         </div>
       </div>
 
       {/* NOTIFICACIONES */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-gray-900">Notificaciones Importantes</h2>
-          <Bell className="w-5 h-5 text-gray-400" />
-        </div>
-
-        <div className="space-y-3">
-          {mockNotifications.map((n) => (
-            <div
-              key={n.id}
-              className="p-4 rounded-lg border bg-gray-50 border-gray-200"
-            >
-              <p className="text-sm text-gray-900">{n.titulo}</p>
-              <p className="text-xs text-gray-600 mt-1">{n.mensaje}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
