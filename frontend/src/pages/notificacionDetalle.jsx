@@ -214,16 +214,6 @@ export default function NotificationDetail({ notification, onBack }) {
           </div>
 
           <div className="pt-4 border-t border-gray-200">
-            <div className="flex items-center gap-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
-                <CheckCircle2 className="size-4" />
-                Marcar como leída
-              </Button>
-              <Button variant="outline" className="gap-2">
-                <Circle className="size-4" />
-                Marcar como no leída
-              </Button>
-            </div>
           </div>
         </div>
       </div>
