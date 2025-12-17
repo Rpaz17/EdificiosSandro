@@ -17,8 +17,6 @@ import {
 } from "../services/comprobantes.api";
 import { listarSucursales } from "../services/sucursales.api";
 
-
-
 export function Comprobantes() {
   const [selectedComprobante, setSelectedComprobante] = useState(null);
   const [comprobantes, setComprobantes] = useState([]);
@@ -134,7 +132,7 @@ export function Comprobantes() {
     }
     try {
       await rechazarComprobante(id);
-      console.log("comprobante validado:", id);
+      console.log("comprobante rechazado:", id);
     } catch (err) {
       console.error(err);
     }
