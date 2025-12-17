@@ -33,7 +33,8 @@ export const fetchPerfilUsuario = async () => {
 };
 
 export const cambiarPassword = async (payload) => {
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
 
   const res = await fetch(
     "http://localhost:3000/api/usuarios/cambiarPassword",
