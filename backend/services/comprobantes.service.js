@@ -180,6 +180,10 @@ async function rechazarComprobante(comprobanteId, usuarioId) {
   if (estado !== "pendiente") {
     throw new ServiceError("El comprobante ya ha sido validado", 409);
   }
+
+  if (!pago) {
+    throw new ServiceError("Pago no encontrado", 404);
+  }
   comprobante.estado_validacion = "rechazado";
   comprobante.validado_por = usuarioId;
   comprobante.validado_en = new Date();
@@ -189,8 +193,31 @@ async function rechazarComprobante(comprobanteId, usuarioId) {
   pago.estado_pago = "rechazado";
   pago.updated_at = new Date();
   pago.updated_by = usuarioId;
+  await pago.save();
 
   await pago.save();
+  try {
+    const contrato = await Contrato.findByPk(pago.id_contrato, {
+      include: [{ model: Cliente, as: "cliente" }],
+    });
+
+    const id_usuario_cliente = contrato?.cliente?.id_usuario; 
+
+    if (id_usuario_cliente) {
+      await crearNotificacion({
+        tipo: "PAGO_RECHAZADO",
+        medio: "APP",
+        mensaje: `Tu pago fue rechazado. Comunicate con el administrador. Monto: ${pago.monto} | Método: ${pago.metodo}`,
+        id_usuario: id_usuario_cliente,
+        id_cliente: contrato.cliente.id,
+        id_contrato: contrato.id,
+        id_pago: pago.id,
+        created_by: usuarioId,
+      });
+    }
+  } catch (e) {
+    console.error("No se pudo crear notificación al cliente (pago rechazado):", e);
+  }
 
   return comprobante;
 }

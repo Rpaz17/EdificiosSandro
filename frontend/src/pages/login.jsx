@@ -135,14 +135,7 @@ export function Login({ onLogin }) {
               {loading ? "Ingresando..." : "Iniciar Sesión"}
             </button>
 
-            <div className="text-center">
-              <Link
-                to="/forgotPassword"
-                className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-              >
-                ¿Olvidó su contraseña?
-              </Link>
-            </div>
+            
           </form>
         </div>
 
